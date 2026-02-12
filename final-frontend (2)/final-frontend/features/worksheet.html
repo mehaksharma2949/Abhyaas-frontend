@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Worksheet Generator </title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Arial}
+:root{
+  --bg1:#eaf7ff;
+  --bg2:#d9f0ff;
+  --card:rgba(255,255,255,.55);
+  --card2:rgba(255,255,255,.35);
+  --border:rgba(15,60,120,.12);
+  --text:#08304f;
+  --muted:#3b6b92;
+  --accent1:#5ad3ff;
+  --accent2:#1d9bf0;
+  --accent3:#0b5bb8;
+  --shadow: 0 20px 60px rgba(0,30,80,.12);
+}
+
+body{
+  margin:0;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(90,211,255,.45) 0%, transparent 35%),
+    radial-gradient(circle at 90% 20%, rgba(29,155,240,.25) 0%, transparent 40%),
+    radial-gradient(circle at 30% 90%, rgba(11,91,184,.18) 0%, transparent 45%),
+    linear-gradient(180deg,var(--bg1),var(--bg2));
+  overflow:hidden;
+}
+
+/* Floating particles */
+.particles{
+  position:fixed; inset:0;
+  pointer-events:none;
+  opacity:.55;
+  filter: blur(.2px);
+}
+.particles span{
+  position:absolute;
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,.9);
+  box-shadow: 0 0 18px rgba(90,211,255,.55);
+  animation: floaty 9s ease-in-out infinite;
+}
+@keyframes floaty{
+  0%,100%{transform:translateY(0) translateX(0); opacity:.55}
+  50%{transform:translateY(-35px) translateX(25px); opacity:1}
+}
+
+/* App layout */
+.app{
+  display:grid;
+  grid-template-columns:300px 1fr;
+  height:100vh;
+}
+
+/* Sidebar */
+.sidebar{
+  padding:22px;
+  border-right:1px solid var(--border);
+  background:rgba(255,255,255,.25);
+  backdrop-filter: blur(18px);
+}
+
+.brand{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 10px 16px;
+}
+.logo{
+  width:48px;height:48px;border-radius:16px;
+  display:grid;place-items:center;
+  background: linear-gradient(135deg, rgba(90,211,255,.9), rgba(29,155,240,.85), rgba(11,91,184,.85));
+  color:white;
+  font-weight:900;
+  box-shadow: 0 18px 55px rgba(29,155,240,.22);
+  position:relative;
+  overflow:hidden;
+}
+.logo::after{
+  content:"";
+  position:absolute; inset:-40%;
+  background: radial-gradient(circle, rgba(255,255,255,.55), transparent 60%);
+  animation: shine 2.8s linear infinite;
+}
+@keyframes shine{
+  0%{transform:translateX(-40%)}
+  100%{transform:translateX(40%)}
+}
+
+.brand h1{
+  font-size:18px; margin:0; font-weight:900;
+}
+.brand p{
+  margin:2px 0 0; font-size:12px; color:var(--muted); font-weight:700;
+}
+
+.plan-pill{
+  margin:12px 10px 18px;
+  padding:10px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.55);
+  border:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow: var(--shadow);
+}
+.plan-pill b{font-size:12px}
+.plan-pill span{
+  font-size:11px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(90,211,255,.22);
+  border:1px solid rgba(29,155,240,.18);
+  color:#0b5bb8;
+  font-weight:900;
+}
+
+.menu{padding:0 10px}
+.menu button{
+  width:100%;
+  background:rgba(255,255,255,.35);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:12px 14px;
+  border-radius:18px;
+  margin-bottom:10px;
+  cursor:pointer;
+  text-align:left;
+  font-weight:800;
+  transition:.22s ease;
+  position:relative;
+  overflow:hidden;
+  box-shadow: 0 12px 30px rgba(0,30,80,.06);
+}
+.menu button::before{
+  content:"";
+  position:absolute;
+  inset:-50%;
+  background: radial-gradient(circle, rgba(90,211,255,.35), transparent 55%);
+  opacity:0;
+  transition:.25s ease;
+}
+.menu button:hover{
+  transform: translateY(-2px);
+  border-color: rgba(29,155,240,.28);
+}
+.menu button:hover::before{opacity:1}
+.menu button.active{
+  background: linear-gradient(135deg, rgba(90,211,255,.9), rgba(29,155,240,.9), rgba(11,91,184,.9));
+  color:white;
+  border-color:transparent;
+  box-shadow: 0 18px 55px rgba(29,155,240,.22);
+}
+
+/* Main */
+.main{
+  padding:26px;
+  overflow:auto;
+}
+
+/* Top header */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:18px;
+}
+.header .title{
+  display:flex;
+  flex-direction:column;
+}
+.header .title h2{
+  margin:0;
+  font-size:22px;
+  font-weight:900;
+}
+.header .title p{
+  margin:4px 0 0;
+  color:var(--muted);
+  font-weight:700;
+  font-size:13px;
+}
+
+.header .cta{
+  display:flex;
+  gap:10px;
+}
+.pill{
+  padding:10px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.55);
+  border:1px solid var(--border);
+  box-shadow: 0 18px 55px rgba(0,30,80,.08);
+  font-weight:800;
+  color:#0b5bb8;
+  display:flex; align-items:center; gap:8px;
+}
+
+/* Cards */
+.card{
+  background: var(--card);
+  backdrop-filter: blur(18px);
+  border-radius:26px;
+  padding:22px;
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition:.25s ease;
+}
+.card:hover{
+  transform: translateY(-3px);
+  border-color: rgba(29,155,240,.25);
+}
+
+/* Generator layout */
+.generator{
+  display:grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap:18px;
+}
+
+/* Form */
+h3{margin:0 0 10px; font-size:18px; font-weight:900}
+label{
+  font-size:12px;
+  color:#0b5bb8;
+  margin-top:14px;
+  display:block;
+  font-weight:900;
+}
+input,select,textarea{
+  width:100%;
+  margin-top:7px;
+  padding:12px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.65);
+  border:1px solid rgba(15,60,120,.12);
+  color:var(--text);
+  outline:none;
+  transition:.2s ease;
+  box-shadow: 0 10px 22px rgba(0,30,80,.05);
+}
+input::placeholder,textarea::placeholder{color:rgba(59,107,146,.65)}
+input:focus,select:focus,textarea:focus{
+  border-color: rgba(29,155,240,.45);
+  box-shadow:0 0 0 4px rgba(29,155,240,.12);
+  transform: translateY(-1px);
+}
+textarea{resize:none;height:86px}
+
+/* Buttons */
+.primary{
+  margin-top:18px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:18px;
+  background: linear-gradient(135deg, #5ad3ff, #1d9bf0, #0b5bb8);
+  color:white;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  transition:.22s ease;
+  box-shadow: 0 22px 70px rgba(29,155,240,.22);
+  position:relative;
+  overflow:hidden;
+}
+.primary::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:-40%;
+  width:70%;
+  height:220%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+  transform: rotate(18deg);
+  opacity:0;
+  transition:.35s ease;
+}
+.primary:hover{transform: translateY(-2px) scale(1.01)}
+.primary:hover::after{opacity:1; left:120%}
+.primary:disabled{opacity:.7; cursor:not-allowed; transform:none}
+
+/* Spinner */
+.spinner{
+  width:18px;height:18px;
+  border:3px solid rgba(255,255,255,.35);
+  border-top:3px solid white;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{100%{transform:rotate(360deg)}}
+
+/* Right hero/progress */
+.hero{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  min-height:420px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(90,211,255,.40) 0%, transparent 45%),
+    radial-gradient(circle at 75% 20%, rgba(29,155,240,.22) 0%, transparent 55%),
+    radial-gradient(circle at 65% 85%, rgba(11,91,184,.18) 0%, transparent 55%);
+  z-index:0;
+}
+.hero > *{position:relative; z-index:1}
+
+.heroTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.65);
+  border:1px solid rgba(15,60,120,.12);
+  font-weight:900;
+  color:#0b5bb8;
+}
+.mini{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:800;
+}
+
+/* Cute illustration (pure CSS) */
+.botWrap{
+  margin-top:8px;
+  display:grid;
+  place-items:center;
+}
+.bot{
+  width:160px;height:160px;
+  border-radius:30px;
+  background:rgba(255,255,255,.75);
+  border:1px solid rgba(15,60,120,.10);
+  box-shadow: 0 30px 80px rgba(0,30,80,.12);
+  position:relative;
+  animation: bob 2.2s ease-in-out infinite;
+}
+@keyframes bob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+.bot::before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  border-radius:26px;
+  background: linear-gradient(135deg, rgba(90,211,255,.35), rgba(29,155,240,.20), rgba(11,91,184,.12));
+}
+.face{
+  position:absolute;
+  inset:0;
+  margin:auto;
+  width:90px;height:70px;
+  border-radius:22px;
+  background:rgba(255,255,255,.8);
+  border:1px solid rgba(15,60,120,.12);
+  top:45px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+}
+.eye{
+  width:12px;height:12px;border-radius:50%;
+  background:#0b5bb8;
+  box-shadow: 0 0 14px rgba(29,155,240,.35);
+  animation: blink 4s infinite;
+}
+@keyframes blink{
+  0%,92%,100%{transform:scaleY(1)}
+  94%,96%{transform:scaleY(.1)}
+}
+.mouth{
+  width:26px;height:10px;
+  border-bottom:4px solid #0b5bb8;
+  border-radius:0 0 30px 30px;
+  opacity:.9;
+}
+
+/* Progress */
+.progressWrap{
+  background:rgba(255,255,255,.65);
+  border:1px solid rgba(15,60,120,.12);
+  border-radius:20px;
+  padding:16px;
+  box-shadow: 0 20px 60px rgba(0,30,80,.08);
+}
+.progressBar{
+  width:100%;
+  height:10px;
+  background:rgba(11,91,184,.08);
+  border-radius:999px;
+  overflow:hidden;
+}
+#progressFill{
+  height:100%;
+  width:0%;
+  background: linear-gradient(90deg,#5ad3ff,#1d9bf0,#0b5bb8);
+  transition:width .25s ease;
+}
+#progressText{
+  margin-top:10px;
+  font-weight:900;
+  color:#0b5bb8;
+  font-size:14px;
+}
+.status{
+  margin-top:8px;
+  color:var(--muted);
+  font-weight:800;
+  font-size:13px;
+}
+
+/* History */
+.hidden{display:none}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:8px 0 14px;
+  font-weight:900;
+}
+.download{
+  border:none;
+  padding:10px 14px;
+  border-radius:16px;
+  color:white;
+  cursor:pointer;
+  font-weight:900;
+  transition:.22s ease;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  box-shadow: 0 22px 70px rgba(34,197,94,.18);
+}
+.download:hover{transform: translateY(-2px)}
+
+.history{
+  display:grid;
+  grid-template-columns: 1fr 340px;
+  gap:16px;
+}
+.preview{
+  background:white;
+  color:#0f172a;
+  padding:40px;
+  border-radius:22px;
+  height:75vh;
+  overflow:auto;
+  border:1px solid rgba(15,60,120,.12);
+  box-shadow: 0 25px 80px rgba(0,30,80,.12);
+}
+.config{
+  background:rgba(255,255,255,.55);
+  padding:18px;
+  border-radius:22px;
+  border:1px solid rgba(15,60,120,.12);
+  box-shadow: 0 25px 80px rgba(0,30,80,.10);
+  color:var(--text);
+}
+.config h4{margin:0 0 10px;font-weight:900}
+.config p{margin:10px 0;color:var(--muted);font-weight:800}
+
+/* Worksheet printable */
+.worksheet-page{
+  background:white;
+  color:#0f172a;
+  padding:50px;
+  max-width:820px;
+  margin:auto;
+  font-family:"Times New Roman", serif;
+}
+.worksheet-header{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  margin-bottom:25px;
+}
+.worksheet-title{
+  text-align:center;
+  font-size:26px;
+  margin:10px 0 5px;
+}
+.worksheet-subtitle{
+  text-align:center;
+  font-style:italic;
+  margin-bottom:30px;
+  color:#334155;
+}
+.section-title{
+  margin-top:30px;
+  font-size:18px;
+  border-bottom:1px solid #dbeafe;
+  padding-bottom:5px;
+  color:#0b5bb8;
+}
+.question{margin:14px 0}
+.answer-line{
+  height:28px;
+  border-bottom:1px dotted #64748b;
+  margin-top:8px;
+}
+.match-wrapper{margin-top:15px}
+.match-header{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  font-weight:700;
+  margin-bottom:10px;
+}
+.match-table{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  column-gap:120px;
+  row-gap:12px;
+}
+.match-left,.match-right{white-space:nowrap}
+
+/* Error */
+#error{
+  color:#ef4444;
+  margin-top:10px;
+  font-weight:900;
+  display:none;
+}
+
+/* Responsive */
+@media(max-width:1000px){
+  .generator,.history{grid-template-columns:1fr}
+  .app{grid-template-columns:1fr}
+  body{overflow:auto}
+  .sidebar{border-right:none;border-bottom:1px solid var(--border)}
+}
+</style>
+</head>
+
+<body>
+
+<!-- particles -->
+<div class="particles">
+  <span style="top:10%;left:12%;animation-delay:.2s"></span>
+  <span style="top:18%;left:80%;animation-delay:1.2s"></span>
+  <span style="top:55%;left:18%;animation-delay:2.0s"></span>
+  <span style="top:70%;left:90%;animation-delay:2.7s"></span>
+  <span style="top:86%;left:35%;animation-delay:1.7s"></span>
+  <span style="top:40%;left:55%;animation-delay:.8s"></span>
+</div>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">W</div>
+      <div>
+        <h1>Workspace</h1>
+        <p>Abhyass </p>
+      </div>
+    </div>
+
+    <div class="plan-pill">
+      <b>Teacher Pro Plan</b>
+      <span>AI</span>
+    </div>
+
+    <div class="menu">
+      <button id="genBtn" class="active" onclick="openGenerator()">✨ Generator</button>
+      <button id="hisBtn" onclick="openHistory()">🕒 History</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="header">
+      <div class="title">
+        <h2>Worksheet Generator</h2>
+        <!-- <p>Light blue UI • smooth animations • print-ready PDF</p> -->
+      </div>
+
+      <div class="cta">
+        <div class="pill">⚡ Fast</div>
+        <div class="pill">🧠 AI Powered</div>
+      </div>
+    </div>
+
+    <!-- Generator -->
+    <section id="generatorView" class="generator">
+
+      <!-- Form card -->
+      <div class="card">
+        <h3>Build your worksheet</h3>
+
+        <label>Subject</label>
+        <input id="subject" placeholder="Eg: Science">
+
+        <label>Class Level</label>
+        <select id="classLevel">
+          <option value="">Select class</option>
+          <option>3</option><option>4</option><option>5</option>
+          <option>6</option><option>7</option><option>8</option>
+          <option>9</option><option>10</option>
+        </select>
+
+        <label>Difficulty</label>
+        <select id="difficulty">
+          <option value="">Select difficulty</option>
+          <option>Easy</option>
+          <option>Intermediate</option>
+          <option>High</option>
+        </select>
+
+        <label>Topic</label>
+        <input id="topic" placeholder="Eg: Metals and Non Metals">
+
+        <label>Specific Instructions (Optional)</label>
+        <textarea id="instructions" placeholder="Eg: add 2 HOTS questions"></textarea>
+
+        <button class="primary" id="processBtn" onclick="generate()">
+          <span id="btnText">Generate Worksheet</span>
+          <span id="btnSpinner" class="spinner hidden"></span>
+        </button>
+
+        <div id="error">Please fill all required fields</div>
+      </div>
+
+      <!-- Hero card -->
+      <div class="card hero">
+        <div class="heroTop">
+          <div class="badge">🤖 AI Assistant</div>
+          <!-- <div class="mini">Auto progress • smooth UI</div> -->
+        </div>
+
+        <div class="botWrap">
+          <div class="bot">
+            <div class="face">
+              <div class="eye"></div>
+              <div class="eye"></div>
+              <div class="mouth"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progressWrap">
+          <div class="progressBar">
+            <div id="progressFill"></div>
+          </div>
+          <div id="progressText">0% COMPLETED</div>
+          <div class="status">AI is crafting your custom worksheet…</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- History -->
+    <section id="historyView" class="hidden">
+      <div class="topbar">
+        <div>📄 Generated Worksheet</div>
+        <button class="download" onclick="window.print()">⬇ Download PDF</button>
+      </div>
+
+      <div class="history">
+        <div class="preview" id="worksheetPreview"></div>
+        <div class="config" id="configBox"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script src="../config.js"></script>
+
+<script>
+  console.log("CONFIG:", window.APP_CONFIG);
+
+  // ✅ API BASE FROM CONFIG
+  const API_BASE = window.APP_CONFIG?.API_BASE || "https://backend-abhyaas-final.onrender.com";
+</script>
+<script>
+/* ========= View switch ========= */
+function openGenerator(){
+  generatorView.classList.remove("hidden");
+  historyView.classList.add("hidden");
+  genBtn.classList.add("active");
+  hisBtn.classList.remove("active");
+}
+function openHistory(){
+  generatorView.classList.add("hidden");
+  historyView.classList.remove("hidden");
+  hisBtn.classList.add("active");
+  genBtn.classList.remove("active");
+}
+
+/* ========= Worksheet formatter ========= */
+function formatWorksheet(raw, meta) {
+  raw = (raw || "").replace(/\*\*/g,"").replace(/=+/g,"\n");
+
+  const getSection = (title) => {
+    const regex = new RegExp(`${title}[\\s\\S]*?(?=SECTION|$)`, "i");
+    const match = raw.match(regex);
+    return match ? match[0].replace(title,"").trim() : "";
+  };
+
+  const sections = {
+    mcq: getSection("SECTION A"),
+    fill: getSection("SECTION B"),
+    short: getSection("SECTION C"),
+    match: getSection("SECTION D"),
+    long: getSection("SECTION E")
+  };
+
+  function clean(text){
+    return (text || "").replace(/–.*Questions.*\n?/gi, "");
+  }
+
+  function renderMCQs(text){
+    text = clean(text);
+    if(!text) return "";
+
+    return text
+      .split(/\n?\d+\.\s*/)
+      .filter(q => q.trim())
+      .map((q,i)=>{
+        const question = q.split(/a\)/i)[0].trim();
+        const options = q.match(/[a-d]\)\s[^]*?(?=\s[a-d]\)|$)/gi) || [];
+        return `
+          <div class="question">
+            <b>${i+1}. ${question}</b>
+            <div style="margin-top:8px">
+              ${options.map(opt=>`<div>○ ${opt.trim()}</div>`).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+  }
+
+  function renderNormal(text, lines=false){
+    text = clean(text);
+    if(!text) return "";
+
+    return text
+      .split(/\n?\d+\.\s*/)
+      .filter(q => q.trim())
+      .map((q,i)=>`
+        <div class="question">
+          <b>${i+1}.</b> ${q.trim()}
+          ${lines ? `<div class="answer-line"></div>` : ""}
+        </div>
+      `).join("");
+  }
+
+  function renderMatchPairs(text){
+    text = clean(text);
+    if(!text) return "";
+
+    const lines = text
+      .split(/\n?\d+\.\s*/)
+      .filter(l => l.trim());
+
+    let html = `
+      <div class="match-wrapper">
+        <div class="match-header">
+          <div>Column A</div>
+          <div>Column B</div>
+        </div>
+        <div class="match-table">
+    `;
+
+    lines.forEach(line=>{
+      const left = line.split(/\s+[a-e]\.\s*/i)[0]?.trim() || "";
+      const rightMatch = line.match(/[a-e]\.\s*.*/i);
+      const right = rightMatch ? rightMatch[0].trim() : "";
+      html += `
+        <div class="match-left">${left}</div>
+        <div class="match-right">${right}</div>
+      `;
+    });
+
+    html += `</div></div>`;
+    return html;
+  }
+
+  return `
+  <div class="worksheet-page">
+
+    <div class="worksheet-header">
+      <div>
+        <b>Name:</b> ___________________<br>
+        <b>Date:</b> ___________________
+      </div>
+      <div>
+        ${meta.subject.toUpperCase()} | CLASS ${meta.classLevel}
+      </div>
+    </div>
+
+    <div class="worksheet-title">${meta.topic}</div>
+    <div class="worksheet-subtitle">Answer all questions carefully.</div>
+
+    <div class="section-title">SECTION A – MCQs</div>
+    ${renderMCQs(sections.mcq)}
+
+    <div class="section-title">SECTION B – Fill in the Blanks</div>
+    ${renderNormal(sections.fill, true)}
+
+    <div class="section-title">SECTION C – Short Answer Questions</div>
+    ${renderNormal(sections.short, true)}
+
+    <div class="section-title">SECTION D – Match the Pairs</div>
+    ${renderMatchPairs(sections.match)}
+
+    <div class="section-title">SECTION E – Long Answer Questions</div>
+    ${renderNormal(sections.long, false)}
+
+  </div>
+  `;
+}
+
+/* ========= Main generate ========= */
+async function generate(){
+
+  if(
+    !subject.value.trim() ||
+    !classLevel.value ||
+    !difficulty.value ||
+    !topic.value.trim()
+  ){
+    error.style.display="block";
+    return;
+  }
+  error.style.display="none";
+
+  processBtn.disabled=true;
+  btnText.innerText="Processing...";
+  btnSpinner.classList.remove("hidden");
+
+  let progress=0;
+  progressFill.style.width="0%";
+  progressText.innerText="0% COMPLETED";
+
+  const interval=setInterval(()=>{
+    if(progress<90){
+      progress += Math.floor(Math.random()*4)+1;
+      progressFill.style.width=progress+"%";
+      progressText.innerText=progress+"% COMPLETED";
+    }
+  },350);
+
+  try{
+    const res = await fetch("http://127.0.0.1:8000/generate",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        subject:subject.value,
+        classLevel:classLevel.value,
+        difficulty:difficulty.value,
+        topic:topic.value,
+        instructions:instructions.value||""
+      })
+    });
+
+    const data = await res.json();
+    clearInterval(interval);
+
+    progressFill.style.width="100%";
+    progressText.innerText="100% COMPLETED";
+
+    openHistory();
+
+    setTimeout(()=>{
+      worksheetPreview.innerHTML = formatWorksheet(data.worksheet,{
+        subject: subject.value,
+        classLevel: classLevel.value,
+        topic: topic.value
+      });
+
+      configBox.innerHTML = `
+        <h4>⚙ Configuration</h4>
+        <p><b>Subject:</b> ${subject.value}</p>
+        <p><b>Class:</b> ${classLevel.value}</p>
+        <p><b>Difficulty:</b> ${difficulty.value}</p>
+        <p><b>Topic:</b> ${topic.value}</p>
+      `;
+    },120);
+
+  }catch(e){
+    alert("Backend not running / CORS issue. Please try again.");
+  }
+
+  processBtn.disabled=false;
+  btnText.innerText="Generate Worksheet";
+  btnSpinner.classList.add("hidden");
+}
+</script>
+
+</body>
+</html>

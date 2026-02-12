@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Teach-Back Engine</title>
+
+<style>
+:root{
+  /* New theme - light cyan/turquoise palette */
+  --bg1:#66d4d4;
+  --bg2:#8deafd;
+  --card:#c8e9e9;
+  --card2:#b8e4e4;
+  --border: rgba(0,0,0,0.08);
+  --text:#1a1a1a;
+  --muted: rgba(0,0,0,0.6);
+  --accent:#4a9dd9;
+  --accent2:#3b8bc9;
+  --purple:#9b6dd9;
+  --purple2:#8b5dc9;
+  --shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  color:var(--text);
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  height:100vh;
+  overflow:hidden;
+}
+
+/* MAIN GRID */
+.app{
+  height:100vh;
+  display:grid;
+  grid-template-columns: 1fr 360px;
+  gap:16px;
+  padding:18px;
+}
+
+/* TOP BAR */
+.topbar{
+  grid-column: 1 / -1;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 18px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  background: rgba(255,255,255,0.5);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+}
+
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.brand small{
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  font-size:11px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.brand h1{
+  margin:0;
+  font-size:18px;
+  font-weight:800;
+  color: var(--text);
+}
+
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.6);
+  font-size:13px;
+  color: var(--muted);
+}
+
+.pill strong{ color: var(--text); }
+
+/* LEFT MAIN CHAT AREA */
+.main{
+  border:1px solid var(--border);
+  border-radius:18px;
+  background: rgba(255,255,255,0.5);
+  box-shadow: var(--shadow);
+  overflow:visible;
+  display:flex;
+  flex-direction:column;
+  height: calc(100vh - 100px);
+}
+
+.chat-wrap{
+  padding:16px;
+  flex:1;
+  overflow-y:auto;
+}
+
+/* Message bubbles */
+.msg{
+  display:flex;
+  gap:12px;
+  margin:14px 0;
+  align-items:flex-start;
+}
+
+.avatar{
+  width:40px;
+  height:40px;
+  border-radius:14px;
+  background: rgba(255,255,255,0.8);
+  border:1px solid var(--border);
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  overflow:hidden;
+}
+
+.bubble{
+  max-width: 760px;
+  padding:14px 14px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.7);
+  line-height:1.45;
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  white-space: pre-line;
+}
+
+.bubble.ai{
+  border-color: var(--border);
+  background: rgba(255,255,255,0.8);
+}
+
+.bubble.student{
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+}
+
+/* Example image */
+.ai-image{
+  margin-top:12px;
+  width:100%;
+  max-width: 640px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  display:none;
+}
+
+/* Student messages right side */
+.msg.student{
+  flex-direction: row-reverse;
+}
+.msg.student .bubble{
+  text-align:left;
+}
+.msg.student .avatar{
+  background: var(--accent);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* INPUT BAR */
+.inputbar{
+  padding:14px;
+  border-top:1px solid var(--border);
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(10px);
+  flex-shrink:0;
+  overflow: visible;
+}
+
+/* ChatGPT style input container */
+.chatbox{
+  position: relative;
+  width: 100%;
+  border-radius: 18px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.8);
+  padding: 14px 140px 14px 70px;
+  overflow: visible;
+}
+
+.chatbox textarea{
+  width: 100%;
+  min-height: 64px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  padding: 0;
+}
+
+.chatbox textarea::placeholder{
+  color: rgba(0,0,0,0.4);
+}
+
+/* LEFT + BUTTON */
+.plus-wrap{
+  position:absolute;
+  left: 12px;
+  top: 12px;
+  overflow: visible;
+}
+
+.plus-btn{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.9);
+  color: var(--text);
+  font-size:24px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition: all 0.2s;
+}
+
+.plus-btn:hover{
+  background: rgba(255,255,255,1);
+  transform: scale(1.05);
+}
+
+/* Dropdown menu */
+.attach-menu{
+  position:absolute;
+  left:0;
+  top:auto;
+  bottom: 52px;
+  width: 200px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  padding:8px;
+  display:none;
+  z-index: 50;
+}
+
+.attach-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 10px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:14px;
+  color: var(--text);
+}
+
+.attach-item:hover{
+  background: rgba(74,157,217,0.1);
+}
+
+/* RIGHT ACTIONS */
+.right-actions{
+  position:absolute;
+  right: 12px;
+  top: 12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* mic button */
+.mic-btn{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.9);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:18px;
+  transition: all 0.2s;
+}
+
+.mic-btn:hover{
+  background: rgba(255,255,255,1);
+  transform: scale(1.05);
+}
+
+/* send button */
+.chatbox .send-btn{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  border:1px solid var(--accent);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow: 0 4px 15px rgba(74,157,217,0.3);
+  transition: all 0.2s;
+}
+
+.chatbox .send-btn:hover{
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(74,157,217,0.4);
+}
+
+.chatbox .send-btn svg{ fill:white; }
+
+/* Listening pill */
+.listening-pill{
+  display:none;
+  margin-top:10px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--accent);
+  background: rgba(74,157,217,0.15);
+  color: var(--accent);
+  font-size:13px;
+  font-weight:700;
+}
+
+/* RIGHT PANEL */
+.sidebar{
+  border:1px solid var(--border);
+  border-radius:18px;
+  background: rgba(255,255,255,0.5);
+  box-shadow: var(--shadow);
+  overflow:auto;
+  padding:16px;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.panel-title{
+  font-size:13px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color: var(--muted);
+  margin:6px 0 10px;
+  font-weight: 600;
+}
+
+.form-card{
+  background: rgba(255,255,255,0.7);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:14px;
+}
+
+label{
+  display:block;
+  font-size:13px;
+  color: var(--muted);
+  margin-top:10px;
+  margin-bottom:6px;
+  font-weight:600;
+}
+
+input, select{
+  width:100%;
+  padding:12px 12px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.9);
+  color: var(--text);
+  outline:none;
+  font-size:14px;
+}
+
+input:focus, select:focus{
+  border-color: var(--accent);
+}
+
+select option{
+  background:#ffffff;
+  color: var(--text);
+}
+
+.row{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+
+/* Camera card */
+.camera-card{
+  background: rgba(255,255,255,0.7);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:12px;
+  margin-bottom:10px;
+}
+
+#camera{
+  width:100%;
+  height:210px;
+  object-fit:cover;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background: rgba(200,233,233,0.5);
+}
+
+/* Stats */
+.stats-card{
+  background: rgba(255,255,255,0.7);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+}
+
+.progress{
+  height:10px;
+  border-radius:999px;
+  background: rgba(0,0,0,0.1);
+  overflow:hidden;
+  margin-top:8px;
+}
+.progress > div{
+  height:100%;
+  width:65%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+
+.kpi{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:10px;
+  color: var(--muted);
+  font-size:13px;
+}
+.kpi strong{
+  color: var(--accent);
+  font-size:14px;
+  font-weight: 700;
+}
+
+.pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.tag{
+  padding:8px 10px;
+  border-radius:999px;
+  font-size:12px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,0.8);
+  color: var(--text);
+}
+.tag.red{ 
+  border-color: rgba(239,68,68,0.4); 
+  background: rgba(239,68,68,0.1);
+  color: #dc2626; 
+}
+.tag.green{ 
+  border-color: rgba(144, 212, 233, 0.4); 
+  background: rgba(144, 228, 251, 0.1);
+  color: #89d2de; 
+}
+.tag.purple{ 
+  border-color: rgba(155,109,217,0.4); 
+  background: rgba(155,109,217,0.1);
+  color: var(--purple); 
+}
+
+@media (max-width: 1050px){
+  body{ overflow:auto; }
+  .app{
+    height:auto;
+    grid-template-columns: 1fr;
+  }
+  .sidebar{ height:auto; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="brand">
+      <small>Teach-Back</small>
+      <h1>AI Tutor — Live Feedback</h1>
+    </div>
+
+    <div class="top-actions">
+      <div class="pill">🕒 <strong id="clock">14:22</strong></div>
+      <div class="pill">❓ <strong>Help Center</strong></div>
+    </div>
+  </div>
+
+  <!-- MAIN CHAT -->
+  <div class="main">
+    <div class="chat-wrap">
+      <div id="chatMessages"></div>
+    </div>
+
+    <!-- Bottom input bar -->
+    <div class="inputbar">
+
+      <div class="chatbox">
+
+        <!-- PLUS BUTTON -->
+        <div class="plus-wrap">
+          <button type="button" class="plus-btn" id="plusBtn" title="Attach">+</button>
+
+          <!-- Dropdown -->
+          <div class="attach-menu" id="attachMenu">
+            <label class="attach-item">
+              🖼️ Upload Image
+              <input type="file" id="imageUpload" accept="image/*" hidden>
+            </label>
+
+            <label class="attach-item">
+              📎 Upload File
+              <input type="file" id="fileUpload" hidden>
+            </label>
+          </div>
+        </div>
+
+        <!-- TEXTAREA -->
+        <textarea id="explanation" placeholder="Explain the concept in your own words..."></textarea>
+
+        <!-- RIGHT BUTTONS -->
+        <div class="right-actions">
+          <button type="button" class="mic-btn" onclick="startListening()" title="Voice">🎤</button>
+
+          <button type="button" class="send-btn" onclick="sendToAI()" title="Send">
+            <svg width="22" height="22" viewBox="0 0 24 24">
+              <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+
+      <div id="listening" class="listening-pill">Listening…</div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- CAMERA -->
+    <div class="panel-title">Camera</div>
+    <div class="camera-card">
+      <video id="camera" autoplay muted></video>
+    </div>
+
+    <!-- STUDENT SETUP -->
+    <div class="panel-title" style="margin-top:14px;">Student Setup</div>
+
+    <div class="form-card">
+      <label>Name</label>
+      <input id="studentName" placeholder="Enter your name"/>
+
+      <label>Language</label>
+      <select id="language">
+        <option>Hinglish</option>
+        <option>Hindi</option>
+        <option>English</option>
+      </select>
+
+      <div class="row">
+        <div>
+          <label>Class</label>
+          <select id="classLevel">
+            <option value="">Select</option>
+            <option>3</option><option>4</option><option>5</option>
+            <option>6</option><option>7</option><option>8</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Subject</label>
+          <input id="subject" value="Science"/>
+        </div>
+      </div>
+
+      <label>Topic</label>
+      <input id="topic" placeholder="e.g., Metals and Non-metals"/>
+    </div>
+
+    <!-- LIVE FEEDBACK -->
+    <div class="panel-title">Live AI Feedback (UI only)</div>
+
+    <div class="stats-card">
+      <div class="kpi">
+        <span>Overall Mastery</span>
+        <strong>65%</strong>
+      </div>
+      <div class="progress"><div></div></div>
+
+      <div style="height:10px"></div>
+
+      <div class="panel-title" style="margin:0">Detected Knowledge Gaps</div>
+      <div class="pills">
+        <span class="tag red">Observer Effect</span>
+        <span class="tag red">Math Formulation</span>
+        <span class="tag purple">Wave-Particle Duality</span>
+        <span class="tag green">Superposition</span>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+<script src="../config.js"></script>
+
+<script>
+  console.log("CONFIG:", window.APP_CONFIG);
+
+  // ✅ API BASE FROM CONFIG
+  const API_BASE = window.APP_CONFIG?.API_BASE || "https://backend-abhyaas-final.onrender.com";
+</script>  
+<script>
+function updateClock(){
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  const el = document.getElementById("clock");
+  if(el) el.innerText = `${hh}:${mm}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* CAMERA */
+navigator.mediaDevices.getUserMedia({ video:true })
+.then(stream => camera.srcObject = stream);
+
+/* STATE */
+let stage = "explain";
+let recognition = null;
+let micOn = false;
+let aiSpeaking = false;
+
+const chatMessages = document.getElementById("chatMessages");
+
+/* HELPERS */
+function scrollChat(){
+  const wrap = document.querySelector(".chat-wrap");
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function escapeHTML(str){
+  return str
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function addStudentMessage(text){
+  const div = document.createElement("div");
+  div.className = "msg student";
+  div.innerHTML = `
+    <div class="avatar"><span style="font-weight:900;color:white">S</span></div>
+    <div class="bubble student">${escapeHTML(text)}</div>
+  `;
+  chatMessages.appendChild(div);
+  scrollChat();
+}
+
+function addAIMessage(text, imageUrl=null){
+  const div = document.createElement("div");
+  div.className = "msg ai";
+
+  div.innerHTML = `
+    <div class="avatar"><span style="font-weight:900;color:${getComputedStyle(document.documentElement).getPropertyValue('--accent')}">AI</span></div>
+    <div>
+      <div class="bubble ai">${escapeHTML(text)}</div>
+      ${imageUrl ? `<img src="${imageUrl}" class="ai-image" style="display:block">` : ""}
+    </div>
+  `;
+
+  chatMessages.appendChild(div);
+  scrollChat();
+}
+
+/* MIC SYSTEM (FIXED) */
+function initRecognition(){
+  if(recognition) return;
+
+  recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = language.value === "Hindi" ? "hi-IN" : "en-IN";
+  recognition.continuous = false;   // ✅ IMPORTANT (no infinite loop)
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    micOn = true;
+    listening.style.display = "block";
+  };
+
+  recognition.onresult = (e) => {
+    if(aiSpeaking) return; // ✅ AI bol raha hai to ignore
+    const t = e.results[0][0].transcript;
+    explanation.value = (explanation.value + " " + t).trim();
+  };
+
+  recognition.onend = () => {
+    micOn = false;
+    listening.style.display = "none";
+  };
+}
+
+function startListening(){
+  if(aiSpeaking) return; // ✅ AI bol raha hai, mic nahi chalega
+  initRecognition();
+  try { recognition.start(); } catch(e){}
+}
+
+function stopListening(){
+  if(!recognition) return;
+  try { recognition.stop(); } catch(e){}
+  micOn = false;
+  listening.style.display = "none";
+}
+
+/* AUDIO PLAY (ElevenLabs) */
+function playAudio(blob){
+  aiSpeaking = true;
+  stopListening(); // ✅ AI voice ke time mic band
+
+  const audio = new Audio(URL.createObjectURL(blob));
+  audio.onended = () => {
+    aiSpeaking = false;
+    stage = "answer";
+    // ❌ Mic auto start mat karo
+    // User khud mic dabayega
+  };
+  audio.play();
+}
+
+/* FALLBACK VOICE (Browser TTS) */
+function speakFallback(text){
+  aiSpeaking = true;
+  stopListening();
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = language.value === "Hindi" ? "hi-IN" : "en-IN";
+  u.rate = 0.9;
+  u.pitch = 1.05;
+
+  u.onend = () => {
+    aiSpeaking = false;
+    stage = "answer";
+  };
+
+  speechSynthesis.speak(u);
+}
+function speakTextAlways(text){
+  text = text.replace(/\*\*/g, "").replace(/\*/g, ""); // ✅ remove stars
+
+  aiSpeaking = true;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = language.value === "Hindi" ? "hi-IN" : "en-IN";
+  u.rate = 0.9;
+  u.pitch = 1.1;
+
+  u.onend = () => {
+    aiSpeaking = false;
+    startListening();
+  };
+
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+
+// /* FIRST MESSAGE ON LOAD */
+// // window.addEventListener("load", () => {
+// //   addAIMessage(
+// //     "Hi 😊\nTopic select karo aur phir apne words me explain karo.\nMain tumhe step-by-step guide karungi."
+// //   );
+// });
+
+/* SEND */
+async function sendToAI(){
+  if (!classLevel.value) return alert("Select class");
+  if (!studentName.value) return alert("Enter name");
+
+  const userText = explanation.value.trim();
+  if(!userText) return alert("Please type something first");
+
+  addStudentMessage(userText);
+  explanation.value = "";
+
+  const t = userText.toLowerCase().trim();
+  const greetings = ["hi","hello","hlo","hey","hii","hyyy","namaste"];
+
+  if(greetings.includes(t)){
+    const topicName = (topic.value || "your topic").trim();
+    const lang = language.value;
+    const name = (studentName.value || "").trim();
+
+    if(lang === "English"){
+      addAIMessage(`Hi ${name} 😊\nNow tell me: What do you know about "${topicName}"?`);
+    } 
+    else if(lang === "Hindi"){
+      addAIMessage(`Hi ${name} 😊\nAb mujhe batao: "${topicName}" ke baare me tumhe kya pata hai?`);
+    } 
+    else {
+      addAIMessage(`Hi ${name} 😊\nAb batao: "${topicName}" ke baare me tumhe kya pata hai?`);
+}
+return;
+
+  }
+
+  stopListening(); // ✅ request bhejne se pehle mic off
+
+  const res = await fetch("http://127.0.0.1:8000/teach-back", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      student_name: studentName.value,
+      class_level: classLevel.value,
+      subject: subject.value,
+      topic: topic.value,
+      explanation: userText,
+      language: (language.value || "English").trim(),
+      stage: stage
+    })
+  });
+
+  const ct = res.headers.get("content-type") || "";
+
+  // ✅ AUDIO RESPONSE
+  if(ct.includes("audio")){
+    const speakText = res.headers.get("X-Speak-Text") || "";
+    const imageUrl = res.headers.get("X-Image-Url") || "";
+
+    addAIMessage(speakText, imageUrl);
+
+    const blob = await res.blob();
+    playAudio(blob);
+    return;
+  }
+
+  // ✅ JSON RESPONSE
+  const data = await res.json();
+  addAIMessage(data.speak, data.image_url);
+
+  // fallback speak
+  speakFallback(data.speak);
+}
+
+/* + Attach menu toggle */
+const plusBtn = document.getElementById("plusBtn");
+const attachMenu = document.getElementById("attachMenu");
+
+plusBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  attachMenu.style.display = attachMenu.style.display === "block" ? "none" : "block";
+});
+
+document.addEventListener("click", () => {
+  attachMenu.style.display = "none";
+});
+</script>
+
+
+</body>
+</html>

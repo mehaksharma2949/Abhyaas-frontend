@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>BrainBlast – NCERT Learning Adventure!</title>
+<style>
+/* ============================================================
+   BRAINBLAST – NCERT EDUCATIONAL GAME ENGINE
+   Aesthetic: Retro-Arcade / Saturday-Morning-Cartoon
+   Single-file · Vanilla HTML/CSS/JS · No dependencies
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --sun:      #FFD93D;
+  --coral:    #FF6B6B;
+  --mint:     #6BCB77;
+  --sky:      #4D96FF;
+  --lavender: #C77DFF;
+  --peach:    #FF9A3C;
+  --cream:    #FFFBEF;
+  --ink:      #1A1A2E;
+  --ink-soft: #3D3D6B;
+  --white:    #FFFFFF;
+  --shadow-s: 4px 4px 0 #1A1A2E;
+  --shadow-m: 6px 6px 0 #1A1A2E;
+  --shadow-l: 8px 8px 0 #1A1A2E;
+  --border:   3px solid #1A1A2E;
+  --fhead:    'Baloo 2','Comic Sans MS',cursive;
+  --fbody:    'Nunito','Segoe UI',sans-serif;
+  --r:        18px;
+  --rs:       10px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--fbody);
+  background:var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* Polka-dot background */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(255,217,61,.18) 2px,transparent 2px),
+    radial-gradient(circle,rgba(77,150,255,.12) 2px,transparent 2px);
+  background-size:40px 40px,60px 60px;
+  background-position:0 0,30px 30px;
+}
+
+#app{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:20px 16px 80px}
+
+/* ---- HEADER ---- */
+.site-header{text-align:center;padding:24px 0 18px;position:relative}
+.logo-wrap{
+  display:inline-block;background:var(--sun);border:var(--border);
+  border-radius:24px;box-shadow:var(--shadow-l);padding:10px 32px 12px;
+  margin-bottom:8px;animation:headerBounce 3s ease-in-out infinite;
+}
+@keyframes headerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.logo-text{font-family:var(--fhead);font-size:clamp(2rem,6vw,3.4rem);font-weight:800;color:var(--ink);letter-spacing:1px;line-height:1}
+.logo-text span{color:var(--coral)}
+.logo-tagline{font-size:.82rem;font-weight:700;color:var(--ink-soft);letter-spacing:3px;text-transform:uppercase}
+.deco-star{position:absolute;font-size:1.6rem;animation:spinStar 8s linear infinite;pointer-events:none}
+@keyframes spinStar{from{transform:rotate(0)scale(1)}50%{transform:rotate(180deg)scale(1.2)}to{transform:rotate(360deg)scale(1)}}
+
+/* ---- SCREENS ---- */
+.screen{display:none}
+.screen.active{display:block;animation:screenIn .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes screenIn{from{opacity:0;transform:scale(.93)translateY(20px)}to{opacity:1;transform:scale(1)translateY(0)}}
+
+/* ---- SELECTION SCREEN ---- */
+.sel-card{
+  background:var(--white);border:var(--border);border-radius:var(--r);
+  box-shadow:var(--shadow-l);padding:36px 32px 32px;max-width:520px;margin:0 auto;
+}
+.sel-card h2{font-family:var(--fhead);font-size:1.65rem;font-weight:800;margin-bottom:26px;text-align:center}
+.sel-card h2 span{color:var(--sky)}
+.form-row{margin-bottom:18px}
+.form-row label{display:block;font-weight:800;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:7px}
+.form-row select{
+  width:100%;background:var(--cream);border:var(--border);border-radius:var(--rs);
+  color:var(--ink);font-family:var(--fbody);font-size:1.02rem;font-weight:700;
+  padding:11px 40px 11px 16px;cursor:pointer;appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10'%3E%3Cpath d='M1 1l6 7 6-7' stroke='%231A1A2E' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  box-shadow:var(--shadow-s);transition:box-shadow .2s,transform .15s;
+}
+.form-row select:focus{outline:none;box-shadow:6px 6px 0 var(--sky);transform:translate(-1px,-1px)}
+.subject-pills{display:flex;gap:12px}
+.subj-pill{
+  flex:1;background:var(--cream);border:var(--border);border-radius:var(--rs);
+  padding:13px 10px;text-align:center;cursor:pointer;font-weight:800;font-size:1rem;
+  box-shadow:var(--shadow-s);transition:all .18s;user-select:none;
+}
+.subj-pill:hover{transform:translate(-1px,-1px);box-shadow:var(--shadow-m)}
+.subj-pill.active-maths{background:var(--sky);color:var(--white)}
+.subj-pill.active-science{background:var(--mint);color:var(--ink)}
+.pill-icon{font-size:1.5rem;display:block;margin-bottom:4px}
+.btn-start{
+  width:100%;background:var(--coral);border:var(--border);border-radius:var(--rs);
+  color:var(--white);font-family:var(--fhead);font-size:1.35rem;font-weight:800;
+  padding:14px;cursor:pointer;box-shadow:var(--shadow-m);transition:all .15s;
+  margin-top:10px;letter-spacing:.5px;
+}
+.btn-start:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:var(--shadow-l)}
+.btn-start:active:not(:disabled){transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.btn-start:disabled{opacity:.45;cursor:not-allowed}
+
+/* ---- GAME SCREEN ---- */
+.btn-back{
+  background:var(--white);border:var(--border);border-radius:var(--rs);
+  padding:7px 18px;font-family:var(--fbody);font-weight:800;font-size:.85rem;
+  cursor:pointer;box-shadow:var(--shadow-s);margin-bottom:18px;transition:all .15s;color:var(--ink);
+}
+.btn-back:hover{transform:translate(-1px,-1px);box-shadow:var(--shadow-m)}
+
+.ch-banner{
+  border:var(--border);border-radius:var(--r);padding:20px 24px 16px;
+  margin-bottom:20px;position:relative;overflow:hidden;display:flex;align-items:center;gap:18px;
+}
+.ch-banner-icon{font-size:3rem;flex-shrink:0;animation:iconWiggle 2.5s ease-in-out infinite}
+@keyframes iconWiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.ch-banner h2{font-family:var(--fhead);font-size:1.5rem;font-weight:800;line-height:1.2}
+.ch-banner p{font-size:.85rem;font-weight:700;opacity:.7;margin-top:4px}
+.banner-maths{background:#E8F4FF}
+.banner-science{background:#E8FFF0}
+.ch-banner::after{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;opacity:.12}
+.banner-maths::after{background:var(--sky)}
+.banner-science::after{background:var(--mint)}
+
+/* Level tabs */
+.level-row{display:flex;gap:10px;margin-bottom:20px}
+.lvl-tab{
+  flex:1;background:var(--white);border:var(--border);border-radius:var(--rs);
+  padding:12px 8px 10px;text-align:center;cursor:pointer;transition:all .2s;
+  position:relative;box-shadow:var(--shadow-s);
+}
+.lvl-tab .ltab-icon{font-size:1.4rem;display:block}
+.lvl-tab .ltab-name{font-weight:800;font-size:.8rem;margin-top:3px}
+.lvl-tab .ltab-pts{font-size:.7rem;font-weight:700;opacity:.6}
+.lvl-tab.lvl-active{background:var(--sun);border-color:var(--ink);box-shadow:var(--shadow-m)}
+.lvl-tab.lvl-done{background:var(--mint);border-color:var(--ink)}
+.lvl-tab.lvl-locked{opacity:.4;cursor:not-allowed;filter:grayscale(.5)}
+.lvl-tab:not(.lvl-locked):hover{transform:translate(-1px,-1px);box-shadow:var(--shadow-m)}
+
+/* Progress bar */
+.q-progress-wrap{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.qp-label{font-weight:800;font-size:.8rem;white-space:nowrap;color:var(--ink-soft)}
+.q-progress-track{flex:1;height:14px;background:#E0E0E0;border:2px solid var(--ink);border-radius:99px;overflow:hidden}
+.q-progress-fill{height:100%;background:linear-gradient(90deg,var(--mint),var(--sky));border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.score-badge{background:var(--sun);border:2px solid var(--ink);border-radius:99px;padding:3px 14px;font-weight:900;font-size:.88rem;white-space:nowrap;box-shadow:2px 2px 0 var(--ink)}
+
+/* ---- QUESTION CARD ---- */
+.q-card{background:var(--white);border:var(--border);border-radius:var(--r);padding:26px 26px 22px;margin-bottom:16px;box-shadow:var(--shadow-m);position:relative}
+.q-top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.diff-chip{font-size:.7rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:99px;border:2px solid var(--ink)}
+.diff-easy{background:#C8F7C5;color:#1a4d17}
+.diff-medium{background:#FFF3C8;color:#4d3a00}
+.diff-hard{background:#FFD0D0;color:#4d0000}
+.q-type-tag{font-size:.7rem;font-weight:800;color:var(--ink-soft);background:var(--cream);border:2px solid var(--ink);padding:3px 10px;border-radius:6px}
+.q-text{font-size:clamp(1rem,2.4vw,1.18rem);font-weight:700;line-height:1.6;color:var(--ink);margin-bottom:20px}
+
+/* MCQ */
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.options-grid{grid-template-columns:1fr}}
+.opt-btn{
+  background:var(--cream);border:2.5px solid var(--ink);border-radius:var(--rs);
+  color:var(--ink);font-family:var(--fbody);font-size:.97rem;font-weight:700;
+  padding:13px 16px;cursor:pointer;text-align:left;transition:all .18s;
+  box-shadow:var(--shadow-s);display:flex;align-items:center;gap:10px;
+}
+.opt-btn .opt-letter{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;min-width:26px;background:var(--ink);color:var(--white);
+  border-radius:6px;font-size:.78rem;font-weight:900;
+}
+.opt-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:var(--shadow-m);background:#FFF3C8}
+.opt-btn:disabled{cursor:default}
+.opt-btn.opt-correct{background:var(--mint)!important;border-color:#2a7a38!important;box-shadow:4px 4px 0 #2a7a38!important}
+.opt-btn.opt-correct .opt-letter{background:#2a7a38}
+.opt-btn.opt-wrong{background:#FFD0D0!important;border-color:#a63232!important;box-shadow:4px 4px 0 #a63232!important}
+.opt-btn.opt-wrong .opt-letter{background:#a63232}
+
+/* T/F */
+.tf-row{display:flex;gap:14px;justify-content:center}
+.tf-btn{flex:1;max-width:180px;border:var(--border);border-radius:var(--rs);font-family:var(--fhead);font-size:1.25rem;font-weight:800;padding:16px 12px;cursor:pointer;text-align:center;box-shadow:var(--shadow-s);transition:all .18s}
+.tf-true{background:#C8F7C5}
+.tf-false{background:#FFD0D0}
+.tf-btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:var(--shadow-m)}
+.tf-btn:disabled{cursor:default}
+.tf-btn.opt-correct{outline:3px solid #2a7a38;box-shadow:5px 5px 0 #2a7a38}
+.tf-btn.opt-wrong{outline:3px solid #a63232;box-shadow:5px 5px 0 #a63232;opacity:.7}
+
+/* Fill */
+.fill-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.fill-input{
+  flex:1;min-width:170px;background:var(--cream);border:var(--border);border-radius:var(--rs);
+  color:var(--ink);font-family:var(--fbody);font-size:1.02rem;font-weight:700;
+  padding:12px 16px;box-shadow:var(--shadow-s);transition:box-shadow .2s;
+}
+.fill-input:focus{outline:none;box-shadow:6px 6px 0 var(--sky)}
+.fill-input.fi-correct{background:var(--mint);border-color:#2a7a38}
+.fill-input.fi-wrong{background:#FFD0D0;border-color:#a63232}
+.btn-check{
+  background:var(--sky);border:var(--border);border-radius:var(--rs);color:var(--white);
+  font-family:var(--fhead);font-size:1rem;font-weight:800;padding:12px 22px;cursor:pointer;
+  box-shadow:var(--shadow-s);transition:all .18s;
+}
+.btn-check:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:var(--shadow-m)}
+.btn-check:disabled{opacity:.4;cursor:not-allowed}
+.hint-lbl{font-size:.82rem;font-weight:700;color:var(--ink-soft);margin-top:8px}
+
+/* Match */
+.match-wrap{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.match-col{flex:1;min-width:120px}
+.match-col-head{font-size:.72rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+.match-item{
+  background:var(--cream);border:var(--border);border-radius:var(--rs);
+  padding:10px 13px;margin-bottom:8px;font-weight:700;font-size:.92rem;
+  cursor:pointer;transition:all .18s;min-height:46px;display:flex;align-items:center;
+  box-shadow:var(--shadow-s);
+}
+.match-item:hover:not(.mi-matched):not(.mi-disabled){transform:translate(-1px,-1px);box-shadow:var(--shadow-m)}
+.match-item.mi-selected{background:#FFF3C8;border-color:var(--peach);box-shadow:4px 4px 0 var(--peach)}
+.match-item.mi-matched{background:var(--mint);border-color:#2a7a38;box-shadow:3px 3px 0 #2a7a38;cursor:default}
+.match-item.mi-wrong{background:#FFD0D0;border-color:#a63232;animation:jolt .3s ease}
+@keyframes jolt{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.match-arrow{font-size:1.6rem;align-self:center;flex-shrink:0}
+
+/* Scenario box */
+.scenario-box{
+  background:#F0F4FF;border:var(--border);border-radius:var(--rs);
+  border-left:5px solid var(--sky);padding:14px 18px;margin-bottom:18px;
+  font-size:.94rem;font-weight:600;line-height:1.65;color:var(--ink-soft);
+}
+
+/* Timer */
+.timer-wrap{margin-bottom:14px}
+.timer-info{display:flex;justify-content:space-between;font-size:.8rem;font-weight:800;margin-bottom:5px;color:var(--ink-soft)}
+.timer-track{height:12px;background:#E0E0E0;border:2px solid var(--ink);border-radius:99px;overflow:hidden}
+.timer-fill{height:100%;background:linear-gradient(90deg,var(--mint),var(--sun));border-radius:99px;transition:width .9s linear}
+.timer-fill.danger{background:linear-gradient(90deg,var(--coral),var(--peach))}
+
+/* Puzzle */
+.puzzle-grid{display:grid;gap:10px}
+.puzzle-tile{
+  background:var(--cream);border:var(--border);border-radius:var(--rs);
+  padding:12px 16px;font-weight:700;font-size:.94rem;cursor:pointer;
+  text-align:left;transition:all .18s;box-shadow:var(--shadow-s);
+}
+.puzzle-tile:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:var(--shadow-m)}
+.puzzle-tile.pt-a{background:#FFF3C8;border-color:var(--peach)}
+.puzzle-tile.pt-correct{background:var(--mint);border-color:#2a7a38;cursor:default}
+.puzzle-tile.pt-wrong{background:#FFD0D0;border-color:#a63232;animation:jolt .3s ease}
+
+/* Feedback */
+.feedback-bubble{border:var(--border);border-radius:var(--rs);padding:12px 18px;margin-top:16px;font-weight:700;font-size:.96rem;animation:popUp .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popUp{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.fb-correct{background:#C8F7C5}
+.fb-wrong{background:#FFD0D0}
+
+.btn-next{
+  display:block;margin:18px auto 0;background:var(--lavender);border:var(--border);
+  border-radius:var(--rs);color:var(--white);font-family:var(--fhead);font-size:1.1rem;
+  font-weight:800;padding:12px 34px;cursor:pointer;box-shadow:var(--shadow-s);transition:all .18s;
+}
+.btn-next:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-m)}
+
+/* ---- LEVEL COMPLETE ---- */
+.lc-panel{
+  background:var(--white);border:var(--border);border-radius:var(--r);
+  padding:36px 28px;text-align:center;box-shadow:var(--shadow-l);
+  max-width:440px;margin:0 auto;animation:popUp .4s cubic-bezier(.34,1.56,.64,1);
+}
+.lc-badge-icon{font-size:5rem;animation:floatBadge 2s ease-in-out infinite;margin-bottom:6px}
+@keyframes floatBadge{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.lc-badge-name{font-family:var(--fhead);font-size:1.6rem;font-weight:800;color:var(--coral)}
+.lc-desc{color:var(--ink-soft);font-size:.95rem;font-weight:600;margin:10px 0 20px}
+.lc-pts-big{font-family:var(--fhead);font-size:3.2rem;font-weight:800;color:var(--ink);line-height:1}
+.lc-pts-big span{color:var(--coral)}
+.lc-pts-lbl{font-size:.82rem;font-weight:700;color:var(--ink-soft);margin-bottom:24px}
+.btn-continue{
+  background:var(--coral);border:var(--border);border-radius:var(--rs);color:var(--white);
+  font-family:var(--fhead);font-size:1.25rem;font-weight:800;padding:14px 38px;
+  cursor:pointer;box-shadow:var(--shadow-m);transition:all .18s;
+}
+.btn-continue:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-l)}
+
+/* ---- MASTER SCREEN ---- */
+.master-wrap{text-align:center;padding:30px 16px}
+.master-trophy{font-size:7rem;animation:floatBadge 2.5s ease-in-out infinite;margin-bottom:6px}
+.master-headline{font-family:var(--fhead);font-size:clamp(1.8rem,5vw,3rem);font-weight:800;color:var(--coral);line-height:1.2;margin-bottom:8px}
+.master-sub{font-size:1rem;font-weight:700;color:var(--ink-soft);max-width:440px;margin:0 auto 28px}
+.badges-row{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-bottom:30px}
+.ebc{background:var(--white);border:var(--border);border-radius:var(--rs);padding:16px 20px;min-width:120px;text-align:center;box-shadow:var(--shadow-s);transition:transform .18s}
+.ebc:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-m)}
+.ebc-icon{font-size:2.5rem;display:block;margin-bottom:6px}
+.ebc-lvl{font-size:.68rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
+.ebc-name{font-weight:800;font-size:.9rem;color:var(--coral);margin-top:3px}
+.master-total{font-family:var(--fhead);font-size:clamp(3rem,8vw,5.5rem);font-weight:800;color:var(--ink);line-height:1}
+.master-total-lbl{font-size:.9rem;font-weight:700;color:var(--ink-soft);margin-bottom:32px}
+.btn-home{
+  background:var(--sky);border:var(--border);border-radius:var(--rs);color:var(--white);
+  font-family:var(--fhead);font-size:1.2rem;font-weight:800;padding:14px 38px;
+  cursor:pointer;box-shadow:var(--shadow-m);transition:all .18s;
+}
+.btn-home:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-l)}
+
+/* Confetti */
+.confetti{position:fixed;pointer-events:none;z-index:999;top:-10px}
+@keyframes confettiDrop{0%{transform:translateY(0)rotate(0)scale(1);opacity:1}100%{transform:translateY(110vh)rotate(600deg)scale(.6);opacity:0}}
+
+/* Utilities */
+.hidden{display:none!important}
+.mt2{margin-top:.5rem}
+.mt3{margin-top:.75rem}
+
+@media(max-width:600px){
+  .sel-card{padding:22px 16px}
+  .q-card{padding:18px 14px}
+  .lc-panel{padding:26px 16px}
+  .match-wrap{flex-direction:column}
+  .match-arrow{transform:rotate(90deg);margin:0 auto}
+  .level-row{gap:6px}
+  .lvl-tab .ltab-name{font-size:.68rem}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <span class="deco-star" style="left:5%;top:10px;animation-delay:-1s">⭐</span>
+    <span class="deco-star" style="right:6%;top:14px;animation-delay:-3s;font-size:1.2rem">🌟</span>
+    <span class="deco-star" style="left:14%;top:46px;animation-delay:-5s;font-size:1rem">✨</span>
+    <div class="logo-wrap">
+      <div class="logo-text">🧠 Brain<span>Blast!</span></div>
+    </div>
+    <div class="logo-tagline">NCERT · Class 1–8 · Learn &amp; Play</div>
+  </header>
+
+  <!-- SCREEN 1: SELECTION -->
+  <section class="screen active" id="screen-select">
+    <div class="sel-card">
+      <h2>🎮 Pick Your <span>Adventure</span></h2>
+      <div class="form-row">
+        <label for="sel-class">📚 Your Class</label>
+        <select id="sel-class">
+          <option value="">— Select Class —</option>
+          <option value="1">Class 1</option><option value="2">Class 2</option>
+          <option value="3">Class 3</option><option value="4">Class 4</option>
+          <option value="5">Class 5</option><option value="6">Class 6</option>
+          <option value="7">Class 7</option><option value="8">Class 8</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>🔭 Subject</label>
+        <div class="subject-pills">
+          <div class="subj-pill" id="pill-maths" onclick="selectSubject('Maths')">
+            <span class="pill-icon">📐</span>Maths
+          </div>
+          <div class="subj-pill" id="pill-science" onclick="selectSubject('Science')">
+            <span class="pill-icon">🔬</span>Science
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="sel-chapter">📖 Chapter</label>
+        <select id="sel-chapter" disabled>
+          <option value="">— Select Class &amp; Subject first —</option>
+        </select>
+      </div>
+      <button class="btn-start" id="btn-start" disabled onclick="startGame()">🚀 Let's Play!</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: GAME -->
+  <section class="screen" id="screen-game">
+    <button class="btn-back" onclick="goHome()">← Back to Menu</button>
+    <div class="ch-banner" id="ch-banner">
+      <div class="ch-banner-icon" id="ch-icon">📚</div>
+      <div><h2 id="ch-title">Chapter</h2><p id="ch-meta">Class X · Subject</p></div>
+    </div>
+    <div class="level-row">
+      <div class="lvl-tab lvl-active" id="ltab-1" onclick="clickLevelTab(1)">
+        <span class="ltab-icon">⭐</span>
+        <div class="ltab-name">Level 1<br>Easy</div>
+        <div class="ltab-pts">+10 pts</div>
+      </div>
+      <div class="lvl-tab lvl-locked" id="ltab-2" onclick="clickLevelTab(2)">
+        <span class="ltab-icon">⭐⭐</span>
+        <div class="ltab-name">Level 2<br>Medium</div>
+        <div class="ltab-pts">+20 pts</div>
+      </div>
+      <div class="lvl-tab lvl-locked" id="ltab-3" onclick="clickLevelTab(3)">
+        <span class="ltab-icon">⭐⭐⭐</span>
+        <div class="ltab-name">Level 3<br>Hard</div>
+        <div class="ltab-pts">+30 pts</div>
+      </div>
+    </div>
+    <div class="q-progress-wrap">
+      <span class="qp-label" id="qp-label">Q 0/0</span>
+      <div class="q-progress-track"><div class="q-progress-fill" id="qp-fill" style="width:0%"></div></div>
+      <div class="score-badge">⚡ <span id="score-disp">0</span> pts</div>
+    </div>
+    <div id="question-zone"></div>
+    <div class="lc-panel hidden" id="lc-panel">
+      <div class="lc-badge-icon" id="lc-badge-icon">🏅</div>
+      <div class="lc-badge-name" id="lc-badge-name">Badge!</div>
+      <div class="lc-desc" id="lc-desc">Great job!</div>
+      <div class="lc-pts-big"><span id="lc-pts-num">0</span> <span>pts</span></div>
+      <div class="lc-pts-lbl">earned this level</div>
+      <button class="btn-continue" id="btn-continue" onclick="onContinue()">Continue →</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 3: CHAPTER MASTER -->
+  <section class="screen" id="screen-master">
+    <button class="btn-back" onclick="goHome()">← Back to Menu</button>
+    <div class="master-wrap">
+      <div class="master-trophy">🏆</div>
+      <div class="master-headline">🎉 Chapter Master!</div>
+      <p class="master-sub" id="master-msg">You conquered all 3 levels!</p>
+      <div class="badges-row" id="master-badges"></div>
+      <div class="master-total" id="master-total">0</div>
+      <div class="master-total-lbl">Total Points</div>
+      <button class="btn-home" onclick="goHome()">🏠 Play Another Chapter</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   BRAINBLAST GAME ENGINE
+   NCERT-Aligned · Class 1-8 · Maths & Science
+   generateGameData(classNum, subject, chapter) → 3-level JSON
+   ============================================================ */
+
+/* ============================================================
+   CURRICULUM DATA
+   ============================================================ */
+const CURRICULUM = {
+  1:{Maths:['Shapes & Patterns','Numbers 1-20','Simple Addition','Simple Subtraction'],
+     Science:['My Body','Animals Around Us','Plants We See','Food We Eat']},
+  2:{Maths:['Numbers 1-100','Addition with Carry','Subtraction Basics','Counting in Groups'],
+     Science:['Good Habits & Safety','Air Around Us','Water','Seasons & Weather']},
+  3:{Maths:['Large Numbers','Multiplication','Division','Fractions Introduction'],
+     Science:['Plant Life','Animal World','Food & Nutrition','Rocks & Soil']},
+  4:{Maths:['Factors & Multiples','Fractions','Decimals Introduction','Geometry Basics'],
+     Science:['Digestive System','Teeth & Microbes','States of Matter','The Earth & Sky']},
+  5:{Maths:['Fractions Operations','Decimals','Area & Perimeter','Data Handling'],
+     Science:['Seeds & Germination','Nervous System','Rocks & Minerals','Force & Motion']},
+  6:{Maths:['Fractions','Decimals','Basic Algebra','Lines & Angles'],
+     Science:['Components of Food','Sorting Materials','Separation of Substances','Changes Around Us']},
+  7:{Maths:['Integers','Fractions & Decimals','Simple Equations','Lines & Angles'],
+     Science:['Nutrition in Plants','Nutrition in Animals','Heat','Acids Bases & Salts']},
+  8:{Maths:['Rational Numbers','Linear Equations','Squares & Square Roots','Factorisation'],
+     Science:['Crop Production','Microorganisms','Cell - Structure & Functions','Force & Pressure']}
+};
+
+const CHAPTER_LOOK = {
+  'Fractions':              {icon:'🍕',color:'banner-maths'},
+  'Decimals':               {icon:'🔢',color:'banner-maths'},
+  'Components of Food':     {icon:'🥗',color:'banner-science'},
+  'Sorting Materials':      {icon:'🔍',color:'banner-science'},
+  'Integers':               {icon:'➕',color:'banner-maths'},
+  'Nutrition in Plants':    {icon:'🌿',color:'banner-science'},
+  'Nutrition in Animals':   {icon:'🐄',color:'banner-science'},
+  'Rational Numbers':       {icon:'📊',color:'banner-maths'},
+  'Microorganisms':         {icon:'🦠',color:'banner-science'},
+  'Simple Equations':       {icon:'⚖️',color:'banner-maths'},
+  'Heat':                   {icon:'🌡️',color:'banner-science'},
+  'Acids Bases & Salts':    {icon:'⚗️',color:'banner-science'},
+  'Force & Motion':         {icon:'🚀',color:'banner-science'},
+  'Force & Pressure':       {icon:'💪',color:'banner-science'},
+  'Cell - Structure & Functions':{icon:'🔬',color:'banner-science'},
+  'Lines & Angles':         {icon:'📐',color:'banner-maths'},
+  'Basic Algebra':          {icon:'🔣',color:'banner-maths'},
+  'default':                {icon:'📚',color:'banner-maths'}
+};
+
+function chLook(ch){return CHAPTER_LOOK[ch]||CHAPTER_LOOK['default']}
+
+/* ============================================================
+   LEVEL META
+   ============================================================ */
+const LM = {
+  1:{label:'easy',  pts:10, badge:'🌱', badgeName:'Concept Starter', dc:'diff-easy'},
+  2:{label:'medium',pts:20, badge:'⚡', badgeName:'Skill Builder',   dc:'diff-medium'},
+  3:{label:'hard',  pts:30, badge:'🔥', badgeName:'Logic Master',    dc:'diff-hard'}
+};
+
+/* ============================================================
+   MAIN AI-LIKE GENERATOR
+   generateGameData(classNum, subject, chapter)
+   Returns: { easy:{level,levelNum,questions,points,badge,badgeName},
+              medium:{...}, hard:{...} }
+   ============================================================ */
+function generateGameData(classNum, subject, chapter) {
+  const cl = parseInt(classNum);
+  return {
+    easy:   {level:'easy',  levelNum:1, questions:shuffle(easyBank(cl,subject,chapter)).slice(0,5),
+             points:10, badge:'🌱 Concept Starter', badgeName:'Concept Starter'},
+    medium: {level:'medium',levelNum:2, questions:shuffle(medBank(cl,subject,chapter)).slice(0,4),
+             points:20, badge:'⚡ Skill Builder',   badgeName:'Skill Builder'},
+    hard:   {level:'hard',  levelNum:3, questions:shuffle(hardBank(cl,subject,chapter)).slice(0,4),
+             points:30, badge:'🔥 Logic Master',    badgeName:'Logic Master'}
+  };
+}
+
+/* ============================================================
+   QUESTION FACTORY HELPERS
+   ============================================================ */
+const qMCQ      = (q,opts,ans,exp)      => ({type:'mcq',q,opts,ans,exp});
+const qTF       = (q,ans,exp)           => ({type:'tf', q,ans,exp});
+const qFill     = (q,ans,hint)          => ({type:'fill',q,ans,hint});
+const qMatch    = (pairs)               => ({type:'match',pairs});
+const qScenario = (ctx,q,opts,ans,exp)  => ({type:'scenario',context:ctx,q,opts,ans,exp});
+const qTimed    = (q,opts,ans,exp,secs) => ({type:'timed',q,opts,ans,exp,timeLimit:secs});
+const qPuzzle   = (q,items,order)       => ({type:'puzzle',q,items,correctOrder:order});
+
+/* ============================================================
+   EASY QUESTION BANKS (MCQ + True/False)
+   ============================================================ */
+function easyBank(cl,sub,ch){
+  const B = {
+    'Fractions':[
+      qMCQ('What is the numerator in 3/5?',['3','5','8','2'],'3','The top number in a fraction is the numerator.'),
+      qMCQ('Which fraction means "one half"?',['1/2','1/3','2/3','3/4'],'1/2','1 out of 2 equal parts = one half.'),
+      qTF('A proper fraction has numerator smaller than denominator.',true,'Proper: numerator < denominator.'),
+      qTF('3/3 equals the whole number 1.',true,'When numerator = denominator, fraction = 1.'),
+      qMCQ('What is the denominator in 7/9?',['7','9','2','16'],'9','The bottom number is the denominator.'),
+      qMCQ('Which is an improper fraction?',['7/4','2/5','1/3','4/9'],'7/4','Improper: numerator ≥ denominator.'),
+      qTF('4/8 is equal to 1/2.',true,'Dividing both by 4: 4/8 = 1/2.')
+    ],
+    'Decimals':[
+      qMCQ('Which digit is in the tenths place of 4.7?',['4','7','0','47'],'7','First digit after decimal = tenths place.'),
+      qMCQ('0.5 as a fraction is:',['1/2','1/4','1/5','5/1'],'1/2','0.5 = 5/10 = 1/2.'),
+      qTF('0.1 is greater than 0.9.',false,'0.1 = 1 tenth; 0.9 = 9 tenths. So 0.9 is greater.'),
+      qTF('1.0 and 1 have the same value.',true,'Adding .0 does not change the value.'),
+      qMCQ('3/10 in decimal form is:',['0.3','3.0','0.03','30'],'0.3','3 out of 10 = 0.3.'),
+      qMCQ('Decimal for "one quarter" is:',['0.25','0.5','0.75','0.125'],'0.25','1/4 = 25/100 = 0.25.')
+    ],
+    'Components of Food':[
+      qMCQ('Which nutrient is the main energy source?',['Carbohydrates','Vitamins','Minerals','Proteins'],'Carbohydrates','Carbohydrates are the primary energy-giving nutrients.'),
+      qMCQ('Which nutrient builds and repairs body cells?',['Proteins','Fats','Water','Carbohydrates'],'Proteins','Proteins are called body-building nutrients.'),
+      qTF('Vitamins and minerals protect us from diseases.',true,'They are called protective foods.'),
+      qMCQ('Iodine turns blue-black in presence of:',['Starch','Protein','Fat','Sugar'],'Starch','Iodine test detects starch in food.'),
+      qTF('All fats are harmful to health.',false,'Some fats (omega-3) are essential for the body.'),
+      qMCQ('A rich source of Vitamin C is:',['Orange','Rice','Butter','Egg'],'Orange','Citrus fruits are rich in Vitamin C.')
+    ],
+    'Sorting Materials':[
+      qMCQ('Which property does sieving use to separate materials?',['Size','Colour','Taste','Smell'],'Size','Sieving works because materials differ in size.'),
+      qTF('Wood floats on water.',true,'Wood is less dense than water.'),
+      qMCQ('Which is attracted to a magnet?',['Iron nail','Plastic spoon','Glass bead','Rubber band'],'Iron nail','Iron is a magnetic material.'),
+      qTF('Transparent materials allow all light to pass through.',true,'Transparent = you can see clearly through it.'),
+      qMCQ('Which material dissolves in water?',['Salt','Sand','Stone','Wood'],'Salt','Salt is soluble in water.'),
+      qMCQ('Rough or smooth describes a material\'s:',['Texture','Colour','Odour','Lustre'],'Texture','Texture = how a surface feels.')
+    ],
+    'Integers':[
+      qMCQ('Additive inverse of +7 is:',['−7','+7','0','14'],'−7','The additive inverse of x is −x.'),
+      qTF('−4 is greater than −9.',true,'On a number line, −4 is to the right of −9.'),
+      qMCQ('(−5) + (+5) = ?',['0','10','−10','5'],'0','A number and its opposite sum to zero.'),
+      qMCQ('|−12| = ?',['12','−12','0','1'],'12','Absolute value = distance from zero, always non-negative.'),
+      qTF('Zero is both positive and negative.',false,'Zero is neither positive nor negative.')
+    ],
+    'Nutrition in Plants':[
+      qMCQ('Which pigment traps sunlight for photosynthesis?',['Chlorophyll','Haemoglobin','Melanin','Carotene'],'Chlorophyll','Chlorophyll is the green pigment for photosynthesis.'),
+      qTF('Plants can make their own food using sunlight.',true,'Plants are autotrophs; they photosynthesize.'),
+      qMCQ('During photosynthesis, plants absorb ___ from air.',['CO₂','O₂','N₂','H₂'],'CO₂','Plants take in CO₂ and release O₂.'),
+      qMCQ('Main site of photosynthesis in a plant:',['Leaf','Root','Stem','Fruit'],'Leaf','Leaves have chlorophyll and stomata.'),
+      qTF('Fungi can make food through photosynthesis.',false,'Fungi are heterotrophs; they feed on others.')
+    ],
+    'Rational Numbers':[
+      qMCQ('Which is a rational number?',['3/4','√2','π','√5'],'3/4','Rational = p/q (q≠0). 3/4 qualifies.'),
+      qTF('Every integer is a rational number.',true,'Any integer n = n/1, which is p/q form.'),
+      qMCQ('Additive inverse of −5/7 is:',['5/7','−5/7','7/5','−7/5'],'5/7','−5/7 + 5/7 = 0.'),
+      qTF('Product of two negative rational numbers is negative.',false,'Negative × Negative = Positive.'),
+      qMCQ('Is zero a rational number?',['Yes, 0=0/1','No','Sometimes','Only if positive'],'Yes, 0=0/1','0 = 0/1 satisfies the definition.')
+    ],
+    'Microorganisms':[
+      qMCQ('Cholera is caused by:',['Bacteria','Virus','Fungi','Protozoa'],'Bacteria','Cholera is caused by Vibrio cholerae (bacterium).'),
+      qTF('Viruses can reproduce outside a living host cell.',false,'Viruses need a living host cell to replicate.'),
+      qMCQ('Who discovered Penicillin?',['Alexander Fleming','Louis Pasteur','Robert Koch','Marie Curie'],'Alexander Fleming','Fleming discovered Penicillin from Penicillium mold in 1928.'),
+      qMCQ('Yeast is used in making:',['Bread','Curd','Vinegar','Cheese'],'Bread','Yeast ferments sugars, releasing CO₂ to make bread rise.'),
+      qTF('All microorganisms are harmful to humans.',false,'Many are beneficial, e.g., Lactobacillus for curd.')
+    ],
+    'Simple Equations':[
+      qMCQ('Solve: x + 5 = 12. x = ?',['7','17','5','12'],'7','x = 12 − 5 = 7.'),
+      qTF('An equation must have an equal sign (=).',true,'An equation always shows two expressions are equal.'),
+      qMCQ('The value found for the unknown is called:',['Solution','Variable','Coefficient','Constant'],'Solution','The value that satisfies the equation = solution.'),
+      qMCQ('In 3x = 15, x = ?',['5','3','15','12'],'5','3x = 15 → x = 15/3 = 5.'),
+      qTF('x = 4 satisfies 2x + 1 = 9.',true,'2(4)+1 = 9 ✓')
+    ]
+  };
+  return B[ch]||defaultEasy(cl,sub,ch);
+}
+
+function defaultEasy(cl,sub,ch){
+  if(sub==='Maths') return [
+    qMCQ('Best approach for Maths problems?',['Step-by-step logic','Random guessing','Skipping steps','Memorising answers'],'Step-by-step logic','Breaking problems into steps is key.'),
+    qTF('Practising problems is the best way to master Maths.',true,'Regular practice builds speed and accuracy.'),
+    qMCQ('What does an equation contain?',['An equal sign (=)','A question mark','Brackets only','No numbers'],'An equal sign (=)','Equations express that two expressions are equal.'),
+    qTF('Checking your answer in Maths is optional.',false,'Always verify your answer by substituting back.'),
+    qMCQ('Numbers can be:',['Whole, decimal, or fraction','Only whole numbers','Only fractions','Only negative'],'Whole, decimal, or fraction','Mathematics covers many types of numbers.')
+  ];
+  return [
+    qMCQ('The scientific method starts with:',['Observation','Guessing','Writing a report','Drawing'],'Observation','Science begins with careful observation.'),
+    qTF('"'+ch+'" has practical applications in daily life.',true,'Most science topics connect to everyday phenomena.'),
+    qMCQ('Scientists study "'+ch+'" mainly through:',['Experiments','Guessing','Only textbooks','Skipping labs'],'Experiments','Hands-on experiments deepen understanding.'),
+    qTF('All science facts were discovered recently.',false,'Many discoveries are centuries old.'),
+    qMCQ('Data collected in an experiment is called:',['Evidence/Observation','A guess','A theorem','A poem'],'Evidence/Observation','Scientists collect evidence through systematic observation.')
+  ];
+}
+
+/* ============================================================
+   MEDIUM QUESTION BANKS (Fill + Match)
+   ============================================================ */
+function medBank(cl,sub,ch){
+  const B = {
+    'Fractions':[
+      qFill('6/8 simplified is ___','3/4','Divide both by 2.'),
+      qFill('½ + ¼ = ___','3/4','Common denominator: 2/4 + 1/4 = 3/4.'),
+      qMatch([['Numerator','Top number of fraction'],['Denominator','Bottom number of fraction'],['Proper fraction','Numerator < Denominator'],['Mixed number','Whole number + proper fraction']]),
+      qFill('¾ of 20 = ___','15','Multiply 20 × 3 = 60, divide by 4 = 15.'),
+      qMatch([['1/2','0.5'],['1/4','0.25'],['3/4','0.75'],['1/5','0.2']])
+    ],
+    'Decimals':[
+      qFill('0.6 + 0.7 = ___','1.3','Add like whole numbers, keep decimal aligned.'),
+      qMatch([['0.5','1/2'],['0.25','1/4'],['0.1','1/10'],['0.75','3/4']]),
+      qFill('Round 5.68 to nearest tenth: ___','5.7','Hundredths digit (8) ≥ 5, so round up the tenths.'),
+      qFill('3.5 × 2 = ___','7.0','Multiply 35 × 2 = 70, then place decimal point.')
+    ],
+    'Components of Food':[
+      qFill('Deficiency of Vitamin C causes ___','scurvy','Sailors historically suffered from this.'),
+      qMatch([['Vitamin A','Night blindness'],['Vitamin C','Scurvy'],['Vitamin D','Rickets'],['Iron deficiency','Anaemia']]),
+      qFill('Foods that provide energy are called ___ foods.','energy-giving','Carbohydrates and fats are energy-giving.'),
+      qMatch([['Carbohydrates','Energy-giving'],['Proteins','Body-building'],['Vitamins','Protective'],['Fats','Energy-storing']])
+    ],
+    'Sorting Materials':[
+      qFill('Separating grain from husk using wind is called ___.','winnowing','Wind carries away the lighter husk.'),
+      qMatch([['Sieving','Separate by size'],['Magnetic separation','Uses a magnet'],['Sedimentation','Heavier particles settle'],['Filtration','Uses filter paper']]),
+      qFill('Materials that allow all light to pass are called ___.','transparent','Example: clear glass.'),
+      qMatch([['Soluble','Dissolves in water'],['Insoluble','Does not dissolve'],['Opaque','Does not let light through'],['Translucent','Lets some light through']])
+    ],
+    'Integers':[
+      qFill('(−8) + (+3) = ___','-5','Move 3 right from −8 on the number line.'),
+      qMatch([['Positive integer','Greater than zero'],['Negative integer','Less than zero'],['Absolute value','Distance from zero'],['Zero','Neither positive nor negative']]),
+      qFill('(−4) × (−5) = ___','20','Negative × Negative = Positive.'),
+      qFill('(−18) ÷ (+3) = ___','-6','Opposite signs → negative result. 18÷3=6.')
+    ],
+    'Nutrition in Plants':[
+      qFill('CO₂ + H₂O + Sunlight → ___ + O₂','glucose','Plants store energy as glucose.'),
+      qMatch([['Chlorophyll','Traps sunlight'],['Stomata','Gas exchange in leaves'],['Root nodules','Fix nitrogen'],['Rhizobium','Nitrogen-fixing bacterium']]),
+      qFill('Plants that trap insects are called ___ plants.','insectivorous','Example: Venus flytrap.'),
+      qMatch([['Autotroph','Makes its own food'],['Heterotroph','Depends on others'],['Parasite','Lives on host, causes harm'],['Saprophyte','Feeds on dead matter']])
+    ],
+    'Rational Numbers':[
+      qFill('(−3/5) + (7/5) = ___','4/5','Same denominator: −3+7=4, so 4/5.'),
+      qMatch([['p/q (q≠0)','Rational number'],['Additive inverse of p/q','−p/q'],['Multiplicative inverse','q/p'],['Standard form','Denominator positive, HCF=1']]),
+      qFill('Standard form of −18/24 is ___.','−3/4','HCF=6. −18/6=−3, 24/6=4 → −3/4.'),
+      qFill('(−2/3) × (9/4) = ___','−3/2','(−2×9)/(3×4) = −18/12 = −3/2.')
+    ],
+    'Microorganisms':[
+      qFill('Microorganisms that cause diseases are called ___.','pathogens','From Greek "pathos" = suffering.'),
+      qMatch([['Bacteria','Cholera, Typhoid'],['Virus','Common cold, COVID-19'],['Fungi','Ringworm, Athlete\'s foot'],['Protozoa','Malaria, Amoebic dysentery']]),
+      qFill('Heating milk to kill microbes is called ___.','pasteurisation','Named after Louis Pasteur.'),
+      qMatch([['Vaccine','Prevents disease'],['Antibiotic','Kills bacteria'],['Preservation','Prevents food spoilage'],['Fermentation','Microbes break down sugars']])
+    ],
+    'Simple Equations':[
+      qFill('If 2x = 14, then x = ___','7','Divide both sides by 2: x = 14/2 = 7.'),
+      qMatch([['Variable','Unknown quantity (e.g. x)'],['Constant','Fixed number'],['Coefficient','Number multiplied with variable'],['Solution','Value that satisfies equation']]),
+      qFill('x − 9 = 5, so x = ___','14','Add 9 to both sides: x = 5+9 = 14.'),
+      qFill('3x + 2 = 11, so x = ___','3','3x = 9 → x = 3.')
+    ]
+  };
+  return B[ch]||defaultMed(cl,sub,ch);
+}
+
+function defaultMed(cl,sub,ch){
+  return [
+    qFill('The main idea behind "'+ch+'" is ___',sub==='Maths'?'problem-solving':'observation','Every chapter has a core idea.'),
+    qMatch([['Theory','Explains how something works'],['Experiment','Tests a theory'],['Observation','What you see/measure'],['Conclusion','What you learn from data']]),
+    qFill('A ___ is used to verify the answer.',sub==='Maths'?'check':'experiment','Always verify your work.'),
+    qMatch([['Step 1','Understand the problem'],['Step 2','Plan your approach'],['Step 3','Solve / Execute'],['Step 4','Verify the answer']])
+  ];
+}
+
+/* ============================================================
+   HARD QUESTION BANKS (Scenario + Timed + Puzzle)
+   ============================================================ */
+function hardBank(cl,sub,ch){
+  const B = {
+    'Fractions':[
+      qScenario('Priya has a pizza cut into 8 equal slices. She eats 3 slices and gives 2 to her brother.','What fraction of the pizza is LEFT?',['3/8','5/8','2/8','4/8'],'3/8','Total consumed = 3+2=5 slices. Left = 8−5=3. Fraction = 3/8.'),
+      qTimed('5/6 − 1/3 = ?  (Hint: 1/3 = 2/6)',['1/2','1/3','3/6','2/3'],'1/2','5/6 − 2/6 = 3/6 = 1/2.',15),
+      qPuzzle('Arrange fractions from SMALLEST to LARGEST:',['1/2','1/4','3/4','1/8'],['1/8','1/4','1/2','3/4']),
+      qScenario('A recipe needs 2/3 cup sugar. Raj wants to triple the recipe.','How much sugar does Raj need?',['2 cups','3 cups','1 cup','2/3 cups'],'2 cups','2/3 × 3 = 6/3 = 2 cups.')
+    ],
+    'Decimals':[
+      qScenario('Arun buys a book for ₹45.75 and a pen for ₹12.50. He pays with ₹100.','How much change does he get?',['₹41.75','₹58.25','₹32.50','₹57.50'],'₹41.75','Total = 45.75+12.50=58.25. Change = 100−58.25 = ₹41.75.'),
+      qTimed('3.5 × 4 = ?',['14','12','14.5','13'],'14','3.5 × 4 = 14.',12),
+      qPuzzle('Arrange from LARGEST to SMALLEST:',['0.9','0.09','0.99','0.009'],['0.99','0.9','0.09','0.009']),
+      qScenario('A car travels 12.5 km every hour.','How far in 4 hours?',['50 km','48 km','52.5 km','46 km'],'50 km','12.5 × 4 = 50 km.')
+    ],
+    'Components of Food':[
+      qScenario('Riya eats only biscuits and rice every day. After a month she feels tired and gets sick often.','Which nutrients is she MOST LIKELY deficient in?',['Vitamins and Proteins','Carbohydrates','Fats','Water'],'Vitamins and Proteins','Rice and biscuits = mainly carbs. Missing vitamins (protective) and proteins (body-building).'),
+      qTimed('Which organ produces bile to digest fats?',['Liver','Stomach','Pancreas','Kidney'],'Liver','The liver produces bile; gall bladder stores it.',15),
+      qPuzzle('Arrange digestion steps in correct ORDER:',['Absorption in small intestine','Chewing in mouth','Digestion in stomach','Egestion'],['Chewing in mouth','Digestion in stomach','Absorption in small intestine','Egestion']),
+      qScenario('A child has bowed legs and weak bones.','Which vitamin deficiency is the cause?',['Vitamin D','Vitamin A','Vitamin B12','Vitamin K'],'Vitamin D','Vitamin D deficiency causes Rickets — soft, deformed bones.')
+    ],
+    'Sorting Materials':[
+      qScenario('A farmer wants to (1) separate wheat from straw, then (2) remove stones from grain.','Correct sequence of methods?',['Winnowing → Sieving','Sieving → Filtration','Filtration → Winnowing','Evaporation → Sieving'],'Winnowing → Sieving','Winnowing removes straw. Sieving separates stones from grain.'),
+      qTimed('Which method separates iron filings from sand?',['Magnetic separation','Sieving','Filtration','Evaporation'],'Magnetic separation','A magnet attracts iron but not sand.',12),
+      qPuzzle('Arrange water purification steps in ORDER:',['Filtration','Sedimentation','Decantation','Boiling'],['Sedimentation','Decantation','Filtration','Boiling']),
+      qScenario('You mix salt in water and want to get the salt back.','Which method will you use?',['Evaporation','Filtration','Sedimentation','Decantation'],'Evaporation','Heating evaporates water, leaving salt crystals behind.')
+    ],
+    'Integers':[
+      qScenario('Temperature in Shimla: −3°C in morning. Rose by 8°C by noon. Fell by 5°C by evening.','Evening temperature?',['0°C','5°C','−5°C','3°C'],'0°C','−3+8=5°C (noon). 5−5=0°C (evening).'),
+      qTimed('(−15) − (−8) = ?',['-7','-23','7','23'],'-7','Subtracting negative = adding positive: −15+8 = −7.',15),
+      qPuzzle('Arrange from LEAST to GREATEST:',['−5','3','−12','0'],['−12','−5','0','3']),
+      qScenario('A submarine is 200m below sea level (−200m). It rises 150m.','New position?',['−50m','+50m','−350m','+150m'],'−50m','−200+150 = −50m.')
+    ],
+    'Nutrition in Plants':[
+      qScenario('A plant in a dark room for several days has yellowing leaves.','Most likely reason?',['Chlorophyll breaks down without sunlight','Too much water','Soil dried out','Too much CO₂'],'Chlorophyll breaks down without sunlight','Without light, chlorophyll degrades → yellowing (chlorosis).'),
+      qTimed('Which gas do plants release during photosynthesis?',['O₂','CO₂','N₂','H₂'],'O₂','Oxygen is released as a by-product of splitting water molecules.',12),
+      qPuzzle('Arrange photosynthesis steps in ORDER:',['CO₂ & H₂O absorbed','Sunlight trapped by chlorophyll','Glucose & O₂ produced','O₂ released through stomata'],['CO₂ & H₂O absorbed','Sunlight trapped by chlorophyll','Glucose & O₂ produced','O₂ released through stomata']),
+      qScenario('Rhizobium bacteria live in root nodules of pea plants. Bacteria get food from plant; plant gets fixed nitrogen.','This relationship is:',['Mutualism / Symbiosis','Parasitism','Predation','Competition'],'Mutualism / Symbiosis','Both organisms benefit = mutualism.')
+    ],
+    'Rational Numbers':[
+      qScenario('3/5 of students are in library, 1/4 are in lab.','Fraction in library OR lab?',['17/20','4/9','7/9','2/5'],'17/20','3/5+1/4 = 12/20+5/20 = 17/20.'),
+      qTimed('(−3/7) ÷ (9/14) = ?',['−2/3','−6/7','2/3','3/14'],'−2/3','÷9/14 = ×14/9. −3/7 × 14/9 = −42/63 = −2/3.',20),
+      qPuzzle('Arrange from LEAST to GREATEST:',['−1/2','3/4','−3/4','1/4'],['−3/4','−1/2','1/4','3/4']),
+      qScenario('Temperature was −5/2°C. It dropped further by 3/2°C.','Final temperature?',['−4°C','−1°C','4°C','−8°C'],'−4°C','−5/2−3/2 = −8/2 = −4°C.')
+    ],
+    'Microorganisms':[
+      qScenario('A village boils drinking water after many fall ill with typhoid.','Why does boiling help?',['Boiling kills Salmonella typhi','Boiling adds nutrients','Boiling improves taste','Boiling removes minerals'],'Boiling kills Salmonella typhi','Typhoid: Salmonella typhi. High heat destroys bacteria.'),
+      qTimed('Who developed the rabies vaccine?',['Louis Pasteur','Alexander Fleming','Robert Koch','Joseph Lister'],'Louis Pasteur','Pasteur developed vaccines for rabies and anthrax.',15),
+      qPuzzle('Arrange disease spread via contaminated water in ORDER:',['Person falls sick','Bacteria multiply in gut','Person drinks water','Contaminated water source'],['Contaminated water source','Person drinks water','Bacteria multiply in gut','Person falls sick']),
+      qScenario('Riya\'s bread has white fuzzy growth after a week in a warm cupboard.','What caused this?',['Fungi (mold)','Bacteria','Virus','Algae'],'Fungi (mold)','Mold (fungi) thrives in warm, moist conditions.')
+    ],
+    'Simple Equations':[
+      qScenario('A bag of apples costs ₹x. Three bags cost ₹60.','Cost of one bag?',['₹20','₹30','₹15','₹25'],'₹20','3x=60 → x=60/3=₹20.'),
+      qTimed('If 5x − 3 = 22, then x = ?',['5','3','7','4'],'5','5x=22+3=25 → x=5.',20),
+      qPuzzle('Arrange equation-solving steps in ORDER:',['Find the variable','Verify by substitution','Identify the unknown','Move constants to one side'],['Identify the unknown','Move constants to one side','Find the variable','Verify by substitution']),
+      qScenario('Twice a number decreased by 8 equals 14.','What is the number?',['11','7','14','8'],'11','2x−8=14 → 2x=22 → x=11.')
+    ]
+  };
+  return B[ch]||defaultHard(cl,sub,ch);
+}
+
+function defaultHard(cl,sub,ch){
+  return [
+    qScenario('You face an unfamiliar problem in "'+ch+'".','Best strategy?',['Break into smaller steps','Random trial','Ask for direct answer','Skip it'],'Break into smaller steps','Decompose complex problems into manageable parts.'),
+    qTimed('Which skill is most critical for mastering "'+ch+'"?',['Critical thinking','Memorisation only','Speed reading','Avoiding practice'],'Critical thinking','Critical thinking lets you apply knowledge to new situations.',20),
+    qPuzzle('Arrange learning steps in correct ORDER:',['Test yourself','Review mistakes','Study the concept','Apply in practice'],['Study the concept','Apply in practice','Test yourself','Review mistakes']),
+    qScenario('A student applies class knowledge to solve a real-world problem.','This demonstrates:',['Applied learning','Rote memorisation','Passive reading','Guessing'],'Applied learning','Applied learning = transferring classroom knowledge to real situations.')
+  ];
+}
+
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+let G = {};
+
+function freshState(cl,sub,ch){
+  return {cl,sub,ch,
+    data:null,
+    curLvl:1,
+    done:[false,false,false],
+    locked:[false,true,true],
+    totalScore:0,
+    lvlScore:0,
+    badges:[],
+    qIdx:0,
+    questions:[],
+    timer:null,
+    timerSec:0
+  };
+}
+
+/* ============================================================
+   SELECTION SCREEN
+   ============================================================ */
+let selSub='';
+
+document.getElementById('sel-class').addEventListener('change',refreshChapters);
+
+function selectSubject(sub){
+  selSub=sub;
+  document.getElementById('pill-maths').className   ='subj-pill'+(sub==='Maths'?' active-maths':'');
+  document.getElementById('pill-science').className ='subj-pill'+(sub==='Science'?' active-science':'');
+  refreshChapters();
+}
+
+function refreshChapters(){
+  const cl=document.getElementById('sel-class').value;
+  const sel=document.getElementById('sel-chapter');
+  sel.innerHTML='<option value="">— Choose Chapter —</option>';
+  sel.disabled=true;
+  document.getElementById('btn-start').disabled=true;
+  if(!cl||!selSub||!CURRICULUM[cl]||!CURRICULUM[cl][selSub])return;
+  CURRICULUM[cl][selSub].forEach(ch=>{
+    const o=document.createElement('option');o.value=ch;o.textContent=ch;sel.appendChild(o);
+  });
+  sel.disabled=false;
+  sel.onchange=()=>{ document.getElementById('btn-start').disabled=!sel.value; };
+}
+
+/* ============================================================
+   START GAME
+   ============================================================ */
+function startGame(){
+  const cl=document.getElementById('sel-class').value;
+  const ch=document.getElementById('sel-chapter').value;
+  if(!cl||!selSub||!ch)return;
+
+  G=freshState(cl,selSub,ch);
+  G.data=generateGameData(cl,selSub,ch);
+
+  const look=chLook(ch);
+  const banner=document.getElementById('ch-banner');
+  banner.className='ch-banner '+look.color;
+  document.getElementById('ch-icon').textContent =look.icon;
+  document.getElementById('ch-title').textContent=ch;
+  document.getElementById('ch-meta').textContent =`Class ${cl} · ${selSub}`;
+
+  refreshTabs();
+  showScreen('screen-game');
+  loadLevel(1);
+}
+
+/* ============================================================
+   LEVEL TABS
+   ============================================================ */
+function refreshTabs(){
+  for(let i=1;i<=3;i++){
+    const t=document.getElementById('ltab-'+i);
+    t.className='lvl-tab';
+    if(G.done[i-1])      t.classList.add('lvl-done');
+    else if(G.locked[i-1])t.classList.add('lvl-locked');
+    if(i===G.curLvl&&!G.locked[i-1])t.classList.add('lvl-active');
+  }
+}
+
+function clickLevelTab(lvl){
+  if(G.locked[lvl-1]){
+    const t=document.getElementById('ltab-'+lvl);
+    t.style.animation='jolt .3s ease';
+    setTimeout(()=>t.style.animation='',400);
+    return;
+  }
+  G.curLvl=lvl; refreshTabs(); loadLevel(lvl);
+}
+
+/* ============================================================
+   LOAD LEVEL
+   ============================================================ */
+function loadLevel(lvl){
+  clearTimer();
+  const key=['easy','medium','hard'][lvl-1];
+  const d=G.data[key];
+  G.questions=shuffle([...d.questions]);
+  G.qIdx=0; G.lvlScore=0;
+  document.getElementById('lc-panel').classList.add('hidden');
+  document.getElementById('question-zone').style.display='block';
+  updatePBar(); renderQ();
+}
+
+function updatePBar(){
+  const t=G.questions.length, d=G.qIdx;
+  document.getElementById('qp-label').textContent='Q '+d+'/'+t;
+  document.getElementById('qp-fill').style.width=(t?Math.round(d/t*100):0)+'%';
+  document.getElementById('score-disp').textContent=G.totalScore;
+}
+
+/* ============================================================
+   RENDER DISPATCHER
+   ============================================================ */
+function renderQ(){
+  const q=G.questions[G.qIdx];
+  const meta=LM[G.curLvl];
+  const zone=document.getElementById('question-zone');
+  zone.innerHTML='';
+  if(!q){showLevelDone();return;}
+  const n=G.qIdx+1, tot=G.questions.length;
+  const fn={mcq:rMCQ,tf:rTF,fill:rFill,match:rMatch,scenario:rScenario,timed:rTimed,puzzle:rPuzzle};
+  (fn[q.type]||rMCQ)(q,zone,meta,n,tot);
+}
+
+/* ---- Card helper ---- */
+function mkCard(meta,typeLabel,n,tot){
+  const c=document.createElement('div'); c.className='q-card';
+  const top=document.createElement('div'); top.className='q-top-row';
+  const chip=document.createElement('span'); chip.className='diff-chip '+meta.dc;
+  chip.textContent=meta.label.toUpperCase();
+  const tag=document.createElement('span'); tag.className='q-type-tag';
+  tag.textContent=typeLabel+' • '+n+'/'+tot;
+  top.appendChild(chip); top.appendChild(tag); c.appendChild(top);
+  return c;
+}
+
+function addQTxt(card,txt){
+  const d=document.createElement('div'); d.className='q-text'; d.textContent=txt;
+  card.appendChild(d);
+}
+
+/* ============================================================
+   MCQ
+   ============================================================ */
+function rMCQ(q,zone,meta,n,tot){
+  const card=mkCard(meta,'MCQ',n,tot); addQTxt(card,q.q);
+  const grid=document.createElement('div'); grid.className='options-grid';
+  const L=['A','B','C','D'];
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='opt-btn';
+    btn.innerHTML=`<span class="opt-letter">${L[i]}</span>${esc(opt)}`;
+    btn.addEventListener('click',()=>{
+      if(btn.disabled)return;
+      grid.querySelectorAll('.opt-btn').forEach((b,j)=>{
+        b.disabled=true;
+        if(q.opts[j]===q.ans)b.classList.add('opt-correct');
+        else if(q.opts[j]===opt&&opt!==q.ans)b.classList.add('opt-wrong');
+      });
+      addFb(card,opt===q.ans,q.exp); givePoints(opt===q.ans); addNext(card);
+    });
+    grid.appendChild(btn);
+  });
+  card.appendChild(grid); zone.appendChild(card);
+}
+
+/* ============================================================
+   TRUE / FALSE
+   ============================================================ */
+function rTF(q,zone,meta,n,tot){
+  const card=mkCard(meta,'True/False',n,tot); addQTxt(card,q.q);
+  const row=document.createElement('div'); row.className='tf-row';
+  [true,false].forEach(val=>{
+    const btn=document.createElement('button');
+    btn.className='tf-btn '+(val?'tf-true':'tf-false');
+    btn.textContent=val?'✅ True':'❌ False';
+    btn.addEventListener('click',()=>{
+      row.querySelectorAll('.tf-btn').forEach(b=>{
+        b.disabled=true;
+        const bv=b.classList.contains('tf-true');
+        if(bv===q.ans)b.classList.add('opt-correct');
+        if(bv===val&&val!==q.ans)b.classList.add('opt-wrong');
+      });
+      addFb(card,val===q.ans,q.exp); givePoints(val===q.ans); addNext(card);
+    });
+    row.appendChild(btn);
+  });
+  card.appendChild(row); zone.appendChild(card);
+}
+
+/* ============================================================
+   FILL IN THE BLANK
+   ============================================================ */
+function rFill(q,zone,meta,n,tot){
+  const card=mkCard(meta,'Fill in the Blank',n,tot); addQTxt(card,q.q);
+  const row=document.createElement('div'); row.className='fill-row';
+  const inp=document.createElement('input'); inp.type='text'; inp.className='fill-input';
+  inp.placeholder='Type your answer here…';
+  const btn=document.createElement('button'); btn.className='btn-check'; btn.textContent='✓ Check';
+  row.appendChild(inp); row.appendChild(btn); card.appendChild(row);
+  if(q.hint){const h=document.createElement('div');h.className='hint-lbl';h.textContent='💡 Hint: '+q.hint;card.appendChild(h);}
+  const doCheck=()=>{
+    const v=inp.value.trim().toLowerCase(), ok=v===q.ans.toString().toLowerCase();
+    inp.disabled=true; btn.disabled=true;
+    inp.classList.add(ok?'fi-correct':'fi-wrong');
+    if(!ok){const s=document.createElement('div');s.className='hint-lbl mt2';s.innerHTML='✅ Answer: <strong>'+q.ans+'</strong>';card.appendChild(s);}
+    addFb(card,ok,''); givePoints(ok); addNext(card);
+  };
+  btn.addEventListener('click',doCheck);
+  inp.addEventListener('keypress',e=>{if(e.key==='Enter'&&!inp.disabled)doCheck();});
+  zone.appendChild(card);
+}
+
+/* ============================================================
+   MATCH THE FOLLOWING
+   ============================================================ */
+function rMatch(q,zone,meta,n,tot){
+  const card=mkCard(meta,'Match the Following',n,tot);
+  const qt=document.createElement('div'); qt.className='q-text'; qt.textContent='Match each item in Column A with Column B:';
+  card.appendChild(qt);
+
+  const map={}; q.pairs.forEach(([l,r])=>map[l]=r);
+  const lefts=q.pairs.map(p=>p[0]);
+  const rights=shuffle(q.pairs.map(p=>p[1]));
+
+  let selL=null, matched=0;
+  const wrap=document.createElement('div'); wrap.className='match-wrap';
+  const lc=document.createElement('div'); lc.className='match-col';
+  const rc=document.createElement('div'); rc.className='match-col';
+  const ar=document.createElement('div'); ar.className='match-arrow'; ar.textContent='↔';
+
+  const lh=document.createElement('div');lh.className='match-col-head';lh.textContent='Column A';
+  const rh=document.createElement('div');rh.className='match-col-head';rh.textContent='Column B';
+  lc.appendChild(lh); rc.appendChild(rh);
+
+  lefts.forEach(term=>{
+    const it=document.createElement('div'); it.className='match-item'; it.textContent=term; it.dataset.v=term;
+    it.addEventListener('click',()=>{
+      if(it.classList.contains('mi-matched')||it.classList.contains('mi-disabled'))return;
+      lc.querySelectorAll('.match-item').forEach(i=>i.classList.remove('mi-selected'));
+      it.classList.add('mi-selected'); selL=term;
+    });
+    lc.appendChild(it);
+  });
+
+  rights.forEach(def=>{
+    const it=document.createElement('div'); it.className='match-item'; it.textContent=def;
+    it.addEventListener('click',()=>{
+      if(!selL||it.classList.contains('mi-matched'))return;
+      const le=lc.querySelector('.match-item[data-v="'+CSS.escape(selL)+'"]');
+      if(def===map[selL]){
+        it.classList.add('mi-matched');
+        if(le){le.classList.remove('mi-selected');le.classList.add('mi-matched');}
+        matched++;
+        if(matched===q.pairs.length){
+          addFb(card,true,'All matches correct!'); givePoints(true); addNext(card);
+          [...lc.querySelectorAll('.match-item'),...rc.querySelectorAll('.match-item')]
+            .forEach(i=>i.classList.add('mi-disabled'));
+        }
+      } else {
+        it.classList.add('mi-wrong');
+        if(le){le.classList.remove('mi-selected');le.classList.add('mi-wrong');}
+        setTimeout(()=>{it.classList.remove('mi-wrong');if(le)le.classList.remove('mi-wrong');},500);
+        givePoints(false);
+      }
+      selL=null;
+    });
+    rc.appendChild(it);
+  });
+
+  wrap.appendChild(lc); wrap.appendChild(ar); wrap.appendChild(rc); card.appendChild(wrap);
+  const tip=document.createElement('div'); tip.className='hint-lbl mt3'; tip.textContent='👆 Click a left item, then its match on the right.';
+  card.appendChild(tip); zone.appendChild(card);
+}
+
+/* ============================================================
+   SCENARIO
+   ============================================================ */
+function rScenario(q,zone,meta,n,tot){
+  const card=mkCard(meta,'Scenario',n,tot);
+  const box=document.createElement('div'); box.className='scenario-box'; box.textContent='📖 '+q.context;
+  card.appendChild(box); addQTxt(card,q.q);
+  const grid=document.createElement('div'); grid.className='options-grid';
+  const L=['A','B','C','D'];
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='opt-btn';
+    btn.innerHTML=`<span class="opt-letter">${L[i]}</span>${esc(opt)}`;
+    btn.addEventListener('click',()=>{
+      if(btn.disabled)return;
+      grid.querySelectorAll('.opt-btn').forEach((b,j)=>{
+        b.disabled=true;
+        if(q.opts[j]===q.ans)b.classList.add('opt-correct');
+        else if(q.opts[j]===opt&&opt!==q.ans)b.classList.add('opt-wrong');
+      });
+      addFb(card,opt===q.ans,q.exp); givePoints(opt===q.ans); addNext(card);
+    });
+    grid.appendChild(btn);
+  });
+  card.appendChild(grid); zone.appendChild(card);
+}
+
+/* ============================================================
+   TIMED CHALLENGE
+   ============================================================ */
+function rTimed(q,zone,meta,n,tot){
+  clearTimer();
+  const card=mkCard(meta,'⏱ Time Challenge',n,tot);
+  const tl=q.timeLimit||15; G.timerSec=tl;
+  const tw=document.createElement('div'); tw.className='timer-wrap';
+  const ti=document.createElement('div'); ti.className='timer-info';
+  ti.innerHTML='<span>⏱ Answer quickly!</span><span id="tcnt">'+tl+'s</span>';
+  const tt=document.createElement('div'); tt.className='timer-track';
+  const tf=document.createElement('div'); tf.className='timer-fill'; tf.id='tfill'; tf.style.width='100%';
+  tt.appendChild(tf); tw.appendChild(ti); tw.appendChild(tt); card.appendChild(tw);
+  addQTxt(card,q.q);
+  const grid=document.createElement('div'); grid.className='options-grid';
+  const L=['A','B','C','D']; let answered=false;
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button'); btn.className='opt-btn';
+    btn.innerHTML=`<span class="opt-letter">${L[i]}</span>${esc(opt)}`;
+    btn.addEventListener('click',()=>{
+      if(answered||btn.disabled)return; answered=true; clearTimer();
+      grid.querySelectorAll('.opt-btn').forEach((b,j)=>{
+        b.disabled=true;
+        if(q.opts[j]===q.ans)b.classList.add('opt-correct');
+        else if(q.opts[j]===opt&&opt!==q.ans)b.classList.add('opt-wrong');
+      });
+      addFb(card,opt===q.ans,q.exp); givePoints(opt===q.ans); addNext(card);
+    });
+    grid.appendChild(btn);
+  });
+  card.appendChild(grid); zone.appendChild(card);
+  G.timer=setInterval(()=>{
+    G.timerSec--;
+    const f=document.getElementById('tfill'),c=document.getElementById('tcnt');
+    if(!f||!c){clearTimer();return;}
+    f.style.width=((G.timerSec/tl)*100)+'%';
+    c.textContent=G.timerSec+'s';
+    if(G.timerSec<=5)f.classList.add('danger');
+    if(G.timerSec<=0&&!answered){
+      answered=true; clearTimer();
+      grid.querySelectorAll('.opt-btn').forEach((b,j)=>{b.disabled=true;if(q.opts[j]===q.ans)b.classList.add('opt-correct');});
+      addFb(card,false,'⏰ Time up! '+(q.exp||'')); givePoints(false); addNext(card);
+    }
+  },1000);
+}
+
+/* ============================================================
+   PUZZLE (ordering)
+   ============================================================ */
+function rPuzzle(q,zone,meta,n,tot){
+  const card=mkCard(meta,'🧩 Puzzle',n,tot); addQTxt(card,q.q);
+  const tip=document.createElement('div'); tip.className='hint-lbl'; tip.textContent='👆 Click items in the CORRECT ORDER:';
+  card.appendChild(tip);
+  const shuffled=shuffle([...q.items]);
+  const grid=document.createElement('div'); grid.className='puzzle-grid';
+  const correct=q.correctOrder; let picked=[];
+  shuffled.forEach(item=>{
+    const tile=document.createElement('button'); tile.className='puzzle-tile'; tile.textContent=item; tile.dataset.v=item;
+    tile.addEventListener('click',()=>{
+      if(tile.disabled||tile.classList.contains('pt-correct'))return;
+      picked.push(item); tile.disabled=true; tile.classList.add('pt-a');
+      if(picked.length===shuffled.length){
+        const allOk=picked.every((v,i)=>v===correct[i]);
+        grid.querySelectorAll('.puzzle-tile').forEach(t=>{
+          t.classList.remove('pt-a');
+          const ci=correct.indexOf(t.dataset.v);
+          const pi=picked.indexOf(t.dataset.v);
+          t.classList.add(picked[ci]===t.dataset.v?'pt-correct':'pt-wrong');
+        });
+        if(!allOk){const a=document.createElement('div');a.className='hint-lbl mt2';a.innerHTML='✅ Correct: <strong>'+correct.join(' → ')+'</strong>';card.appendChild(a);}
+        addFb(card,allOk,allOk?'🎉 Perfect sequence!':''); givePoints(allOk); addNext(card);
+      }
+    });
+    grid.appendChild(tile);
+  });
+  card.appendChild(grid); zone.appendChild(card);
+}
+
+/* ============================================================
+   SHARED HELPERS
+   ============================================================ */
+function addFb(card,ok,exp){
+  const d=document.createElement('div');
+  d.className='feedback-bubble '+(ok?'fb-correct':'fb-wrong');
+  d.textContent=(ok?'✅ Correct! ':'❌ Not quite. ')+(exp||'');
+  card.appendChild(d);
+}
+
+function givePoints(ok){
+  if(!ok)return;
+  const p=LM[G.curLvl].pts; G.totalScore+=p; G.lvlScore+=p;
+  document.getElementById('score-disp').textContent=G.totalScore;
+}
+
+function addNext(card){
+  const isLast=G.qIdx>=G.questions.length-1;
+  const btn=document.createElement('button'); btn.className='btn-next';
+  btn.textContent=isLast?'🏁 Finish Level!':'➡ Next Question';
+  btn.addEventListener('click',()=>{
+    G.qIdx++; updatePBar();
+    if(G.qIdx>=G.questions.length)showLevelDone(); else renderQ();
+  });
+  card.appendChild(btn);
+}
+
+function clearTimer(){if(G.timer){clearInterval(G.timer);G.timer=null;}}
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+/* ============================================================
+   LEVEL COMPLETE
+   ============================================================ */
+function showLevelDone(){
+  clearTimer();
+  document.getElementById('question-zone').style.display='none';
+  const panel=document.getElementById('lc-panel'); panel.classList.remove('hidden');
+  const lvl=G.curLvl, meta=LM[lvl];
+  const key=['easy','medium','hard'][lvl-1];
+  const d=G.data[key];
+  G.done[lvl-1]=true; if(lvl<3)G.locked[lvl]=false;
+  G.badges.push({icon:meta.badge,name:meta.badgeName,level:lvl});
+  document.getElementById('lc-badge-icon').textContent=meta.badge;
+  document.getElementById('lc-badge-name').textContent='🏅 '+meta.badgeName;
+  document.getElementById('lc-pts-num').textContent=d.points;
+  document.getElementById('lc-desc').textContent=['🌟 You understood the core concepts!','⚡ You applied the concepts successfully!','🔥 Outstanding logical thinking!'][lvl-1];
+  document.getElementById('btn-continue').textContent=lvl===3?'🏆 See My Results!':'Continue to Level '+(lvl+1)+' →';
+  refreshTabs(); spawnConfetti(lvl===3?80:40);
+}
+
+function onContinue(){
+  const lvl=G.curLvl;
+  if(lvl===3){showMaster();return;}
+  G.curLvl=lvl+1; refreshTabs();
+  document.getElementById('lc-panel').classList.add('hidden');
+  document.getElementById('question-zone').style.display='block';
+  loadLevel(G.curLvl);
+}
+
+/* ============================================================
+   CHAPTER MASTER
+   ============================================================ */
+function showMaster(){
+  showScreen('screen-master');
+  document.getElementById('master-msg').textContent='You conquered all 3 levels of "'+G.ch+'"! You are a Chapter Master!';
+  document.getElementById('master-total').textContent=G.totalScore;
+  const row=document.getElementById('master-badges'); row.innerHTML='';
+  const ll=['Level 1 – Easy','Level 2 – Medium','Level 3 – Hard'];
+  G.badges.forEach(b=>{
+    const el=document.createElement('div'); el.className='ebc';
+    el.innerHTML='<span class="ebc-icon">'+b.icon+'</span><div class="ebc-lvl">'+ll[b.level-1]+'</div><div class="ebc-name">'+b.name+'</div>';
+    row.appendChild(el);
+  });
+  spawnConfetti(100);
+}
+
+/* ============================================================
+   SCREEN NAV
+   ============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome(){
+  clearTimer();
+  selSub='';
+  document.getElementById('pill-maths').className='subj-pill';
+  document.getElementById('pill-science').className='subj-pill';
+  document.getElementById('sel-class').value='';
+  document.getElementById('sel-chapter').innerHTML='<option value="">— Select Class & Subject first —</option>';
+  document.getElementById('sel-chapter').disabled=true;
+  document.getElementById('btn-start').disabled=true;
+  showScreen('screen-select');
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+function spawnConfetti(n){
+  const cols=['#FFD93D','#FF6B6B','#6BCB77','#4D96FF','#C77DFF','#FF9A3C'];
+  const sh=['■','●','▲','◆','★'];
+  for(let i=0;i<n;i++){
+    const el=document.createElement('div'); el.className='confetti';
+    el.textContent=sh[Math.floor(Math.random()*sh.length)];
+    const dur=1.5+Math.random()*2.5;
+    el.style.cssText='left:'+Math.random()*100+'vw;color:'+cols[~~(Math.random()*cols.length)]+';font-size:'+(8+Math.random()*14)+'px;animation:confettiDrop '+dur+'s linear '+(Math.random()*.8)+'s forwards;';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),(dur+1)*1000);
+  }
+}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+console.log('%c🧠 BrainBlast! Ready','font-size:16px;color:#FF6B6B;font-weight:bold');
+console.log('%cNCERT Class 1-8 | Maths & Science | 3 Levels','font-size:11px;color:#3D3D6B');
+</script>
+</body>
+</html>

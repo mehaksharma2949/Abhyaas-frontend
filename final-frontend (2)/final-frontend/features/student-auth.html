@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abhyaas • Student Auth</title>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,Arial;}
+    body{
+      min-height:100vh;
+      background: radial-gradient(ellipse at 15% 10%, #b8e8ff 0%, #d6f5ff 30%, #e8fafe 60%, #c2eefb 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      color:#0d2a3f;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    /* Soft floating aura blobs */
+    body::before{
+      content:'';
+      position:fixed;
+      top:-120px;
+      left:-100px;
+      width:520px;
+      height:520px;
+      border-radius:50%;
+      background: radial-gradient(circle, rgba(125,210,255,0.45) 0%, transparent 70%);
+      pointer-events:none;
+      z-index:0;
+    }
+    body::after{
+      content:'';
+      position:fixed;
+      bottom:-100px;
+      right:-80px;
+      width:480px;
+      height:480px;
+      border-radius:50%;
+      background: radial-gradient(circle, rgba(160,235,255,0.38) 0%, transparent 70%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .wrap{
+      width:min(1100px, 100%);
+      background: rgba(255,255,255,0.60);
+      border:1px solid rgba(130,205,250,0.45);
+      border-radius:28px;
+      padding:22px;
+      box-shadow:
+        0 8px 40px rgba(30,130,200,0.12),
+        0 2px 8px rgba(100,200,240,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow:hidden;
+      position:relative;
+      z-index:1;
+    }
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:6px 8px 18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:22px;
+      font-weight:800;
+      color:#0b6ea8;
+      letter-spacing:-0.3px;
+    }
+    .back{
+      border:1px solid rgba(30,140,210,0.25);
+      background: rgba(210,240,255,0.55);
+      color:#0b6ea8;
+      padding:10px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:600;
+      font-size:14px;
+      transition: background .2s, box-shadow .2s;
+    }
+    .back:hover{
+      background: rgba(180,230,255,0.75);
+      box-shadow: 0 2px 12px rgba(30,130,200,0.18);
+    }
+    .panel{
+      background: rgba(255,255,255,0.48);
+      border:1px solid rgba(130,210,250,0.30);
+      border-radius:22px;
+      padding:26px;
+      min-height:560px;
+      position:relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.90);
+    }
+    .title{
+      font-size:40px;
+      font-weight:900;
+      margin-bottom:10px;
+      color:#09427a;
+      letter-spacing:-0.5px;
+    }
+    .sub{
+      color:#2f6080;
+      opacity:.90;
+      margin-bottom:20px;
+      line-height:1.50;
+      font-size:15px;
+    }
+
+    .screen{
+      display:none;
+      animation: fadeUp .35s ease;
+    }
+    .screen.active{display:block;}
+    @keyframes fadeUp{
+      from{opacity:0; transform: translateY(10px);}
+      to{opacity:1; transform: translateY(0);}
+    }
+
+    .row1{display:grid;grid-template-columns:1fr;gap:14px;}
+
+    label{
+      font-size:13px;
+      color:#1a5e8a;
+      font-weight:600;
+      margin-bottom:6px;
+      display:block;
+      letter-spacing:0.2px;
+    }
+    input{
+      width:100%;
+      padding:14px 14px;
+      border-radius:16px;
+      border:1.5px solid rgba(90,185,240,0.35);
+      background: rgba(235,248,255,0.70);
+      color:#0d2a3f;
+      outline:none;
+      font-size:15px;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    input:focus{
+      border-color: rgba(30,140,220,0.60);
+      background: rgba(245,252,255,0.90);
+      box-shadow: 0 0 0 3px rgba(80,190,240,0.18);
+    }
+    input::placeholder{color:rgba(30,100,160,0.40);}
+
+    .switch{
+      display:flex;
+      gap:10px;
+      margin:14px 0 10px;
+    }
+    .pill{
+      flex:1;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1.5px solid rgba(90,185,240,0.30);
+      background: rgba(210,240,255,0.35);
+      color:#1a5e8a;
+      cursor:pointer;
+      font-weight:700;
+      opacity:.75;
+      transition:.2s;
+      font-size:14px;
+    }
+    .pill:hover{opacity:.90;}
+    .pill.active{
+      opacity:1;
+      background: linear-gradient(135deg, rgba(30,140,220,0.90), rgba(50,185,240,0.80));
+      border-color: rgba(90,200,255,0.50);
+      color:#fff;
+      box-shadow: 0 4px 16px rgba(30,130,210,0.25);
+    }
+
+    .btn{
+      width:100%;
+      border:none;
+      border-radius:18px;
+      padding:15px 16px;
+      font-size:16px;
+      font-weight:800;
+      color:#fff;
+      background: linear-gradient(135deg, #1a8ed4, #30c5f0);
+      cursor:pointer;
+      transition: opacity .25s, box-shadow .25s, transform .15s;
+      margin-top:14px;
+      box-shadow: 0 4px 20px rgba(26,120,200,0.32);
+      letter-spacing:0.1px;
+    }
+    .btn:hover{
+      opacity:.95;
+      box-shadow: 0 6px 28px rgba(26,120,200,0.42);
+      transform: translateY(-1px);
+    }
+    .btn:active{transform: translateY(0);}
+    .btn.secondary{
+      background: rgba(210,240,255,0.55);
+      border:1.5px solid rgba(90,185,240,0.35);
+      color:#1a6ea8;
+      font-weight:700;
+      margin-top:10px;
+      box-shadow: none;
+    }
+    .btn.secondary:hover{
+      background: rgba(190,235,255,0.75);
+      box-shadow: 0 2px 12px rgba(30,130,200,0.15);
+    }
+
+    .hint{
+      margin-top:14px;
+      color:#2f6080;
+      font-size:14px;
+    }
+    .link{
+      color:#0e8fd8;
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:none;
+      transition: color .2s;
+    }
+    .link:hover{color:#0b6ea8;text-decoration:underline;}
+
+    .msg{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1.5px solid rgba(90,185,240,0.20);
+      background: rgba(225,245,255,0.55);
+      display:none;
+      font-size:14px;
+      line-height:1.45;
+      color:#0d2a3f;
+    }
+    .msg.show{display:block;}
+    .msg.ok{
+      border-color: rgba(34,197,94,0.40);
+      background: rgba(220,252,231,0.55);
+      color:#166534;
+    }
+    .msg.err{
+      border-color: rgba(239,68,68,0.40);
+      background: rgba(254,226,226,0.55);
+      color:#991b1b;
+    }
+
+    .otpBox{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      margin-top:16px;
+      flex-wrap:wrap;
+    }
+    .otpBox input{
+      width:54px;
+      text-align:center;
+      font-size:18px;
+      font-weight:900;
+      padding:14px 0;
+      border-radius:16px;
+      color:#09427a;
+    }
+
+    @media (max-width:900px){
+      .title{font-size:32px;}
+      .panel{min-height:auto;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">✨ Abhyaas</div>
+      <button class="back" onclick="goBack()">← Back</button>
+    </div>
+
+    <div class="panel">
+
+      <!-- SIGNUP -->
+      <div id="screen-signup" class="screen active">
+        <div class="title">Create Student Account</div>
+        <div class="sub">Signup first, then verify OTP. After verification, login allowed.</div>
+
+        <div class="row1">
+          <div>
+            <label>Full Name</label>
+            <input id="su_name" placeholder="Enter your name"/>
+          </div>
+        </div>
+
+        <div class="switch">
+          <button id="su_email_btn" class="pill active" onclick="setSignupMode('email')">Use Email</button>
+          <button id="su_phone_btn" class="pill" onclick="setSignupMode('phone')">Use Phone</button>
+        </div>
+
+        <div id="su_email_wrap">
+          <label>Email</label>
+          <input id="su_email" placeholder="example@gmail.com"/>
+        </div>
+
+        <div id="su_phone_wrap" style="display:none;">
+          <label>Phone</label>
+          <input id="su_phone" placeholder="+91 9876543210"/>
+        </div>
+
+        <div class="row1">
+          <div>
+            <label>Password</label>
+            <input id="su_pass" type="password" placeholder="Create password"/>
+          </div>
+        </div>
+
+        <button class="btn" onclick="signupStudent()">Signup</button>
+
+        <div class="hint">
+          Already have an account?
+          <span class="link" onclick="show('login')">Login</span>
+        </div>
+
+        <div id="msg_signup" class="msg"></div>
+      </div>
+
+      <!-- OTP -->
+      <div id="screen-otp" class="screen">
+        <div class="title" id="otp_title">Verify OTP</div>
+        <div class="sub" id="otp_sub">We've sent an OTP. Please enter it to continue.</div>
+
+        <div class="otpBox">
+          <input maxlength="1" id="o1" oninput="jumpOtp(1)" />
+          <input maxlength="1" id="o2" oninput="jumpOtp(2)" />
+          <input maxlength="1" id="o3" oninput="jumpOtp(3)" />
+          <input maxlength="1" id="o4" oninput="jumpOtp(4)" />
+          <input maxlength="1" id="o5" oninput="jumpOtp(5)" />
+          <input maxlength="1" id="o6" oninput="jumpOtp(6)" />
+        </div>
+
+        <button class="btn" onclick="verifyOtp()">Verify OTP</button>
+        <button class="btn secondary" onclick="resendOtp()">Resend OTP</button>
+
+        <div class="hint">
+          Wrong email/phone?
+          <span class="link" onclick="show('signup')">Go back</span>
+        </div>
+
+        <div id="msg_otp" class="msg"></div>
+      </div>
+
+      <!-- RESET PASSWORD -->
+      <div id="screen-reset" class="screen">
+        <div class="title">Set New Password</div>
+        <div class="sub">OTP verified. Now create your new password.</div>
+
+        <div class="row1">
+          <div>
+            <label>New Password</label>
+            <input id="rp_pass" type="password" placeholder="Enter new password"/>
+          </div>
+        </div>
+
+        <button class="btn" onclick="finalResetPassword()">Update Password</button>
+
+        <div class="hint">
+          Back to login?
+          <span class="studentDashboard.html" onclick="show('login')">Login</span>
+        </div>
+
+        <div id="msg_reset" class="msg"></div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div id="screen-forgot" class="screen">
+        <div class="title">Forgot Password</div>
+        <div class="sub">Enter your email or phone. We'll send OTP.</div>
+
+        <div class="row1">
+          <div>
+            <label>Email or Phone</label>
+            <input id="fp_identifier" placeholder="example@gmail.com or +91 9876543210"/>
+          </div>
+        </div>
+
+        <button class="btn" onclick="sendResetOtp()">Send OTP</button>
+
+        <div class="hint">
+          Back to login?
+          <span class="link" onclick="show('login')">Login</span>
+        </div>
+
+        <div id="msg_forgot" class="msg"></div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="screen-login" class="screen">
+        <div class="title">Login Student</div>
+        <div class="sub">If your email/phone is not verified, OTP screen will open.</div>
+
+        <div class="switch">
+          <button id="li_email_btn" class="pill active" onclick="setLoginMode('email')">Login with Email</button>
+          <button id="li_phone_btn" class="pill" onclick="setLoginMode('phone')">Login with Phone</button>
+        </div>
+
+        <div id="li_email_wrap">
+          <label>Email</label>
+          <input id="li_email" placeholder="email"/>
+        </div>
+
+        <div id="li_phone_wrap" style="display:none;">
+          <label>Phone</label>
+          <input id="li_phone" placeholder="+91 9876543210"/>
+        </div>
+
+        <div class="row1">
+          <div>
+            <label>Password</label>
+            <input id="li_pass" type="password" placeholder="your password"/>
+          </div>
+        </div>
+
+        <button class="btn" onclick="loginStudent()">Login</button>
+
+        <div class="hint">
+          Forgot password?
+          <span class="link" onclick="show('forgot')">Reset here</span>
+        </div>
+
+        <div class="hint">
+          New here?
+          <span class="link" onclick="show('signup')">Create account</span>
+        </div>
+
+        <div id="msg_login" class="msg"></div>
+      </div>
+
+    </div>
+  </div>
+<script src="./config.js"></script>
+
+<script>
+  console.log("CONFIG:", window.APP_CONFIG);
+</script>
+<script>
+  const API_BASE = window.APP_CONFIG?.API_BASE || "https://backend-abhyaas-final.onrender.com";
+
+  let signupMode = "email";
+  let loginMode = "email";
+
+  let lastSignupIdentity = { type: "email", value: "" };
+  let otpPurpose = "signup";
+  let resetOtpValue = "";
+
+  function goBack(){
+    window.location.href = "chooseRole.html";
+  }
+
+  function show(which){
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById("screen-" + which).classList.add("active");
+  }
+
+  function setSignupMode(mode){
+    signupMode = mode;
+    document.getElementById("su_email_btn").classList.toggle("active", mode==="email");
+    document.getElementById("su_phone_btn").classList.toggle("active", mode==="phone");
+    document.getElementById("su_email_wrap").style.display = mode==="email" ? "block" : "none";
+    document.getElementById("su_phone_wrap").style.display = mode==="phone" ? "block" : "none";
+  }
+
+  function setLoginMode(mode){
+    loginMode = mode;
+    document.getElementById("li_email_btn").classList.toggle("active", mode==="email");
+    document.getElementById("li_phone_btn").classList.toggle("active", mode==="phone");
+    document.getElementById("li_email_wrap").style.display = mode==="email" ? "block" : "none";
+    document.getElementById("li_phone_wrap").style.display = mode==="phone" ? "block" : "none";
+  }
+
+  function showMsg(id, text, type="ok"){
+    const el = document.getElementById(id);
+    el.classList.remove("ok","err","show");
+    el.classList.add("show", type==="ok" ? "ok":"err");
+    el.innerText = text;
+  }
+
+  function clearOtp(){
+    ["o1","o2","o3","o4","o5","o6"].forEach(i => document.getElementById(i).value="");
+    document.getElementById("o1").focus();
+  }
+
+  function jumpOtp(n){
+    const cur = document.getElementById("o"+n);
+    if(cur.value.length===1 && n<6){
+      document.getElementById("o"+(n+1)).focus();
+    }
+  }
+
+  function getOtp(){
+    return ["o1","o2","o3","o4","o5","o6"].map(i => document.getElementById(i).value).join("");
+  }
+
+  async function api(path, method="POST", body=null){
+    const res = await fetch(API_BASE + path, {
+      method,
+      headers: { "Content-Type":"application/json" },
+      body: body ? JSON.stringify(body) : null
+    });
+
+    const data = await res.json().catch(()=> ({}));
+
+    if(!res.ok){
+      throw new Error(data.detail || data.message || "Request failed");
+    }
+    return data;
+  }
+
+  // ==========================
+  // SIGNUP
+  // ==========================
+  async function signupStudent(){
+    const name = document.getElementById("su_name").value.trim();
+    const pass = document.getElementById("su_pass").value.trim();
+    const email = document.getElementById("su_email").value.trim();
+    const phone = document.getElementById("su_phone").value.trim();
+
+    if(!name) return showMsg("msg_signup","Please enter full name.","err");
+    if(!pass || pass.length < 6) return showMsg("msg_signup","Password should be at least 6 characters.","err");
+
+    try{
+      showMsg("msg_signup","Creating your account...","ok");
+      otpPurpose = "signup";
+
+      if(signupMode==="email"){
+        if(!email) return showMsg("msg_signup","Please enter email.","err");
+
+        await api("/auth/signup/email","POST",{ name, email: email.toLowerCase(), password: pass, role:"student" });
+
+        lastSignupIdentity = { type:"email", value: email.toLowerCase() };
+
+        await api("/otp/email/send","POST",{ email: email.toLowerCase() });
+
+        document.getElementById("otp_title").innerText = "Verify OTP";
+        document.getElementById("otp_sub").innerText = `OTP sent to ${email}. Enter it to verify.`;
+      }
+
+      if(signupMode==="phone"){
+        if(!phone) return showMsg("msg_signup","Please enter phone number.","err");
+
+        await api("/auth/signup/phone","POST",{ name, phone, password: pass, role:"student" });
+
+        lastSignupIdentity = { type:"phone", value: phone };
+
+        await api("/otp/phone/send","POST",{ phone });
+
+        document.getElementById("otp_title").innerText = "Verify OTP";
+        document.getElementById("otp_sub").innerText = `OTP sent to ${phone}. Enter it to verify.`;
+      }
+
+      clearOtp();
+      show("otp");
+
+    }catch(err){
+
+      const msg = (err.message || "").toLowerCase();
+
+      if(msg.includes("already registered")){
+        try{
+          showMsg("msg_signup","Account already exists. Sending OTP for verification...","ok");
+          otpPurpose = "signup";
+
+          if(signupMode==="email"){
+            lastSignupIdentity = { type:"email", value: email.toLowerCase() };
+            await api("/otp/email/send","POST",{ email: email.toLowerCase() });
+            document.getElementById("otp_title").innerText = "Verify OTP";
+            document.getElementById("otp_sub").innerText = `OTP sent to ${email}. Enter it to verify.`;
+          }else{
+            lastSignupIdentity = { type:"phone", value: phone };
+            await api("/otp/phone/send","POST",{ phone });
+            document.getElementById("otp_title").innerText = "Verify OTP";
+            document.getElementById("otp_sub").innerText = `OTP sent to ${phone}. Enter OTP to verify.`;
+          }
+
+          clearOtp();
+          show("otp");
+          return;
+
+        }catch(e){
+          showMsg("msg_signup", e.message, "err");
+          return;
+        }
+      }
+
+      showMsg("msg_signup", err.message, "err");
+    }
+  }
+
+  // ==========================
+  // FORGOT PASSWORD -> SEND OTP
+  // ==========================
+  async function sendResetOtp(){
+    const identifier = document.getElementById("fp_identifier").value.trim();
+
+    if(!identifier) return showMsg("msg_forgot","Please enter email or phone.","err");
+
+    try{
+      otpPurpose = "reset";
+      showMsg("msg_forgot","Sending OTP...","ok");
+
+      if(identifier.includes("@")){
+        lastSignupIdentity = { type:"email", value: identifier.toLowerCase() };
+        await api("/otp/email/send","POST",{ email: identifier.toLowerCase() });
+      }else{
+        lastSignupIdentity = { type:"phone", value: identifier };
+        await api("/otp/phone/send","POST",{ phone: identifier });
+      }
+
+      document.getElementById("otp_title").innerText = "Reset Password OTP";
+      document.getElementById("otp_sub").innerText =
+        `OTP sent to ${lastSignupIdentity.value}. Enter it to reset password.`;
+
+      clearOtp();
+      show("otp");
+
+    }catch(err){
+      showMsg("msg_forgot", err.message, "err");
+    }
+  }
+
+  // ==========================
+  // RESEND OTP
+  // ==========================
+  async function resendOtp(){
+    try{
+      showMsg("msg_otp","Resending OTP...","ok");
+
+      if(!lastSignupIdentity.value){
+        showMsg("msg_otp","No email/phone found. Please try again.","err");
+        return;
+      }
+
+      if(lastSignupIdentity.type==="email"){
+        await api("/otp/email/send","POST",{ email: lastSignupIdentity.value });
+      }else{
+        await api("/otp/phone/send","POST",{ phone: lastSignupIdentity.value });
+      }
+
+      showMsg("msg_otp","OTP sent again ✅","ok");
+      clearOtp();
+
+    }catch(err){
+      showMsg("msg_otp", err.message, "err");
+    }
+  }
+
+  // ==========================
+  // VERIFY OTP
+  // ==========================
+  async function verifyOtp(){
+    const otp = getOtp();
+    if(otp.length !== 6) return showMsg("msg_otp","Please enter full 6-digit OTP.","err");
+
+    try{
+      showMsg("msg_otp","Verifying OTP...","ok");
+
+      if(lastSignupIdentity.type==="email"){
+        await api("/otp/email/verify","POST",{ email: lastSignupIdentity.value, otp });
+      }else{
+        await api("/otp/phone/verify","POST",{ phone: lastSignupIdentity.value, otp });
+      }
+
+      showMsg("msg_otp","OTP verified successfully ✅","ok");
+
+      if(otpPurpose === "signup"){
+        setTimeout(()=> window.location.href = "/final-frontend/studentDashboard.html", 600);
+        return;
+      }
+
+      if(otpPurpose === "reset"){
+        resetOtpValue = otp;
+        setTimeout(()=> show("reset"), 400);
+        return;
+      }
+
+    }catch(err){
+      showMsg("msg_otp", err.message, "err");
+    }
+  }
+
+  // ==========================
+  // FINAL RESET PASSWORD CALL
+  // ==========================
+  async function finalResetPassword(){
+    const newPass = document.getElementById("rp_pass").value.trim();
+
+    if(!newPass || newPass.length < 6){
+      return showMsg("msg_reset","Password should be at least 6 characters.","err");
+    }
+
+    try{
+      showMsg("msg_reset","Updating password...","ok");
+
+      await api("/auth/reset-password","POST",{
+        identifier: lastSignupIdentity.value,
+        otp: resetOtpValue,
+        new_password: newPass
+      });
+
+      showMsg("msg_reset","Password updated successfully ✅ Now login.","ok");
+
+      setTimeout(()=> show("login"), 900);
+
+    }catch(err){
+      showMsg("msg_reset", err.message, "err");
+    }
+  }
+
+  // ==========================
+  // LOGIN
+  // ==========================
+  async function loginStudent(){
+    const email = document.getElementById("li_email").value.trim();
+    const phone = document.getElementById("li_phone").value.trim();
+    const pass = document.getElementById("li_pass").value.trim();
+
+    if(!pass) return showMsg("msg_login","Please enter password.","err");
+
+    try{
+      showMsg("msg_login","Logging in...","ok");
+
+      let identifier = "";
+
+      if(loginMode==="email"){
+        if(!email) return showMsg("msg_login","Please enter email.","err");
+        identifier = email.toLowerCase();
+      }else{
+        if(!phone) return showMsg("msg_login","Please enter phone.","err");
+        identifier = phone;
+      }
+
+      const data = await api("/auth/login","POST", {
+        identifier,
+        password: pass
+      });
+
+      localStorage.setItem("access_token", data.access_token || "");
+      localStorage.setItem("refresh_token", data.refresh_token || "");
+      localStorage.setItem("role", "student");
+
+      showMsg("msg_login","Login successful ✅","ok");
+      setTimeout(()=> window.location.href = "../studentDashboard.html", 600);
+
+    }catch(err){
+      showMsg("msg_login", err.message, "err");
+    }
+  }
+</script>
+</body>
+</html>

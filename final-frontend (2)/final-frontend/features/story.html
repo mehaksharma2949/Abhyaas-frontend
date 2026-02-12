@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abhyaas • Storytelling</title>
+
+  <style>
+    /* ===== RESET ===== */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter', system-ui, sans-serif;
+}
+
+:root{
+  --heading:#0a4a56;
+  --muted:#53707f;
+  --accent-from:#06b6d4;
+  --accent-to:#0ea5e9;
+  --panel:#ffffff;
+  --card-border:rgba(2,6,23,0.06);
+  --card-shadow:0 25px 60px rgba(8,30,40,0.08);
+}
+
+/* ===== BODY ===== */
+body{
+  background: linear-gradient(180deg, #f7feff 0%, #66caf5 45%, #ffffff 100%);
+  min-height:100vh;
+  color:var(--heading);
+  padding:40px 24px;
+}
+
+/* ===== WRAP ===== */
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+}
+
+/* ===== TOPBAR ===== */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:28px;
+  animation: fadeTop .7s ease forwards;
+}
+
+@keyframes fadeTop{
+  from{opacity:0; transform:translateY(-10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.brand h1{
+  font-size:26px;
+  font-weight:900;
+  font-family:'Plus Jakarta Sans', sans-serif;
+}
+
+.brand p{
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* ===== GLASS CARD ===== */
+.card{
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(14px);
+  border:1px solid var(--card-border);
+  border-radius:24px;
+  padding:26px;
+  box-shadow:var(--card-shadow);
+  transition:.3s ease;
+  animation: floatCard 6s ease-in-out infinite;
+}
+
+
+.card:hover{
+  transform:translateY(-4px);
+}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:420px 1fr;
+  gap:24px;
+}
+
+@media(max-width:980px){
+  .grid{grid-template-columns:1fr;}
+}
+
+/* ===== LABELS ===== */
+label{
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted);
+  margin-bottom:6px;
+  display:block;
+}
+
+/* ===== INPUTS ===== */
+select, input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid var(--card-border);
+  background:#ffffff;
+  color:var(--heading);
+  outline:none;
+  transition:.2s;
+}
+
+select:focus, input:focus{
+  border-color:var(--accent-from);
+  box-shadow:0 0 0 3px rgba(6,182,212,0.15);
+}
+
+/* ===== ROWS ===== */
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.row3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:12px;
+}
+
+/* ===== BUTTON ===== */
+.btn{
+  width:100%;
+  padding:12px 16px;
+  border-radius:14px;
+  border:0;
+  cursor:pointer;
+  font-weight:700;
+  color:white;
+  background:linear-gradient(90deg, var(--accent-from), var(--accent-to));
+  transition:.25s ease;
+  font-family:'Plus Jakarta Sans', sans-serif;
+  position:relative;
+  overflow:hidden;
+}
+
+.btn::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:60%;
+  height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,0.4),transparent);
+  transition:left .6s ease;
+}
+
+.btn:hover::after{
+  left:140%;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 30px rgba(6,182,212,0.35);
+}
+
+.btn.secondary{
+  background:#e6f8ff;
+  color:var(--heading);
+  border:1px solid var(--card-border);
+  font-weight:600;
+}
+
+.btn.secondary:hover{
+  background:#d4f4ff;
+}
+
+/* ===== PILL ===== */
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(6,182,212,0.08);
+  border:1px solid rgba(6,182,212,0.15);
+  font-size:12px;
+  font-weight:600;
+  color:var(--accent-from);
+}
+
+/* ===== STORY AREA ===== */
+.storyTitle{
+  font-size:32px;
+  font-weight:900;
+  margin-bottom:18px;
+  font-family:'Plus Jakarta Sans', sans-serif;
+  letter-spacing:-0.02em;
+  background:linear-gradient(90deg,var(--accent-from),var(--accent-to));
+
+  -webkit-text-fill-color:transparent;
+}
+
+
+.storyText{
+  line-height:1.9;
+  font-size:17px;
+  color:#1f2937;
+  white-space:pre-wrap;
+  animation: fadeInStory .6s ease forwards;
+}
+@keyframes fadeInStory{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+
+/* ===== DIVIDER ===== */
+.divider{
+  height:1px;
+  background:var(--card-border);
+  margin:18px 0;
+}
+
+/* ===== MUTED ===== */
+.muted{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* ===== AUDIO ===== */
+audio{
+  width:100%;
+  max-width:650px;
+}
+
+/* ===== LOADING ===== */
+.loading{
+  display:none;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--accent-from);
+  animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1);opacity:.6}
+  50%{transform:scale(1.6);opacity:1}
+  100%{transform:scale(1);opacity:.6}
+}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  max-width:360px;
+  z-index:9999;
+}
+
+.toast .t{
+  margin-top:12px;
+  padding:14px 16px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.95);
+  border:1px solid var(--card-border);
+  box-shadow:var(--card-shadow);
+  font-size:14px;
+  color:var(--heading);
+}
+
+    </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <h1>Abhyaas • NCERT Story + Voice</h1>
+      <p>Class 3–8 • Chapter name type karo • Story suno</p>
+    </div>
+    <div class="pill" id="apiStatus">🔌 Backend: Checking...</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT -->
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <div class="row">
+          <div>
+            <label>Class</label>
+            <select id="classSel">
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+          </div>
+          <div>
+            <label>Language</label>
+            <select id="langSel">
+              <option>Hindi</option>
+              <option>English</option>
+              <option>Hinglish</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label>Chapter Name (SST / Science / EVS / English)</label>
+          <input id="chapterInput" placeholder="Example: The Mughal Empire / Friction / Super Senses / The Tsunami"/>
+        </div>
+
+        <div class="row3">
+          <div>
+            <label>Style</label>
+            <select id="styleSel">
+              <option>Warm Teacher</option>
+              <option>Funny</option>
+              <option>Adventure</option>
+              <option>Emotional</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Length</label>
+            <select id="lenSel">
+              <option>Short</option>
+              <option>Medium</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Voice</label>
+            <select id="voiceSel">
+              <option value="nova">Nova (Teacher)</option>
+              <option value="alloy">Alloy</option>
+              <option value="shimmer">Shimmer</option>
+              <option value="sage">Sage</option>
+              <option value="echo">Echo</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn" id="genBtn">✨ Generate Story</button>
+
+        <div class="row">
+          <button class="btn secondary" id="ttsBtn" disabled>🔊 Generate Voice</button>
+          <button class="btn secondary" id="copyBtn" disabled>📋 Copy Story</button>
+        </div>
+
+        <div class="loading" id="loading">
+          <div class="dot"></div>
+          <div id="loadingText">Generating...</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="muted">
+          <b>Tip:</b> Chapter name thoda exact likho. Example: “The Tsunami”, “Friction”, “Super Senses”.
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="card">
+
+      <div class="audioWrap" style="margin-bottom:12px;">
+        <span class="pill">🎧 Audio Player</span>
+        <audio id="audio" controls></audio>
+      </div>
+
+      <div id="matchedBox" class="muted" style="margin-bottom:10px;"></div>
+
+      <div id="out">
+        <div class="muted">Type a chapter name and generate story.</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="../config.js"></script>
+
+<script>
+  console.log("CONFIG:", window.APP_CONFIG);
+</script>
+<script>
+  const API_BASE = window.APP_CONFIG?.API_BASE || "https://backend-abhyaas-final.onrender.com";
+
+  const apiStatus = document.getElementById("apiStatus");
+
+  const classSel = document.getElementById("classSel");
+  const langSel = document.getElementById("langSel");
+  const chapterInput = document.getElementById("chapterInput");
+  const styleSel = document.getElementById("styleSel");
+  const lenSel = document.getElementById("lenSel");
+  const voiceSel = document.getElementById("voiceSel");
+
+  const genBtn = document.getElementById("genBtn");
+  const ttsBtn = document.getElementById("ttsBtn");
+  const copyBtn = document.getElementById("copyBtn");
+
+  const out = document.getElementById("out");
+  const audio = document.getElementById("audio");
+  const matchedBox = document.getElementById("matchedBox");
+
+  const loading = document.getElementById("loading");
+  const loadingText = document.getElementById("loadingText");
+
+  let LAST_STORY = null;
+
+  function toast(msg){
+    const wrap = document.getElementById("toast");
+    const el = document.createElement("div");
+    el.className = "t";
+    el.textContent = msg;
+    wrap.appendChild(el);
+    setTimeout(()=>{ el.style.opacity = "0"; el.style.transform="translateY(6px)"; }, 2600);
+    setTimeout(()=>{ el.remove(); }, 3200);
+  }
+
+  function setLoading(on, text="Working..."){
+    loading.style.display = on ? "flex" : "none";
+    loadingText.textContent = text;
+    genBtn.disabled = on;
+    ttsBtn.disabled = on || !LAST_STORY;
+    copyBtn.disabled = on || !LAST_STORY;
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll("\"","&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function renderStory(data){
+    const title = data.title || "";
+    const story = data.story || "";
+    const recap = Array.isArray(data.concept_recap) ? data.concept_recap : [];
+    out.innerHTML = `
+      <div class="storyTitle">${escapeHtml(data.title || "")}</div>
+      <div class="storyText">${escapeHtml(data.story || "")}</div>
+      <div class="divider"></div>
+      <div class="pill">📌 Concept Recap</div>
+      <div style="margin-top:10px;line-height:1.7;opacity:.95">
+        ${(data.concept_recap || []).map(x=>`• ${escapeHtml(x)}`).join("<br/>")}
+      </div>
+      <div class="divider"></div>
+      <div class="pill">🎯 Activity</div>
+      <div style="margin-top:10px;line-height:1.7;opacity:.95">
+        ${escapeHtml(data.activity || "")}
+      </div>
+    `;
+  }
+
+  function buildTeacherScript(storyObj){
+    const title = storyObj.title || "";
+    const story = storyObj.story || "";
+    const recap = Array.isArray(storyObj.concept_recap) ? storyObj.concept_recap : [];
+    const timeline = Array.isArray(storyObj.timeline_or_steps) ? storyObj.timeline_or_steps : [];
+  const tricks = Array.isArray(storyObj.memory_tricks) ? storyObj.memory_tricks : [];
+
+  const recapText = recap.length
+    ? "\n\nChalo ab recap karte hain.\n" + recap.map((x,i)=>`${i+1}. ${x}`).join("\n")
+    : "";
+
+  const timelineText = timeline.length
+    ? "\n\nChalo ab timeline ya steps dekhte hain.\n" +
+      timeline.map((x,i)=>`${i+1}. ${x.key} — ${x.point}`).join("\n")
+    : "";
+
+  const tricksText = tricks.length
+    ? "\n\nAb kuch yaad rakhne ke tricks.\n" +
+      tricks.map((t,i)=>`${i+1}. ${t}`).join("\n")
+    : "";
+    return `Namaste bachcho! Aaj hum ek chhoti si kahani sunenge.
+
+Kahani ka naam hai: ${title}
+
+Ab dhyan se sunna.
+
+${story}
+
+Chalo ab recap karte hain.
+${recap.map((x,i)=>`${i+1}. ${x}`).join("\n")}
+
+Bahut badhiya!
+Ab aap teacher ko 2 line me batao, aaj aapne kya seekha.
+`;
+  }
+
+  async function checkBackend(){
+    try{
+      const r = await fetch(`${API_BASE}/`);
+      if(!r.ok) throw new Error("not ok");
+      apiStatus.textContent = "🟢 Backend: Connected";
+      return true;
+    }catch(e){
+      apiStatus.textContent = "🔴 Backend: Not Running";
+      return false;
+    }
+  }
+
+  async function generateStory(){
+    if(!(await checkBackend())){
+      toast("Backend not running. Start FastAPI first.");
+      return;
+    }
+
+    const chapter_name = chapterInput.value.trim();
+    if(chapter_name.length < 2){
+      toast("Please type chapter name.");
+      return;
+    }
+
+    setLoading(true, "Generating story...");
+    audio.src = "";
+    matchedBox.innerHTML = "";
+
+    try{
+      const payload = {
+        class_level: classSel.value,
+        chapter_name,
+        language: langSel.value,
+        style: styleSel.value,
+        length: lenSel.value
+      };
+
+      const r = await fetch(`${API_BASE}/api/story_by_name`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      });
+
+      const res = await r.json();
+      if(!r.ok) throw new Error(res.detail || "Story error");
+
+      LAST_STORY = res.data;
+      renderStory(LAST_STORY);
+
+      matchedBox.innerHTML = `Matched: <b>${escapeHtml(res.matched.subject)}</b> • <b>${escapeHtml(res.matched.chapter)}</b>`;
+      toast("Story ready! Now generate voice.");
+
+      ttsBtn.disabled = false;
+      copyBtn.disabled = false;
+
+    }catch(e){
+      toast(String(e.message || e));
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  async function generateVoice(){
+    if(!LAST_STORY){
+      toast("Generate story first.");
+      return;
+    }
+
+    setLoading(true, "Generating voice...");
+
+    try{
+      const text = buildTeacherScript(LAST_STORY);
+
+      const r = await fetch(`${API_BASE}/api/tts`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ text, voice: voiceSel.value })
+      });
+
+      if(!r.ok){
+        const err = await r.json();
+        throw new Error(err.detail || "TTS error");
+      }
+
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      audio.src = url;
+      audio.play();
+
+      toast("Voice playing!");
+
+    }catch(e){
+      toast(String(e.message || e));
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  async function copyStory(){
+    if(!LAST_STORY) return;
+    const text = `${LAST_STORY.title}\n\n${LAST_STORY.story}`;
+    await navigator.clipboard.writeText(text);
+    toast("Copied!");
+  }
+
+  genBtn.addEventListener("click", generateStory);
+  ttsBtn.addEventListener("click", generateVoice);
+  copyBtn.addEventListener("click", copyStory);
+
+  chapterInput.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter") generateStory();
+  });
+
+  (async function init(){
+    await checkBackend();
+  })();
+</script>
+
+</body>
+</html>

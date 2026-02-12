@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abhyaas • Teacher Portal</title>
+
+  <style>
+    :root{
+      --bg-start: #8fd8f0;
+      --bg-mid:   #b8ecf8;
+      --bg-end:   #e0faff;
+      --card:     rgba(255,255,255,0.45);
+      --card2:    rgba(255,255,255,0.32);
+      --border:   rgba(255,255,255,0.60);
+      --border2:  rgba(140,210,240,0.40);
+      --text:     #0b2e45;
+      --muted:    rgba(10,55,85,0.72);
+      --muted2:   rgba(10,55,85,0.50);
+      --accent:   #1a8ed4;
+      --accent2:  #30c5f0;
+      --good:     #16a34a;
+      --bad:      #dc2626;
+      --shadow:   0 18px 60px rgba(20,100,160,0.18);
+      --radius:   28px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,Arial;}
+
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      color:var(--text);
+      position:relative;
+      overflow-x:hidden;
+
+      /* Sky blue → light cyan gradient — exactly like the reference */
+      background:
+        radial-gradient(ellipse 900px 500px at 15% 10%,  rgba(80,195,235,0.55), transparent 60%),
+        radial-gradient(ellipse 800px 450px at 85% 20%,  rgba(150,225,248,0.50), transparent 60%),
+        radial-gradient(ellipse 700px 600px at 50% 100%, rgba(210,248,255,0.60), transparent 65%),
+        linear-gradient(160deg, #8fd8f0 0%, #b8ecf8 40%, #d6f8ff 70%, #e8fafe 100%);
+    }
+
+    /* Subtle floating aura blobs like reference */
+    body::before{
+      content:'';
+      position:fixed;
+      top:-80px; left:-80px;
+      width:480px; height:480px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(100,210,245,0.38) 0%, transparent 70%);
+      pointer-events:none; z-index:0;
+    }
+    body::after{
+      content:'';
+      position:fixed;
+      bottom:-60px; right:-60px;
+      width:420px; height:420px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(170,238,255,0.32) 0%, transparent 70%);
+      pointer-events:none; z-index:0;
+    }
+
+    .shell{
+      width:min(1100px,100%);
+      border-radius:36px;
+      background: rgba(255,255,255,0.42);
+      border:1px solid rgba(190,235,255,0.65);
+      box-shadow:
+        0 8px 40px rgba(30,130,200,0.14),
+        0 2px 8px rgba(100,200,240,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.90);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      padding:26px;
+      position:relative;
+      overflow:hidden;
+      z-index:1;
+    }
+
+    /* Soft inner glow */
+    .shell::before{
+      content:"";
+      position:absolute;
+      inset:-120px;
+      background:
+        radial-gradient(circle at 25% 25%, rgba(100,210,250,0.22), transparent 55%),
+        radial-gradient(circle at 75% 65%, rgba(160,235,255,0.16), transparent 55%);
+      filter:blur(18px);
+      z-index:0;
+      pointer-events:none;
+    }
+
+    .topbar{
+      position:relative; z-index:2;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:16px; margin-bottom:16px;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:800; letter-spacing:.2px; font-size:22px;
+      color:#0b6ea8;
+    }
+    .brand .spark{
+      font-size:20px;
+      filter:drop-shadow(0 4px 12px rgba(30,140,220,0.40));
+    }
+
+    .pill{
+      border:1px solid rgba(30,140,210,0.25);
+      background:rgba(210,242,255,0.55);
+      color:#0b6ea8;
+      padding:10px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      transition:.2s;
+      font-weight:600;
+      font-size:14px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .pill:hover{
+      transform:translateY(-1px);
+      background:rgba(185,235,255,0.75);
+      box-shadow:0 2px 12px rgba(30,130,200,0.18);
+    }
+
+    .stageWrap{
+      position:relative; z-index:2;
+      border-radius:var(--radius);
+      border:1px solid rgba(170,230,255,0.45);
+      background: rgba(255,255,255,0.36);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      padding:26px;
+      overflow:hidden;
+      min-height:560px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .hidden{ display:none !important; }
+
+    .screen{
+      width:100%;
+      animation:fadeIn .35s ease;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(8px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+
+    .title{
+      font-size:46px;
+      line-height:1.05;
+      margin-top:4px;
+      margin-bottom:10px;
+      letter-spacing:-.6px;
+      color:#09427a;
+      font-weight:900;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      margin-bottom:22px;
+      font-size:15px;
+      line-height:1.5;
+    }
+    .subtitle b{ color:#0b6ea8; }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+      margin-top:10px;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      color:#1a5e8a;
+      margin-bottom:8px;
+      font-weight:600;
+      letter-spacing:.2px;
+    }
+
+    input{
+      width:100%;
+      padding:16px 18px;
+      border-radius:18px;
+      border:1.5px solid rgba(90,185,240,0.35);
+      background:rgba(235,248,255,0.65);
+      color:#0d2a3f;
+      outline:none;
+      font-size:15px;
+      transition:.2s;
+    }
+    input:focus{
+      border-color:rgba(30,140,220,0.60);
+      background:rgba(245,252,255,0.90);
+      box-shadow:0 0 0 3px rgba(80,190,240,0.18);
+    }
+    input::placeholder{color:rgba(20,90,140,0.38);}
+
+    .switchRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin:12px 0 6px;
+    }
+
+    .switchBtn{
+      border-radius:18px;
+      padding:14px 16px;
+      font-weight:800;
+      font-size:14px;
+      border:1.5px solid rgba(90,185,240,0.30);
+      background:rgba(215,242,255,0.45);
+      cursor:pointer;
+      transition:.2s;
+      color:#1a5e8a;
+    }
+    .switchBtn:hover{transform:translateY(-1px); background:rgba(195,238,255,0.65);}
+    .switchBtn.active{
+      background:linear-gradient(135deg, #1a8ed4, #30c5f0);
+      border-color:rgba(100,210,255,0.55);
+      color:white;
+      box-shadow:0 8px 28px rgba(26,130,210,0.28);
+    }
+
+    .btn{
+      width:100%;
+      margin-top:6px;
+      padding:16px 18px;
+      border-radius:18px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      font-size:16px;
+      color:white;
+      background:linear-gradient(135deg, #1a8ed4, #30c5f0);
+      transition:.2s;
+      box-shadow:0 8px 28px rgba(26,130,210,0.28);
+      letter-spacing:.1px;
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow:0 12px 36px rgba(26,130,210,0.38);}
+    .btn:active{transform:translateY(0) scale(.99);}
+
+    .btn.secondary{
+      background:rgba(210,242,255,0.55);
+      border:1.5px solid rgba(90,185,240,0.35);
+      box-shadow:none;
+      color:#1a5e8a;
+      font-weight:700;
+    }
+    .btn.secondary:hover{
+      background:rgba(190,238,255,0.75);
+      box-shadow:0 2px 12px rgba(30,130,200,0.15);
+    }
+
+    .row2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:10px;
+    }
+
+    .smallLink{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:14px;
+    }
+    .smallLink a{
+      color:#0e8fd8;
+      font-weight:800;
+      text-decoration:none;
+      border-bottom:1px solid rgba(30,140,220,0.30);
+      padding-bottom:2px;
+      transition:.2s;
+    }
+    .smallLink a:hover{color:#0b6ea8; border-bottom-color:rgba(11,110,168,0.50);}
+
+    .toast{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1.5px solid rgba(90,185,240,0.20);
+      background:rgba(225,245,255,0.55);
+      color:#0d2a3f;
+      font-size:14px;
+      line-height:1.4;
+      display:none;
+    }
+    .toast.good{
+      border-color:rgba(34,197,94,0.40);
+      background:rgba(220,252,231,0.55);
+      color:#166534;
+    }
+    .toast.bad{
+      border-color:rgba(239,68,68,0.40);
+      background:rgba(254,226,226,0.55);
+      color:#991b1b;
+    }
+    .toast.show{display:block; animation:fadeIn .25s ease;}
+
+    .otpBox{
+      display:flex;
+      gap:10px;
+      margin-top:6px;
+    }
+    .otpBox input{
+      text-align:center;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:3px;
+      color:#09427a;
+    }
+
+    /* SUCCESS */
+    .successWrap{
+      width:min(520px,100%);
+      margin:10px auto 0;
+      background:rgba(255,255,255,0.55);
+      border:1px solid rgba(170,230,255,0.55);
+      border-radius:26px;
+      padding:22px;
+      box-shadow:0 12px 40px rgba(30,130,200,0.14);
+      text-align:center;
+      backdrop-filter:blur(10px);
+    }
+    .check{
+      width:66px; height:66px;
+      border-radius:999px;
+      margin:4px auto 12px;
+      background:rgba(34,197,94,0.15);
+      border:1px solid rgba(34,197,94,0.35);
+      display:flex; align-items:center; justify-content:center;
+      font-size:28px;
+      color:#16a34a;
+      box-shadow:0 8px 28px rgba(34,197,94,0.18);
+    }
+    .heroImg{
+      width:100%;
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(170,230,255,0.45);
+      margin-bottom:12px;
+      background:rgba(210,245,255,0.30);
+    }
+    .heroImg img{
+      width:100%;
+      height:190px;
+      object-fit:cover;
+      display:block;
+      opacity:.92;
+    }
+    .successTitle{
+      font-size:26px;
+      font-weight:900;
+      margin-top:6px;
+      margin-bottom:8px;
+      color:#09427a;
+    }
+    .successText{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.55;
+      margin-bottom:16px;
+    }
+
+    .footerLinks{
+      margin-top:12px;
+      color:var(--muted2);
+      font-size:13px;
+    }
+    .footerLinks a{
+      color:#0e8fd8;
+      font-weight:800;
+      text-decoration:none;
+    }
+
+    @media (max-width:820px){
+      .title{font-size:34px;}
+      .row2{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand"><span class="spark">✨</span> Abhyaas</div>
+      <button class="pill" id="backBtn" onclick="goBack()" style="visibility:hidden;">← Back</button>
+    </div>
+
+    <div class="stageWrap">
+
+      <!-- SIGNUP -->
+      <div class="screen" id="screen-signup">
+        <div class="title">Create Teacher Account</div>
+        <div class="subtitle">
+          Signup first, then verify OTP. After verification, login allowed.
+        </div>
+
+        <div class="grid">
+          <div>
+            <label>Full Name</label>
+            <input id="su_name" placeholder="Enter your name" />
+          </div>
+
+          <div class="switchRow">
+            <button class="switchBtn active" id="su_useEmail" onclick="setSignupMode('email')">Use Email</button>
+            <button class="switchBtn" id="su_usePhone" onclick="setSignupMode('phone')">Use Phone</button>
+          </div>
+
+          <div id="su_emailWrap">
+            <label>Email</label>
+            <input id="su_email" placeholder="example@gmail.com" />
+          </div>
+
+          <div id="su_phoneWrap" class="hidden">
+            <label>Phone</label>
+            <input id="su_phone" placeholder="+91XXXXXXXXXX" />
+          </div>
+
+          <div>
+            <label>Password</label>
+            <input id="su_password" type="password" placeholder="Create password" />
+          </div>
+
+          <div>
+            <label>Admin Teacher Code (Required)</label>
+            <input id="su_adminCode" placeholder="Enter teacher admin code" />
+          </div>
+
+          <button class="btn" onclick="teacherSignup()">Signup</button>
+
+          <div class="smallLink">
+            Already have an account? <a href="#" onclick="showScreen('login')">Login</a>
+          </div>
+
+          <div class="toast" id="su_toast"></div>
+        </div>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="screen hidden" id="screen-login">
+        <div class="title">Login Teacher</div>
+        <div class="subtitle">
+          Login successful hone par token <b>localStorage</b> me save hoga.
+        </div>
+
+        <div class="switchRow">
+          <button class="switchBtn active" id="li_useEmail" onclick="setLoginMode('email')">Login with Email</button>
+          <button class="switchBtn" id="li_usePhone" onclick="setLoginMode('phone')">Login with Phone</button>
+        </div>
+
+        <div id="li_emailWrap">
+          <label>Email</label>
+          <input id="li_email" placeholder="email" />
+        </div>
+
+        <div id="li_phoneWrap" class="hidden">
+          <label>Phone</label>
+          <input id="li_phone" placeholder="+91XXXXXXXXXX" />
+        </div>
+
+        <div style="margin-top:16px;">
+          <label>Password</label>
+          <input id="li_password" type="password" placeholder="your password" />
+        </div>
+
+        <button class="btn" onclick="teacherLogin()">Login</button>
+
+        <div class="smallLink">
+          Forgot password? <a href="#" onclick="showScreen('forgot')">Reset here</a>
+        </div>
+
+        <div class="smallLink">
+          New here? <a href="#" onclick="showScreen('signup')">Create account</a>
+        </div>
+
+        <div class="toast" id="li_toast"></div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div class="screen hidden" id="screen-forgot">
+        <div class="title">Forgot Password</div>
+        <div class="subtitle">
+          Enter your email or phone. We'll send an OTP.
+        </div>
+
+        <div class="grid">
+          <div>
+            <label>Email or Phone</label>
+            <input id="fp_identifier" placeholder="example@gmail.com or +91XXXXXXXXXX" />
+          </div>
+
+          <button class="btn" onclick="sendResetOtp()">Send OTP</button>
+          <button class="btn secondary" onclick="showScreen('login')">Back to Login</button>
+
+          <div class="toast" id="fp_toast"></div>
+        </div>
+      </div>
+
+      <!-- OTP -->
+      <div class="screen hidden" id="screen-otp">
+        <div class="title" id="otp_title">Verify OTP</div>
+        <div class="subtitle" id="otp_subtitle">
+          Enter the 6-digit OTP sent to your email/phone.
+        </div>
+
+        <div class="grid">
+          <div>
+            <label>OTP</label>
+            <div class="otpBox">
+              <input id="otp_input" maxlength="6" placeholder="------" />
+            </div>
+          </div>
+
+          <div class="row2">
+            <button class="btn secondary" onclick="resendOtp()">Resend OTP</button>
+            <button class="btn" onclick="verifyOtp()">Verify OTP</button>
+          </div>
+
+          <div class="toast" id="otp_toast"></div>
+        </div>
+      </div>
+
+      <!-- RESET PASSWORD -->
+      <div class="screen hidden" id="screen-reset">
+        <div class="title">Set New Password</div>
+        <div class="subtitle">
+          OTP verified. Now create your new password.
+        </div>
+
+        <div class="grid">
+          <div>
+            <label>New Password</label>
+            <input id="rp_password" type="password" placeholder="Enter new password" />
+          </div>
+
+          <button class="btn" onclick="finalResetPassword()">Update Password</button>
+          <button class="btn secondary" onclick="showScreen('login')">Back to Login</button>
+
+          <div class="toast" id="rp_toast"></div>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="screen hidden" id="screen-success">
+        <div class="successWrap">
+          <div class="check">✓</div>
+
+          <div class="heroImg">
+            <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=70" alt="success" />
+          </div>
+
+          <div class="successTitle">You're all set!</div>
+          <div class="successText">
+            Your teacher account is ready to use. You can now log in and start managing your classes.
+          </div>
+
+          <button class="btn" onclick="goDashboard()">Go to Dashboard</button>
+          <button class="btn secondary" style="margin-top:10px;" onclick="showScreen('login')">Back to Login</button>
+
+          <div class="footerLinks">
+            Having trouble? <a href="#">Contact Support</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+<script src="./config.js"></script>
+
+<script>
+  console.log("CONFIG:", window.APP_CONFIG);
+</script>
+<script>
+  // =============================
+  // CONFIG
+  // =============================
+  const API_BASE = window.APP_CONFIG?.API_BASE || "https://backend-abhyaas-final.onrender.com";
+  const TEACHER_DASHBOARD_URL = "teacherDashboard.html";
+
+  // =============================
+  // STATE
+  // =============================
+  let currentScreen = "signup";
+
+  let signupMode = "email";
+  let loginMode  = "email";
+
+  let otpChannel = "email";
+  let otpTarget = "";
+  let otpPurpose = "signup";
+
+  let resetOtpValue = "";
+  let resetIdentifier = "";
+
+  // =============================
+  // HELPERS
+  // =============================
+  function toast(elId, msg, type="good"){
+    const el = document.getElementById(elId);
+    el.className = "toast show " + (type === "bad" ? "bad" : "good");
+    el.innerHTML = msg;
+  }
+
+  function clearToast(elId){
+    const el = document.getElementById(elId);
+    el.className = "toast";
+    el.innerHTML = "";
+  }
+
+  function showScreen(name){
+    ["signup","login","forgot","otp","reset","success"].forEach(s=>{
+      const el = document.getElementById("screen-" + s);
+      if(el) el.classList.add("hidden");
+    });
+
+    document.getElementById("screen-" + name).classList.remove("hidden");
+    currentScreen = name;
+
+    const backBtn = document.getElementById("backBtn");
+    if(name === "signup"){
+      backBtn.style.visibility = "hidden";
+    } else {
+      backBtn.style.visibility = "visible";
+    }
+
+    ["su_toast","li_toast","fp_toast","otp_toast","rp_toast"].forEach(id=>{
+      if(document.getElementById(id)) clearToast(id);
+    });
+  }
+
+  function goBack(){
+    if(currentScreen === "login") showScreen("signup");
+    else if(currentScreen === "forgot") showScreen("login");
+    else if(currentScreen === "otp") showScreen("signup");
+    else if(currentScreen === "reset") showScreen("login");
+    else if(currentScreen === "success") showScreen("login");
+  }
+
+  function setSignupMode(mode){
+    signupMode = mode;
+    document.getElementById("su_useEmail").classList.toggle("active", mode === "email");
+    document.getElementById("su_usePhone").classList.toggle("active", mode === "phone");
+    document.getElementById("su_emailWrap").classList.toggle("hidden", mode !== "email");
+    document.getElementById("su_phoneWrap").classList.toggle("hidden", mode !== "phone");
+  }
+
+  function setLoginMode(mode){
+    loginMode = mode;
+    document.getElementById("li_useEmail").classList.toggle("active", mode === "email");
+    document.getElementById("li_usePhone").classList.toggle("active", mode === "phone");
+    document.getElementById("li_emailWrap").classList.toggle("hidden", mode !== "email");
+    document.getElementById("li_phoneWrap").classList.toggle("hidden", mode !== "phone");
+  }
+
+  async function api(path, method="POST", body=null){
+    const opts = { method, headers: {"Content-Type":"application/json"} };
+    if(body) opts.body = JSON.stringify(body);
+
+    const res = await fetch(API_BASE + path, opts);
+    let data = {};
+    try{ data = await res.json(); } catch(e){}
+
+    if(!res.ok){
+      throw new Error(data.detail || data.message || "Something went wrong");
+    }
+    return data;
+  }
+
+  // =============================
+  // SIGNUP
+  // =============================
+  async function teacherSignup(){
+    clearToast("su_toast");
+
+    const name = document.getElementById("su_name").value.trim();
+    const password = document.getElementById("su_password").value.trim();
+    const admin_code = document.getElementById("su_adminCode").value.trim();
+
+    if(!name) return toast("su_toast", "Please enter your full name.", "bad");
+    if(!password || password.length < 6) return toast("su_toast", "Password must be at least 6 characters.", "bad");
+    if(!admin_code) return toast("su_toast", "Admin Teacher Code is required.", "bad");
+
+    try{
+      otpPurpose = "signup";
+      let signupPayload = { name, password, role: "teacher", admin_code };
+
+      if(signupMode === "email"){
+        const email = document.getElementById("su_email").value.trim().toLowerCase();
+        if(!email.includes("@")) return toast("su_toast", "Please enter a valid email.", "bad");
+
+        signupPayload.email = email;
+        await api("/auth/signup/email", "POST", signupPayload);
+        await api("/otp/email/send", "POST", { email });
+
+        otpChannel = "email";
+        otpTarget = email;
+
+        document.getElementById("otp_title").innerText = "Verify OTP";
+        document.getElementById("otp_subtitle").innerHTML =
+          `Enter the 6-digit OTP sent to <b>${email}</b>.`;
+
+        toast("su_toast", "Signup successful. OTP sent!", "good");
+        setTimeout(()=>showScreen("otp"), 550);
+
+      } else {
+        const phone = document.getElementById("su_phone").value.trim();
+        if(phone.length < 8) return toast("su_toast", "Please enter a valid phone number.", "bad");
+
+        signupPayload.phone = phone;
+        await api("/auth/signup/phone", "POST", signupPayload);
+        await api("/otp/phone/send", "POST", { phone });
+
+        otpChannel = "phone";
+        otpTarget = phone;
+
+        document.getElementById("otp_title").innerText = "Verify OTP";
+        document.getElementById("otp_subtitle").innerHTML =
+          `OTP call initiated on <b>${phone}</b>. Enter the code you heard.`;
+
+        toast("su_toast", "Signup successful. OTP call initiated!", "good");
+        setTimeout(()=>showScreen("otp"), 550);
+      }
+
+    }catch(err){
+      toast("su_toast", err.message, "bad");
+    }
+  }
+
+  // =============================
+  // FORGOT PASSWORD -> SEND OTP
+  // =============================
+  async function sendResetOtp(){
+    clearToast("fp_toast");
+
+    const identifier = document.getElementById("fp_identifier").value.trim();
+    if(!identifier) return toast("fp_toast", "Please enter email or phone.", "bad");
+
+    try{
+      otpPurpose = "reset";
+      resetIdentifier = identifier;
+
+      if(identifier.includes("@")){
+        otpChannel = "email";
+        otpTarget = identifier.toLowerCase();
+        await api("/otp/email/send", "POST", { email: otpTarget });
+
+        document.getElementById("otp_title").innerText = "Reset Password OTP";
+        document.getElementById("otp_subtitle").innerHTML =
+          `OTP sent to <b>${otpTarget}</b>. Enter it to reset password.`;
+
+      } else {
+        otpChannel = "phone";
+        otpTarget = identifier;
+        await api("/otp/phone/send", "POST", { phone: otpTarget });
+
+        document.getElementById("otp_title").innerText = "Reset Password OTP";
+        document.getElementById("otp_subtitle").innerHTML =
+          `OTP call initiated on <b>${otpTarget}</b>. Enter it to reset password.`;
+      }
+
+      toast("fp_toast", "OTP sent successfully ✅", "good");
+      setTimeout(()=>showScreen("otp"), 500);
+
+    }catch(err){
+      toast("fp_toast", err.message, "bad");
+    }
+  }
+
+  // =============================
+  // OTP
+  // =============================
+  async function resendOtp(){
+    clearToast("otp_toast");
+
+    try{
+      if(!otpTarget) return toast("otp_toast", "No email/phone found. Please try again.", "bad");
+
+      if(otpChannel === "email"){
+        await api("/otp/email/send", "POST", { email: otpTarget });
+        toast("otp_toast", "OTP resent to your email.", "good");
+      } else {
+        await api("/otp/phone/send", "POST", { phone: otpTarget });
+        toast("otp_toast", "OTP call initiated again.", "good");
+      }
+    }catch(err){
+      toast("otp_toast", err.message, "bad");
+    }
+  }
+
+  async function verifyOtp(){
+    clearToast("otp_toast");
+
+    const otp = document.getElementById("otp_input").value.trim();
+    if(otp.length !== 6) return toast("otp_toast", "Please enter 6-digit OTP.", "bad");
+
+    try{
+      if(otpChannel === "email"){
+        await api("/otp/email/verify", "POST", { email: otpTarget, otp });
+      } else {
+        await api("/otp/phone/verify", "POST", { phone: otpTarget, otp });
+      }
+
+      toast("otp_toast", "OTP verified successfully!", "good");
+
+      if(otpPurpose === "signup"){
+        setTimeout(()=> window.location.href = "success.html", 600);
+        return;
+      }
+
+      if(otpPurpose === "reset"){
+        resetOtpValue = otp;
+        setTimeout(()=> showScreen("reset"), 450);
+        return;
+      }
+
+    }catch(err){
+      toast("otp_toast", err.message, "bad");
+    }
+  }
+
+  // =============================
+  // FINAL RESET PASSWORD
+  // =============================
+  async function finalResetPassword(){
+    clearToast("rp_toast");
+
+    const new_password = document.getElementById("rp_password").value.trim();
+    if(!new_password || new_password.length < 6){
+      return toast("rp_toast", "Password must be at least 6 characters.", "bad");
+    }
+
+    try{
+      await api("/auth/reset-password", "POST", {
+        identifier: otpTarget,
+        otp: resetOtpValue,
+        new_password
+      });
+
+      toast("rp_toast", "Password updated successfully ✅ Now login.", "good");
+      setTimeout(()=> showScreen("login"), 900);
+
+    }catch(err){
+      toast("rp_toast", err.message, "bad");
+    }
+  }
+
+  // =============================
+  // LOGIN
+  // =============================
+  async function teacherLogin(){
+    clearToast("li_toast");
+
+    const password = document.getElementById("li_password").value.trim();
+    if(!password) return toast("li_toast", "Please enter your password.", "bad");
+
+    try{
+      let identifier = "";
+
+      if(loginMode === "email"){
+        const email = document.getElementById("li_email").value.trim().toLowerCase();
+        if(!email.includes("@")) return toast("li_toast", "Please enter a valid email.", "bad");
+        identifier = email;
+      } else {
+        const phone = document.getElementById("li_phone").value.trim();
+        if(phone.length < 8) return toast("li_toast", "Please enter a valid phone number.", "bad");
+        identifier = phone;
+      }
+
+      const data = await api("/auth/login", "POST", {
+        identifier,
+        password
+      });
+
+      localStorage.setItem("access_token", data.access_token || "");
+      localStorage.setItem("refresh_token", data.refresh_token || "");
+      localStorage.setItem("role", "teacher");
+
+      toast("li_toast", "Login successful! Redirecting...", "good");
+      setTimeout(()=> window.location.href = "../teacherDashboard.html", 700);
+
+    }catch(err){
+      toast("li_toast", err.message, "bad");
+    }
+  }
+
+  // =============================
+  // DASHBOARD
+  // =============================
+  function goDashboard(){
+    window.location.href = TEACHER_DASHBOARD_URL;
+  }
+
+  // default screen
+  showScreen("signup");
+</script>
+
+</body>
+</html>

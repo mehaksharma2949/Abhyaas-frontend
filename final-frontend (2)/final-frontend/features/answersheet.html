@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Answer Sheet Evaluator</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900;1000&display=swap" rel="stylesheet">
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,Arial;}
+
+  :root{
+    --bg1:#eefbff;
+    --bg2:#dff3ff;
+
+    --card:rgba(255,255,255,.62);
+    --card2:rgba(255,255,255,.42);
+    --border:rgba(10,50,110,.12);
+
+    --text:#072a45;
+    --muted:#3c6c95;
+
+    --a1:#5ad3ff;
+    --a2:#1d9bf0;
+    --a3:#0b5bb8;
+
+    --ok:#22c55e;
+    --warn:#f97316;
+    --bad:#ef4444;
+
+    --shadow: 0 25px 80px rgba(0,30,80,.12);
+    --shadow2: 0 30px 95px rgba(0,30,80,.14);
+  }
+
+  body{
+    min-height:100vh;
+    color:var(--text);
+    overflow:hidden;
+    background: linear-gradient(120deg, #eefbff, #dff3ff, #f6feff, #d7f1ff);
+    background-size: 420% 420%;
+    animation: bgmove 14s ease infinite;
+  }
+  @keyframes bgmove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  .particles{position:fixed; inset:0; pointer-events:none; opacity:.75;}
+  .particles span{
+    position:absolute;
+    width:10px;height:10px;border-radius:50%;
+    background:rgba(255,255,255,.95);
+    box-shadow: 0 0 18px rgba(90,211,255,.55);
+    animation: floaty 9s ease-in-out infinite;
+  }
+  @keyframes floaty{
+    0%,100%{transform:translateY(0) translateX(0); opacity:.55}
+    50%{transform:translateY(-35px) translateX(25px); opacity:1}
+  }
+
+  .float-icons{position:fixed; inset:0; pointer-events:none; opacity:.75;}
+  .float-icons i{
+    position:absolute;
+    font-style:normal;
+    font-size:22px;
+    animation: floatIcon 8s ease-in-out infinite;
+  }
+  @keyframes floatIcon{
+    0%,100%{transform:translateY(0) rotate(0deg); opacity:.55}
+    50%{transform:translateY(-30px) rotate(7deg); opacity:1}
+  }
+
+  .app{
+    height:100vh;
+    display:grid;
+    grid-template-columns: 290px 1fr;
+    gap:16px;
+    padding:16px;
+  }
+
+  .sidebar{
+    border-radius:22px;
+    background: rgba(255,255,255,0.32);
+    border:1px solid var(--border);
+    backdrop-filter: blur(18px);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    box-shadow: var(--shadow);
+  }
+
+  .brand{display:flex;gap:12px;align-items:center;}
+  .logo{
+    width:48px;height:48px;border-radius:18px;
+    background: linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:1000;
+    color:white;
+    box-shadow: 0 22px 70px rgba(29,155,240,.22);
+    position:relative;
+    overflow:hidden;
+  }
+  .logo::after{
+    content:"";
+    position:absolute;
+    inset:-50%;
+    background: radial-gradient(circle, rgba(255,255,255,.65), transparent 60%);
+    animation: shine 3s linear infinite;
+  }
+  @keyframes shine{
+    0%{transform:translateX(-45%)}
+    100%{transform:translateX(45%)}
+  }
+
+  .brand h2{font-size:16px;font-weight:1000;line-height:1;}
+  .brand span{font-size:12px;color:var(--muted);font-weight:900;margin-top:2px;display:block;}
+
+  .nav{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+  .nav button{
+    width:100%;
+    padding:12px 12px;
+    border-radius:16px;
+    border:1px solid rgba(10,50,110,.10);
+    background: rgba(255,255,255,0.35);
+    color:var(--text);
+    text-align:left;
+    font-weight:1000;
+    cursor:pointer;
+    transition:.22s ease;
+    position:relative;
+    overflow:hidden;
+    box-shadow: 0 14px 40px rgba(0,30,80,.06);
+  }
+  .nav button:hover{transform: translateY(-2px);}
+  .nav button.active{
+    background: linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+    border:none;
+    color:white;
+    box-shadow: 0 22px 70px rgba(29,155,240,.22);
+  }
+
+  .storage{
+    margin-top:auto;
+    background: rgba(255,255,255,0.35);
+    border:1px solid rgba(10,50,110,.10);
+    border-radius:18px;
+    padding:14px;
+    box-shadow: 0 20px 65px rgba(0,30,80,.08);
+  }
+  .storage small{color:var(--muted);font-weight:900;display:block;margin-top:8px;}
+  .storage small:first-child{margin-top:0}
+  .bar{
+    height:9px;border-radius:999px;
+    background: rgba(11,91,184,0.10);
+    overflow:hidden;margin-top:10px;
+  }
+  .bar > div{
+    width:40%;
+    height:100%;
+    background: linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+  }
+
+  .content{
+    border-radius:22px;
+    background: rgba(255,255,255,0.28);
+    border:1px solid rgba(10,50,110,.10);
+    backdrop-filter: blur(18px);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    box-shadow: var(--shadow);
+  }
+
+  .premiumTop{
+    padding:14px 16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid rgba(10,50,110,.10);
+    background: rgba(255,255,255,0.32);
+  }
+  .premiumTop h1{font-size:18px;font-weight:1000;}
+  .premiumTop p{font-size:12px;color:var(--muted);font-weight:900;margin-top:4px;}
+  .premiumTop .right{display:flex;gap:10px;align-items:center;}
+  .pill{
+    padding:10px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,.55);
+    border:1px solid rgba(10,50,110,.10);
+    font-weight:1000;
+    color:#0b5bb8;
+  }
+
+  .typing{
+    display:inline-block;
+    font-weight:1000;
+    background: linear-gradient(90deg, var(--a3), var(--a2), var(--a1));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .cursor{
+    display:inline-block;
+    width:10px;
+    height:18px;
+    margin-left:6px;
+    border-radius:4px;
+    background:var(--a2);
+    animation: blink 1s infinite;
+    transform: translateY(2px);
+  }
+  @keyframes blink{50%{opacity:0}}
+
+  .page{display:none;height:100%;}
+  .page.active{display:block;}
+
+  .workspaceGrid{
+    height:calc(100% - 64px);
+    display:grid;
+    grid-template-columns: 1fr 380px;
+    gap:16px;
+    padding:16px;
+  }
+
+  .main{
+    border-radius:22px;
+    background: rgba(255,255,255,0.42);
+    border:1px solid rgba(10,50,110,.10);
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    overflow:hidden;
+    box-shadow: var(--shadow2);
+  }
+
+  .topbar h1{font-size:18px;font-weight:1000;}
+  .topbar p{margin-top:4px;font-size:12px;color:var(--muted);font-weight:900;}
+
+  .drop{
+    flex:1;
+    border-radius:22px;
+    border:2px dashed rgba(29,155,240,0.40);
+    background: rgba(255,255,255,0.25);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:10px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+    box-shadow: 0 25px 80px rgba(0,30,80,.08);
+    transition:.25s ease;
+  }
+  .drop.dragover{
+    border-color: rgba(90,211,255,0.9);
+    box-shadow: 0 35px 110px rgba(29,155,240,.18);
+    transform: translateY(-3px) scale(1.01);
+  }
+  .drop .icon{
+    width:56px;height:56px;border-radius:20px;
+    background: rgba(29,155,240,0.14);
+    border:1px solid rgba(29,155,240,0.20);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+  }
+
+  .btn{
+    width:260px;
+    padding:13px 14px;
+    border-radius:16px;
+    border:none;
+    cursor:pointer;
+    font-weight:1000;
+    color:#fff;
+    background: linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+    box-shadow: 0 25px 85px rgba(29,155,240,.22);
+    transition:.22s ease;
+  }
+  .btn:hover{transform: translateY(-2px) scale(1.01)}
+  .btn.gray{
+    background: rgba(255,255,255,0.55);
+    border:1px solid rgba(10,50,110,.12);
+    color:#0b5bb8;
+  }
+
+  #fileInput,#cameraInput{display:none;}
+  #previewImg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:none;
+    background: rgba(255,255,255,0.55);
+    padding:18px;
+    backdrop-filter: blur(10px);
+  }
+
+  .bottomBar{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:center;
+    background: rgba(255,255,255,0.45);
+    border:1px solid rgba(10,50,110,.10);
+    border-radius:18px;
+    padding:14px;
+  }
+  .toggle{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:1000;
+  }
+  .toggle .pillSwitch{
+    width:44px;height:26px;border-radius:30px;
+    background: linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+    position:relative;
+  }
+  .toggle .pillSwitch::after{
+    content:"";
+    position:absolute;
+    top:3px;left:22px;
+    width:20px;height:20px;border-radius:50%;
+    background:#fff;
+  }
+  .rubric{
+    color:#0b5bb8;
+    font-weight:1000;
+    cursor:pointer;
+    text-decoration: underline;
+  }
+
+  .rightPanel{
+    border-radius:22px;
+    background: rgba(255,255,255,0.42);
+    border:1px solid rgba(10,50,110,.10);
+    padding:16px;
+    overflow:auto;
+    box-shadow: var(--shadow2);
+  }
+
+  .panelTitle{font-size:16px;font-weight:1000;margin-bottom:14px;}
+
+  .finalGrade{
+    border-radius:22px;
+    padding:16px;
+    background: rgba(29,155,240,0.10);
+    border:1px solid rgba(29,155,240,0.18);
+    margin-bottom:14px;
+  }
+
+  .finalGrade small{color:var(--muted);font-weight:1000;}
+  .finalGrade h2{margin-top:6px;font-size:44px;font-weight:1000;line-height:1;}
+
+  .chip{
+    margin-top:10px;
+    display:inline-block;
+    padding:7px 11px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:1000;
+    background: rgba(29,155,240,0.12);
+    border:1px solid rgba(29,155,240,0.22);
+    color:#0b5bb8;
+  }
+
+  .miniGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .mini{
+    border-radius:18px;
+    padding:14px;
+    background: rgba(255,255,255,0.45);
+    border:1px solid rgba(10,50,110,.10);
+  }
+  .mini small{color:var(--muted);font-weight:1000;}
+  .mini b{display:block;margin-top:8px;font-size:18px;font-weight:1000;}
+
+  .section{
+    margin-top:10px;
+    padding-top:12px;
+    border-top:1px solid rgba(10,50,110,.10);
+  }
+  .section h4{
+    font-size:12px;
+    letter-spacing:1px;
+    color:var(--muted);
+    font-weight:1000;
+    margin-bottom:10px;
+  }
+
+  .analysis{
+    border-radius:18px;
+    padding:14px;
+    background: rgba(255,255,255,0.55);
+    border:1px solid rgba(10,50,110,.10);
+    font-size:12px;
+    line-height:1.6;
+    white-space:pre-wrap;
+  }
+
+  .run{
+    width:100%;
+    margin-top:10px;
+    padding:14px;
+    border-radius:18px;
+    border:none;
+    cursor:pointer;
+    font-weight:1000;
+    color:#fff;
+    background: linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+  }
+  .run.soft{
+    background: rgba(255,255,255,0.55);
+    border:1px solid rgba(10,50,110,.12);
+    color:#0b5bb8;
+  }
+
+  .rightPanel input{
+    flex:1;
+    padding:12px 14px;
+    border-radius:16px;
+    border:1px solid rgba(10,50,110,.12);
+    background: rgba(255,255,255,0.65);
+    color:var(--text);
+    outline:none;
+    font-weight:1000;
+  }
+
+  /* Table page */
+  .tableWrap{
+    padding:16px;
+    height:calc(100% - 64px);
+    overflow:auto;
+  }
+  .tableTop{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .tableTop h2{font-size:18px;font-weight:1000;}
+
+  .search{
+    width:340px;
+    padding:12px 14px;
+    border-radius:16px;
+    border:1px solid rgba(10,50,110,.12);
+    background: rgba(255,255,255,0.55);
+    color:var(--text);
+    outline:none;
+    font-weight:1000;
+  }
+
+  table{width:100%; border-collapse:separate; border-spacing:0 10px;}
+  td,th{text-align:left; padding:14px; font-size:13px;}
+  th{color:var(--muted);font-weight:1000;}
+  tr{background: rgba(255,255,255,0.55);}
+  tr td:first-child{border-radius:16px 0 0 16px;}
+  tr td:last-child{border-radius:0 16px 16px 0;}
+
+  .tag{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:1000;display:inline-block;}
+  .tOk{background: rgba(34,197,94,0.12); color:#16a34a; border:1px solid rgba(34,197,94,0.25);}
+  .tPart{background: rgba(249,115,22,0.12); color:#ea580c; border:1px solid rgba(249,115,22,0.25);}
+  .tBad{background: rgba(239,68,68,0.12); color:#dc2626; border:1px solid rgba(239,68,68,0.25);}
+
+  .link{color:#0b5bb8;font-weight:1000;cursor:pointer;text-decoration: underline;}
+  .danger{color:#dc2626;font-weight:1000;cursor:pointer;margin-left:14px;text-decoration: underline;}
+
+  @media (max-width: 1100px){
+    body{overflow:auto;}
+    .app{grid-template-columns:1fr; height:auto;}
+    .workspaceGrid{grid-template-columns:1fr; height:auto;}
+  }
+</style>
+</head>
+
+<body>
+
+<div class="particles">
+  <span style="top:10%;left:12%;animation-delay:.2s"></span>
+  <span style="top:18%;left:80%;animation-delay:1.2s"></span>
+  <span style="top:55%;left:18%;animation-delay:2.0s"></span>
+  <span style="top:70%;left:90%;animation-delay:2.7s"></span>
+  <span style="top:86%;left:35%;animation-delay:1.7s"></span>
+  <span style="top:40%;left:55%;animation-delay:.8s"></span>
+</div>
+
+<div class="float-icons">
+  <i style="top:12%;left:14%;animation-delay:.1s">✨</i>
+  <i style="top:18%;left:78%;animation-delay:1.1s">📘</i>
+  <i style="top:55%;left:10%;animation-delay:2.0s">🧠</i>
+  <i style="top:72%;left:88%;animation-delay:2.7s">⚡</i>
+  <i style="top:84%;left:34%;animation-delay:1.7s">📄</i>
+  <i style="top:40%;left:56%;animation-delay:.8s">🤖</i>
+</div>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">◎</div>
+      <div>
+        <h2>Worksheet AI</h2>
+        <span>Evaluator Pro </span>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button id="tab_workspace" class="active" onclick="showTab('workspace')">🧠 Workspace</button>
+      <button id="tab_history" onclick="showTab('history')">🕒 History</button>
+    </div>
+
+    <div class="storage">
+      <small>STORAGE USED</small>
+      <div class="bar"><div></div></div>
+      <small>1.5GB / 10GB</small>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <section class="content">
+
+    <div class="premiumTop">
+      <div class="left">
+        <h1><span class="typing" id="typingWord">AI Evaluation</span><span class="cursor"></span></h1>
+        <p>Upload worksheet → run semantic analysis → save & manage reports</p>
+      </div>
+      <div class="right">
+        <div class="pill">⚡ Fast</div>
+        <div class="pill">🧠 Smart</div>
+        <div class="pill">📄 Print-ready</div>
+      </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div class="page active" id="workspace">
+      <div class="workspaceGrid">
+
+        <div class="main">
+          <div class="topbar">
+            <div>
+              <h1>Active Evaluation</h1>
+              <p>Drop a worksheet image for AI semantic analysis</p>
+            </div>
+          </div>
+
+          <div class="drop" id="dropZone">
+            <img id="previewImg" />
+            <div class="icon">📸</div>
+            <h3>Drop worksheet here</h3>
+            <p>Supports JPG and PNG. AI detects handwriting and semantic meaning automatically.</p>
+
+            <button class="btn" onclick="fileInput.click()">📄 Select File</button>
+
+            <!-- ✅ Camera works -->
+            <button class="btn gray" style="margin-top:8px;" onclick="openCamera()">📷 Capture from Camera</button>
+
+            <input id="fileInput" type="file" accept="image/png,image/jpeg"/>
+            <input id="cameraInput" type="file" accept="image/*" capture="environment"/>
+          </div>
+
+          <div class="bottomBar">
+            <div class="toggle">
+              <div class="pillSwitch"></div>
+              Auto-Correction Enabled
+            </div>
+            <div class="rubric">Edit Rubric</div>
+          </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="rightPanel">
+          <div class="panelTitle">Evaluation Panel</div>
+
+          <div class="finalGrade">
+            <small>FINAL GRADE</small>
+            <h2><span id="scoreBig">--</span><span style="font-size:16px;opacity:.6">/100</span></h2>
+            <div class="chip" id="chip">Waiting for analysis…</div>
+          </div>
+
+          <div class="miniGrid">
+            <div class="mini">
+              <small>CONFIDENCE</small>
+              <b id="confidence">--</b>
+            </div>
+            <div class="mini">
+              <small>TIME SAVED</small>
+              <b id="timeSaved">--</b>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4>EDIT STUDENT NAME</h4>
+            <div style="display:flex; gap:10px;">
+              <input id="editStudentName" placeholder="Edit name" />
+              <button class="btn" style="width:120px;" onclick="saveName()">Save</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4>EDIT SUBJECT</h4>
+            <div style="display:flex; gap:10px;">
+              <input id="editSubject" placeholder="Edit subject" />
+              <button class="btn" style="width:120px;" onclick="saveSubject()">Save</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4>EDIT TOTAL MARKS</h4>
+            <div style="display:flex; gap:10px;">
+              <input id="editTotalMarks" type="number" placeholder="Edit total marks" />
+              <button class="btn" style="width:120px;" onclick="saveTotalMarks()">Save</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h4>SEMANTIC ANALYSIS</h4>
+            <div class="analysis" id="semanticText">Upload worksheet to start analysis.</div>
+          </div>
+
+          <button class="run" onclick="runSingle()">⚡ Run Full Analysis</button>
+          <button class="run soft" onclick="downloadJSON()">📊 Download JSON</button>
+          <button class="run soft" onclick="downloadTXT()">📄 Download TXT</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="page" id="history">
+      <div class="tableWrap">
+        <div class="tableTop">
+          <h2>All Evaluations</h2>
+          <input class="search" id="searchBox" placeholder="Search student / subject..." oninput="doSearch()" />
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Subject</th>
+              <th>Marks</th>
+              <th>Grade</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+</div>
+<script src="../config.js"></script>
+
+<script>
+  console.log("CONFIG:", window.APP_CONFIG);
+</script>
+<script>
+const API_BASE = window.APP_CONFIG?.API_BASE || "https://backend-abhyaas-final.onrender.com";
+let selectedFile = null;
+let lastResult = null;
+
+const fileInput = document.getElementById("fileInput");
+const cameraInput = document.getElementById("cameraInput");
+const previewImg = document.getElementById("previewImg");
+const dropZone = document.getElementById("dropZone");
+
+/* Typing */
+const words = ["Answer Sheet Evaluation", "Semantic Checking", "Smart Grading", "Teacher Pro Tools"];
+let wi = 0, ci = 0, deleting = false;
+function typeLoop(){
+  const el = document.getElementById("typingWord");
+  const word = words[wi];
+  if(!deleting){
+    ci++;
+    el.textContent = word.substring(0, ci);
+    if(ci === word.length){
+      deleting = true;
+      setTimeout(typeLoop, 1100);
+      return;
+    }
+  }else{
+    ci--;
+    el.textContent = word.substring(0, ci);
+    if(ci === 0){
+      deleting = false;
+      wi = (wi + 1) % words.length;
+    }
+  }
+  setTimeout(typeLoop, deleting ? 55 : 75);
+}
+typeLoop();
+
+/* Preview */
+fileInput.addEventListener("change", ()=>{ selectedFile = fileInput.files[0]; showPreview(); });
+cameraInput.addEventListener("change", ()=>{ selectedFile = cameraInput.files[0]; showPreview(); });
+
+function showPreview(){
+  if(!selectedFile) return;
+  previewImg.src = URL.createObjectURL(selectedFile);
+  previewImg.style.display = "block";
+}
+
+/* Drag drop */
+dropZone.addEventListener("dragover", (e)=>{
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+dropZone.addEventListener("dragleave", ()=>{
+  dropZone.classList.remove("dragover");
+});
+dropZone.addEventListener("drop", (e)=>{
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  const f = e.dataTransfer.files?.[0];
+  if(!f) return;
+  selectedFile = f;
+  showPreview();
+});
+
+/* ✅ Camera Open */
+function openCamera(){
+  // mobile -> camera open
+  // desktop -> file picker (browser limitation)
+  cameraInput.click();
+}
+
+/* Tabs */
+function showTab(name){
+  ["workspace","history"].forEach(x=>{
+    document.getElementById(x).classList.remove("active");
+    document.getElementById("tab_"+x)?.classList.remove("active");
+  });
+
+  document.getElementById(name).classList.add("active");
+  document.getElementById("tab_"+name).classList.add("active");
+
+  if(name==="history") loadHistory();
+}
+
+/* Run */
+async function runSingle(){
+  if(!selectedFile){ alert("Upload worksheet first!"); return; }
+
+  document.getElementById("chip").innerText = "Running analysis…";
+
+  const fd = new FormData();
+  fd.append("file", selectedFile);
+
+  fd.append("total_marks", 100);
+  fd.append("student_name", "Unknown");
+  fd.append("subject", "General");
+  fd.append("save_file", "true");
+
+  const res = await fetch(`${API}/evaluate`, {method:"POST", body: fd});
+  const data = await res.json();
+
+  if(!res.ok){
+    alert(data.detail || "Error");
+    document.getElementById("chip").innerText = "Failed";
+    return;
+  }
+
+  lastResult = data;
+
+  document.getElementById("scoreBig").innerText = data.score;
+  document.getElementById("chip").innerText = `${data.status} • Grade ${data.grade}`;
+  document.getElementById("confidence").innerText = data.confidence + "%";
+  document.getElementById("timeSaved").innerText = data.time_saved;
+  document.getElementById("semanticText").innerText = data.detailed_feedback || "";
+
+  document.getElementById("editStudentName").value = data.student_name || "";
+  document.getElementById("editSubject").value = data.subject || "";
+  document.getElementById("editTotalMarks").value = data.total_marks || 100;
+}
+
+/* Save Name */
+async function saveName(){
+  if(!lastResult){ alert("Run analysis first!"); return; }
+  const newName = document.getElementById("editStudentName").value.trim();
+  if(!newName){ alert("Enter name"); return; }
+
+  const res = await fetch(`${API}/report/${lastResult.id}/name`, {
+    method: "PUT",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({student_name: newName})
+  });
+
+  if(!res.ok){ alert("Failed to update name"); return; }
+  lastResult.student_name = newName;
+  alert("Name updated ✅");
+}
+
+/* Save Subject */
+async function saveSubject(){
+  if(!lastResult){ alert("Run analysis first!"); return; }
+  const newSubject = document.getElementById("editSubject").value.trim();
+  if(!newSubject){ alert("Enter subject"); return; }
+
+  const res = await fetch(`${API}/report/${lastResult.id}/subject`, {
+    method: "PUT",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({subject: newSubject})
+  });
+
+  if(!res.ok){ alert("Failed to update subject"); return; }
+  lastResult.subject = newSubject;
+  alert("Subject updated ✅");
+}
+
+/* Save Marks */
+async function saveTotalMarks(){
+  if(!lastResult){ alert("Run analysis first!"); return; }
+  const newMarks = parseInt(document.getElementById("editTotalMarks").value || "0");
+  if(!newMarks || newMarks <= 0){ alert("Enter valid marks"); return; }
+
+  const res = await fetch(`${API}/report/${lastResult.id}/marks`, {
+    method: "PUT",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({total_marks: newMarks})
+  });
+
+  if(!res.ok){ alert("Failed to update marks"); return; }
+  lastResult.total_marks = newMarks;
+  alert("Total marks updated ✅");
+}
+
+/* Download JSON */
+function downloadJSON(){
+  if(!lastResult){ alert("Run analysis first!"); return; }
+  const blob = new Blob([JSON.stringify(lastResult, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "evaluation.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* Download TXT */
+function downloadTXT(){
+  if(!lastResult){ alert("Run analysis first!"); return; }
+
+  const txt = `
+STUDENT: ${lastResult.student_name}
+SUBJECT: ${lastResult.subject}
+MARKS: ${lastResult.score}/${lastResult.total_marks}
+PERCENTAGE: ${lastResult.percentage}%
+GRADE: ${lastResult.grade}
+STATUS: ${lastResult.status}
+
+--- DETAILED FEEDBACK ---
+${lastResult.detailed_feedback}
+`;
+
+  const blob = new Blob([txt], {type:"text/plain"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "evaluation.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* History */
+async function loadHistory(){
+  const res = await fetch(`${API}/history?limit=50`);
+  const data = await res.json();
+
+  const tb = document.getElementById("historyTable");
+  tb.innerHTML = "";
+
+  data.items.forEach(x=>{
+    let tag = "tPart";
+    if((x.status||"").toLowerCase().includes("correct")) tag="tOk";
+    if((x.status||"").toLowerCase().includes("review")) tag="tBad";
+
+    tb.innerHTML += `
+      <tr>
+        <td>${x.student_name || "-"}</td>
+        <td>${x.subject || "-"}</td>
+        <td><b>${x.score}/${x.total_marks}</b></td>
+        <td>${x.grade || "-"}</td>
+        <td><span class="tag ${tag}">${x.status}</span></td>
+        <td>${new Date(x.created_at).toLocaleString()}</td>
+        <td>
+          <span class="link" onclick="viewReport('${x.id}')">Details</span>
+          <span class="danger" onclick="deleteReport('${x.id}')">Delete</span>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function doSearch(){
+  const q = document.getElementById("searchBox").value.trim();
+  if(!q){ loadHistory(); return; }
+
+  const res = await fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=50`);
+  const data = await res.json();
+
+  const tb = document.getElementById("historyTable");
+  tb.innerHTML = "";
+
+  data.items.forEach(x=>{
+    tb.innerHTML += `
+      <tr>
+        <td>${x.student_name || "-"}</td>
+        <td>${x.subject || "-"}</td>
+        <td><b>${x.score}/${x.total_marks}</b></td>
+        <td>${x.grade || "-"}</td>
+        <td>${x.status}</td>
+        <td>${new Date(x.created_at).toLocaleString()}</td>
+        <td><span class="link" onclick="viewReport('${x.id}')">Details</span></td>
+      </tr>
+    `;
+  });
+}
+
+async function viewReport(id){
+  const res = await fetch(`${API}/report/${id}`);
+  const data = await res.json();
+  alert(
+    `Student: ${data.student_name}\nSubject: ${data.subject}\nMarks: ${data.score}/${data.total_marks}\n\nFeedback:\n${data.detailed_feedback}`
+  );
+}
+
+async function deleteReport(id){
+  if(!confirm("Delete this report?")) return;
+  await fetch(`${API}/report/${id}`, {method:"DELETE"});
+  loadHistory();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Teacher Dashboard — Abhyaas</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --text: #062a37;
+      --muted: #52606d;
+      --accent-from: #06b6d4;
+      --accent-to: #3b82f6;
+      --shadow: 0 20px 60px rgba(0, 0, 0, .25);
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--text);
+      background: #000;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-heading);
+      letter-spacing: -0.02em;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: white;
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+    }
+
+    .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .nav-links a:hover { color: var(--accent-from) }
+
+    /* LANG SWITCH */
+    .lang-switch { display: flex; gap: 6px; }
+    .lang-switch button {
+      border: 1px solid rgba(0,0,0,.15);
+      background: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+    }
+    .lang-switch button.active {
+      background: #06b6d4;
+      color: white;
+      border-color: #06b6d4;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      padding: 80px 24px;
+      overflow: hidden;
+    }
+
+    .hero video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(6, 42, 55, .65), rgba(6, 42, 55, .85));
+      z-index: -1;
+    }
+
+    .hero-inner {
+      max-width: 1050px;
+      margin: 0 auto;
+      width: 100%;
+      color: white;
+    }
+
+    .hero h1 { font-size: 2.8rem; margin: 0 0 10px; font-weight: 800; }
+
+    .hero p {
+      max-width: 1050px;
+      font-size: 1.15rem;
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+
+    /* HERO CARDS */
+    .hero-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 1050px;
+    }
+
+    /* ============================================================
+       CARD — airy blue tint + entrance animation + shimmer hover
+    ============================================================ */
+    @keyframes cardEntrance {
+      from {
+        opacity: 0;
+        transform: translateY(32px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes shimmerSweep {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes floatPulse {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-5px); }
+    }
+
+    .hero-card {
+      /* airy blue tinted base */
+      background: linear-gradient(
+        145deg,
+        rgba(224, 247, 255, 0.96) 0%,
+        rgba(207, 239, 255, 0.93) 40%,
+        rgba(219, 244, 255, 0.95) 100%
+      );
+      backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow:
+        var(--shadow),
+        0 0 0 1px rgba(6, 182, 212, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.85);
+      color: #062a37;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+
+      /* entrance animation — each card staggered */
+      animation: cardEntrance 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .hero-card:nth-child(1) { animation-delay: 0.10s; }
+    .hero-card:nth-child(2) { animation-delay: 0.22s; }
+    .hero-card:nth-child(3) { animation-delay: 0.34s; }
+    .hero-card:nth-child(4) { animation-delay: 0.46s; }
+
+    /* subtle idle float */
+    .hero-card:not(:hover) {
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* shimmer layer (pseudo-element) */
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      background: linear-gradient(
+        105deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.55) 50%,
+        rgba(186, 230, 255, 0.35) 58%,
+        transparent 65%
+      );
+      background-size: 250% 100%;
+      background-position: -200% center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-card:hover::before {
+      opacity: 1;
+      animation: shimmerSweep 0.75s ease forwards;
+    }
+
+    /* hover lift + glow */
+    .hero-card:hover {
+      transform: translateY(-10px) scale(1.015);
+      box-shadow:
+        0 32px 90px rgba(6, 182, 212, 0.28),
+        0 8px 24px rgba(59, 130, 246, 0.18),
+        0 0 0 1.5px rgba(6, 182, 212, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      background: linear-gradient(
+        145deg,
+        rgba(236, 251, 255, 0.98) 0%,
+        rgba(214, 244, 255, 0.96) 40%,
+        rgba(225, 248, 255, 0.97) 100%
+      );
+    }
+
+    /* icon, text, content sit above the shimmer layer */
+    .hero-card > * { position: relative; z-index: 2; }
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      font-size: 1.7rem;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+      color: white;
+      margin-bottom: 10px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+    }
+
+    .hero-card:hover .icon {
+      transform: scale(1.12) rotate(-4deg);
+      box-shadow: 0 8px 24px rgba(6, 182, 212, 0.5);
+    }
+
+    .hero-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .hero-card p  { font-size: 1rem; line-height: 1.55; color: #334155; }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 0;
+      height: 1px;
+      background: rgba(6, 182, 212, 0.12);
+      z-index: 2;
+    }
+
+    .badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: linear-gradient(90deg, rgba(59, 130, 246, .18), rgba(6, 182, 212, .12));
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 600;
+      z-index: 3;
+    }
+
+    /* WORKSHEET FORM */
+    #worksheetForm {
+      display: none;
+      margin-top: 40px;
+      background: rgba(255, 255, 255, .95);
+      padding: 22px;
+      border-radius: 18px;
+      color: #062a37;
+      max-width: 700px;
+      box-shadow: var(--shadow);
+    }
+
+    #worksheetForm input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, .1);
+      font-family: var(--font-body);
+    }
+
+    #worksheetForm button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+    }
+
+    #output {
+      margin-top: 14px;
+      background: white;
+      padding: 14px;
+      border-radius: 12px;
+      max-height: 400px;
+      overflow: auto;
+      white-space: pre-wrap;
+      border: 1px solid rgba(0, 0, 0, .1);
+    }
+
+    footer { background: white; text-align: center; padding: 18px; color: #64748b; }
+
+    @media(max-width:768px) {
+      .hero h1 { font-size: 2.1rem }
+      .hero-cards { grid-template-columns: 1fr }
+    }
+
+    /* SITE FOOTER */
+    .site-footer {
+      background: #ffffff;
+      border-top: 1px solid rgba(2, 6, 23, 0.08);
+      padding: 48px 24px 20px;
+      color: #111827;
+    }
+
+    .footer-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    .footer-col h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; color: #0a4a56; }
+    .footer-col a { display: block; font-size: 0.9rem; color: #4b5563; text-decoration: none; margin-bottom: 9px; line-height: 1.4; }
+    .footer-col a:hover { color: #06b6d4; }
+    .footer-col .mt { margin-top: 24px; }
+
+    .footer-bottom {
+      max-width: 1180px;
+      margin: 40px auto 0;
+      padding-top: 16px;
+      border-top: 1px solid rgba(2, 6, 23, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .footer-links { display: flex; gap: 22px; }
+    .footer-links a { color: #6b7280; text-decoration: none; }
+    .footer-links a:hover { color: #06b6d4; }
+
+    @media(max-width:900px) {
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: left; }
+      .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="brand">
+      <img src="assets/images/logo.jpeg" alt="Abhyaas">
+      Abhyaas
+    </div>
+    <nav class="nav-links">
+      <div class="lang-switch">
+        <button id="langEn" class="active">EN</button>
+        <button id="langHi">हिंदी</button>
+      </div>
+      <a href="index.html" data-key="nav_home">Home</a>
+      <a href="features/teacher-auth.html" data-key="nav_logout">Logout</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <video autoplay muted loop playsinline>
+      <source src="assets/images/teach.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-inner">
+      <h1 data-key="hero_title">Welcome, Teacher</h1>
+      <p data-key="hero_sub">
+        Your AI-powered teaching workspace designed to save time, reduce workload,
+        and improve learning outcomes — all from one dashboard.
+        Teach smarter, track progress better, and make every class more effective.
+      </p>
+
+      <div class="hero-cards">
+
+        <div class="hero-card" data-href="features/worksheet.html">
+          <span class="badge" data-key="badge_live">Live</span>
+          <div class="icon">📝</div>
+          <h3 data-key="card1_title">Worksheet Generator</h3>
+          <p data-key="card1_desc">
+            Instantly generate well-structured, printable worksheets based on topic,
+            class level, and difficulty — saving hours of manual preparation.
+          </p>
+        </div>
+
+        <div class="hero-card" data-href="features/answersheet.html">
+          <span class="badge" data-key="badge_upcoming">Upcoming</span>
+          <div class="icon">📸</div>
+          <h3 data-key="card2_title">Answersheeet Auto Evaluator</h3>
+          <p data-key="card2_desc">
+            Upload student answer sheets as photos and get quick AI-based evaluation,
+            reducing checking time and improving feedback quality.
+          </p>
+        </div>
+
+        <div class="hero-card" data-href="features/diagram.html">
+          <!-- <span class="badge" data-key="badge_upcoming">Upcoming</span> -->
+          <div class="icon">📊</div>
+          <h3 data-key="card3_title">Board Diagram Creator</h3>
+          <p data-key="card3_desc">
+            Create clear, classroom-ready diagrams for blackboard or digital teaching
+            to explain concepts more visually and effectively.
+          </p>
+        </div>
+
+        <div class="hero-card" data-href="features/lesson.html">
+          <!-- <span class="badge" data-key="badge_upcoming">Upcoming</span> -->
+          <div class="icon">📅</div>
+          <h3 data-key="card4_title">Smart Lesson Planner</h3>
+          <p data-key="card4_desc">
+            Automatically generate balanced timetables that manage subjects, revisions,
+            and workload efficiently across classes.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- WORKSHEET FORM -->
+      <div id="worksheetForm">
+        <h3 data-key="form_title">Generate Worksheet</h3>
+        <input id="subject"    data-placeholder-key="form_subject"    placeholder="Subject (e.g. Maths)">
+        <input id="classLevel" data-placeholder-key="form_class"      placeholder="Class (e.g. 5)">
+        <input id="difficulty" data-placeholder-key="form_difficulty" placeholder="Difficulty (Easy / Medium / Hard)">
+        <input id="topic"      data-placeholder-key="form_topic"      placeholder="Topic (e.g. Fractions)">
+        <button onclick="generateWorksheet()" data-key="form_btn">Generate Worksheet</button>
+        <pre id="output"></pre>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer">
+
+    <div class="footer-grid">
+
+      <div class="footer-col">
+        <h4 data-key="footer_col1_title">For Students</h4>
+        <a href="#" data-key="footer_s1">Gamified Learning</a>
+        <a href="#" data-key="footer_s2">Teach-Back Mode</a>
+        <a href="#" data-key="footer_s3">Revision Tools</a>
+        <a href="#" data-key="footer_s4">Multilingual Support</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col2_title">For Teachers</h4>
+        <a href="#" data-key="footer_t1">Board Diagram Generator</a>
+        <a href="#" data-key="footer_t2">Worksheet Auto Evaluator</a>
+        <a href="#" data-key="footer_t3">Track Progress</a>
+        <a href="#" data-key="footer_t4">Instant Worksheet Generator</a>
+        <a href="#" data-key="footer_t5">Smart Timetable Scheduler</a>
+        <h4 class="mt" data-key="footer_col2b_title">Admin</h4>
+        <a href="#" data-key="footer_a1">Admin Dashboard</a>
+        <a href="#" data-key="footer_a2">Teacher Analytics</a>
+        <a href="#" data-key="footer_a3">Institutional Insights</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col3_title">Products</h4>
+        <a href="#" data-key="footer_p1">Student App</a>
+        <a href="#" data-key="footer_p2">Teacher Dashboard</a>
+        <a href="#" data-key="footer_p3">Gamification Suite</a>
+        <a href="#" data-key="footer_p4">Teach-Back AI</a>
+        <a href="#" data-key="footer_p5">Learning Analytics</a>
+        <a href="#" data-key="footer_p6">Revision Engine</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col4_title">Company</h4>
+        <a href="#" data-key="footer_c1">About Us</a>
+        <a href="#" data-key="footer_c2">Pricing</a>
+        <a href="#" data-key="footer_c3">Careers</a>
+        <a href="#" data-key="footer_c4">Contact</a>
+        <a href="#" data-key="footer_c5">Terms &amp; Privacy</a>
+        <h4 class="mt" data-key="footer_col4b_title">Resources</h4>
+        <a href="#" data-key="footer_r1">Documentation</a>
+        <a href="#" data-key="footer_r2">Blog</a>
+        <a href="#" data-key="footer_r3">Community</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span data-key="footer_copy">© 2025 Abhyaass — Made with ❤️. All rights reserved</span>
+      <div class="footer-links">
+        <a href="#" data-key="footer_privacy">Privacy Policy</a>
+        <a href="#" data-key="footer_terms">Terms of Use</a>
+      </div>
+    </div>
+
+  </footer>
+
+
+  <script>
+    /* ======================================================
+       TRANSLATIONS
+    ====================================================== */
+    const translations = {
+      en: {
+        /* NAV */
+        nav_home:   "Home",
+        nav_logout: "Logout",
+
+        /* HERO */
+        hero_title: "Welcome, Teacher",
+        hero_sub:   "Your AI-powered teaching workspace designed to save time, reduce workload, and improve learning outcomes — all from one dashboard. Teach smarter, track progress better, and make every class more effective.",
+
+        /* BADGES */
+        badge_live:     "Live",
+        badge_upcoming: "Upcoming",
+
+        /* CARDS */
+        card1_title: "Worksheet Generator",
+        card1_desc:  "Instantly generate well-structured, printable worksheets based on topic, class level, and difficulty — saving hours of manual preparation.",
+
+        card2_title: "Auto Evaluator",
+        card2_desc:  "Upload student answer sheets as photos and get quick AI-based evaluation, reducing checking time and improving feedback quality.",
+
+        card3_title: "Board Diagram Creator",
+        card3_desc:  "Create clear, classroom-ready diagrams for blackboard or digital teaching to explain concepts more visually and effectively.",
+
+        card4_title: "Smart Timetable",
+        card4_desc:  "Automatically generate balanced timetables that manage subjects, revisions, and workload efficiently across classes.",
+
+        /* WORKSHEET FORM */
+        form_title:       "Generate Worksheet",
+        form_subject:     "Subject (e.g. Maths)",
+        form_class:       "Class (e.g. 5)",
+        form_difficulty:  "Difficulty (Easy / Medium / Hard)",
+        form_topic:       "Topic (e.g. Fractions)",
+        form_btn:         "Generate Worksheet",
+
+        /* FOOTER */
+        footer_col1_title:  "For Students",
+        footer_s1: "Gamified Learning",
+        footer_s2: "Teach-Back Mode",
+        footer_s3: "Revision Tools",
+        footer_s4: "Multilingual Support",
+
+        footer_col2_title:  "For Teachers",
+        footer_t1: "Board Diagram Generator",
+        footer_t2: "Worksheet Auto Evaluator",
+        footer_t3: "Track Progress",
+        footer_t4: "Instant Worksheet Generator",
+        footer_t5: "Smart Timetable Scheduler",
+        footer_col2b_title: "Admin",
+        footer_a1: "Admin Dashboard",
+        footer_a2: "Teacher Analytics",
+        footer_a3: "Institutional Insights",
+
+        footer_col3_title: "Products",
+        footer_p1: "Student App",
+        footer_p2: "Teacher Dashboard",
+        footer_p3: "Gamification Suite",
+        footer_p4: "Teach-Back AI",
+        footer_p5: "Learning Analytics",
+        footer_p6: "Revision Engine",
+
+        footer_col4_title:  "Company",
+        footer_c1: "About Us",
+        footer_c2: "Pricing",
+        footer_c3: "Careers",
+        footer_c4: "Contact",
+        footer_c5: "Terms & Privacy",
+        footer_col4b_title: "Resources",
+        footer_r1: "Documentation",
+        footer_r2: "Blog",
+        footer_r3: "Community",
+
+        footer_copy:    "© 2025 Abhyaass — Made with ❤️. All rights reserved",
+        footer_privacy: "Privacy Policy",
+        footer_terms:   "Terms of Use"
+      },
+
+      /* ==================== HINDI ==================== */
+      hi: {
+        /* NAV */
+        nav_home:   "होम",
+        nav_logout: "लॉगआउट",
+
+        /* HERO */
+        hero_title: "स्वागत है, शिक्षक",
+        hero_sub:   "आपका AI-पावर्ड टीचिंग वर्कस्पेस — समय बचाने, काम का बोझ कम करने और सीखने के परिणाम सुधारने के लिए। स्मार्ट तरीके से पढ़ाएं, प्रगति बेहतर ट्रैक करें और हर कक्षा को अधिक प्रभावी बनाएं।",
+
+        /* BADGES */
+        badge_live:     "लाइव",
+        badge_upcoming: "जल्द आ रहा है",
+
+        /* CARDS */
+        card1_title: "वर्कशीट जनरेटर",
+        card1_desc:  "विषय, कक्षा स्तर और कठिनाई के आधार पर तुरंत सुव्यवस्थित, प्रिंट करने योग्य वर्कशीट्स बनाएं — घंटों की मैन्युअल तैयारी बचाएं।",
+
+        card2_title: "ऑटो इवैल्यूएटर",
+        card2_desc:  "छात्रों की उत्तर-पुस्तिकाओं की फ़ोटो अपलोड करें और त्वरित AI-आधारित मूल्यांकन पाएं — जाँच का समय कम करें और फ़ीडबैक की गुणवत्ता सुधारें।",
+
+        card3_title: "बोर्ड डायग्राम क्रिएटर",
+        card3_desc:  "ब्लैकबोर्ड या डिजिटल टीचिंग के लिए स्पष्ट, कक्षा-तैयार डायग्राम बनाएं — अवधारणाओं को अधिक दृश्यात्मक और प्रभावी ढंग से समझाएं।",
+
+        card4_title: "स्मार्ट टाइमटेबल",
+        card4_desc:  "विषयों, रिवीजन और कार्यभार को कुशलतापूर्वक प्रबंधित करने वाले संतुलित टाइमटेबल अपने आप तैयार करें।",
+
+        /* WORKSHEET FORM */
+        form_title:       "वर्कशीट बनाएं",
+        form_subject:     "विषय (जैसे गणित)",
+        form_class:       "कक्षा (जैसे 5)",
+        form_difficulty:  "कठिनाई (आसान / मध्यम / कठिन)",
+        form_topic:       "टॉपिक (जैसे भिन्न)",
+        form_btn:         "वर्कशीट बनाएं",
+
+        /* FOOTER */
+        footer_col1_title:  "छात्रों के लिए",
+        footer_s1: "गेमिफ़ाइड लर्निंग",
+        footer_s2: "टीच-बैक मोड",
+        footer_s3: "रिवीजन टूल्स",
+        footer_s4: "बहुभाषी सपोर्ट",
+
+        footer_col2_title:  "शिक्षकों के लिए",
+        footer_t1: "बोर्ड डायग्राम जनरेटर",
+        footer_t2: "वर्कशीट ऑटो इवैल्यूएटर",
+        footer_t3: "प्रगति ट्रैक करें",
+        footer_t4: "तुरंत वर्कशीट जनरेटर",
+        footer_t5: "स्मार्ट टाइमटेबल शेड्यूलर",
+        footer_col2b_title: "एडमिन",
+        footer_a1: "एडमिन डैशबोर्ड",
+        footer_a2: "शिक्षक एनालिटिक्स",
+        footer_a3: "संस्थागत इनसाइट्स",
+
+        footer_col3_title: "प्रोडक्ट्स",
+        footer_p1: "छात्र ऐप",
+        footer_p2: "शिक्षक डैशबोर्ड",
+        footer_p3: "गेमिफ़िकेशन सूट",
+        footer_p4: "टीच-बैक AI",
+        footer_p5: "लर्निंग एनालिटिक्स",
+        footer_p6: "रिवीजन इंजन",
+
+        footer_col4_title:  "कंपनी",
+        footer_c1: "हमारे बारे में",
+        footer_c2: "मूल्य योजना",
+        footer_c3: "करियर",
+        footer_c4: "संपर्क करें",
+        footer_c5: "नियम और गोपनीयता",
+        footer_col4b_title: "संसाधन",
+        footer_r1: "डॉक्यूमेंटेशन",
+        footer_r2: "ब्लॉग",
+        footer_r3: "कम्युनिटी",
+
+        footer_copy:    "© 2025 Abhyaass — ❤️ के साथ बनाया गया। सर्वाधिकार सुरक्षित",
+        footer_privacy: "गोपनीयता नीति",
+        footer_terms:   "उपयोग की शर्तें"
+      }
+    };
+
+    /* ======================================================
+       setLanguage
+    ====================================================== */
+    function setLanguage(lang) {
+      const t = translations[lang];
+      if (!t) return;
+
+      /* text content elements */
+      document.querySelectorAll("[data-key]").forEach(el => {
+        const key = el.getAttribute("data-key");
+        if (t[key] !== undefined) {
+          el.textContent = t[key];
+        }
+      });
+
+      /* input placeholders — separate attribute */
+      document.querySelectorAll("[data-placeholder-key]").forEach(el => {
+        const key = el.getAttribute("data-placeholder-key");
+        if (t[key] !== undefined) {
+          el.placeholder = t[key];
+        }
+      });
+
+      document.documentElement.lang = lang === "hi" ? "hi" : "en";
+      document.getElementById("langEn").classList.toggle("active", lang === "en");
+      document.getElementById("langHi").classList.toggle("active", lang === "hi");
+
+      try { localStorage.setItem("lang", lang); } catch(e) {}
+    }
+
+    /* BUTTONS */
+    document.getElementById("langEn").addEventListener("click", () => setLanguage("en"));
+    document.getElementById("langHi").addEventListener("click", () => setLanguage("hi"));
+
+    /* on load */
+    document.addEventListener("DOMContentLoaded", () => {
+      let savedLang = "en";
+      try { savedLang = localStorage.getItem("lang") || "en"; } catch(e) {}
+      setLanguage(savedLang);
+    });
+
+    /* ======================================================
+       EXISTING CARD CLICK LOGIC — unchanged
+    ====================================================== */
+  document.querySelectorAll(".hero-card").forEach(card => {
+  card.addEventListener("click", () => {
+    const href = card.dataset.href;
+
+    if (href) {
+      window.location.href = href;
+    } else if (card.hasAttribute("data-upcoming")) {
+      alert("This feature is coming soon — stay tuned!");
+    }
+  });
+});
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("tool") === "worksheet") {
+      const form = document.getElementById("worksheetForm");
+      form.style.display = "block";
+      form.scrollIntoView({ behavior: "smooth" });
+
+      /* URL clean karo */
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+    }
+
+    /* ======================================================
+       EXISTING API LOGIC — unchanged
+    ====================================================== */
+    const API_URL = "http://127.0.0.1:8000/generate";
+
+    async function generateWorksheet() {
+      const output = document.getElementById("output");
+      output.textContent = "⏳ Generating worksheet...";
+
+      const data = {
+        subject:    document.getElementById("subject").value,
+        classLevel: document.getElementById("classLevel").value,
+        difficulty: document.getElementById("difficulty").value,
+        topic:      document.getElementById("topic").value
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        output.textContent = json.worksheet || "❌ No worksheet returned";
+      } catch (e) {
+        output.textContent = "❌ Failed to generate worksheet";
+      }
+    }
+  </script>
+
+</body>
+</html>

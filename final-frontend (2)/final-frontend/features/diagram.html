@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Diagram Generator</title>
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,Arial;}
+  body{
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color:#1a202c;
+    height:100vh;
+    overflow:hidden;
+  }
+
+  body.light{
+    background: linear-gradient(180deg, #e0f7ff 0%, #a7d8f0 100%);
+    color:#111;
+  }
+
+  .app{
+    display:grid;
+    grid-template-columns: 330px 1fr;
+    height:100vh;
+  }
+
+  /* LEFT */
+  .sidebar{
+    padding:18px 14px;
+    background: rgba(255,255,255,0.95);
+    border-right:1px solid rgba(0,0,0,0.08);
+    overflow:auto;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+  }
+  body.light .sidebar{
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-right:1px solid rgba(0,0,0,0.06);
+  }
+
+  .logo{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    padding:10px 8px 12px;
+  }
+  .logo .icon{
+    width:54px;height:54px;
+    border-radius:18px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:900;
+    font-size:22px;
+    box-shadow:0 10px 30px rgba(102,126,234,0.3);
+    color:#fff;
+  }
+  .logo h1{font-size:22px;line-height:1.1;color:#2d3748;}
+  .logo h1 span{
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .small{opacity:0.65;font-size:13px;margin-top:2px;color:#4a5568;}
+
+  .badge{
+    margin:0 8px 14px;
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid rgba(102,126,234,0.2);
+    background: rgba(102,126,234,0.1);
+    font-size:12px;
+    color:#667eea;
+    font-weight:600;
+  }
+  body.light .badge{
+    background: rgba(102,126,234,0.15);
+    border:1px solid rgba(102,126,234,0.25);
+  }
+  .dot{
+    width:8px;height:8px;border-radius:99px;
+    background:#10b981;
+    box-shadow:0 0 0 4px rgba(16,185,129,0.2);
+  }
+
+  .section-title{
+    font-size:11px;
+    letter-spacing:0.1em;
+    opacity:0.5;
+    margin:20px 8px 10px;
+    font-weight:700;
+    color:#4a5568;
+    text-transform:uppercase;
+  }
+
+  .type-btn{
+    width:100%;
+    text-align:left;
+    padding:12px 12px;
+    border-radius:12px;
+    border:1px solid transparent;
+    background:transparent;
+    color:#2d3748;
+    cursor:pointer;
+    transition:all 0.2s ease;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    opacity:0.8;
+    font-size:14px;
+    font-weight:500;
+  }
+  body.light .type-btn{color:#2d3748;}
+  .type-btn:hover{
+    background: rgba(102,126,234,0.08);
+    opacity:1;
+    transform:translateX(4px);
+  }
+  body.light .type-btn:hover{background: rgba(102,126,234,0.12);}
+  .type-btn.active{
+    border:1px solid rgba(102,126,234,0.3);
+    background: linear-gradient(135deg, rgba(102,126,234,0.15), rgba(118,75,162,0.15));
+    opacity:1;
+    box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+    font-weight:700;
+  }
+
+  .btn{
+    padding:11px 14px;
+    border-radius:12px;
+    border:1px solid rgba(102,126,234,0.2);
+    background: rgba(255,255,255,0.7);
+    color:#2d3748;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.2s ease;
+    font-size:13px;
+    text-align:left;
+    width:100%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  body.light .btn{
+    color:#2d3748;
+    background: rgba(255,255,255,0.8);
+    border:1px solid rgba(102,126,234,0.15);
+  }
+
+  .btn:hover{
+    transform:translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102,126,234,0.25);
+    background: rgba(255,255,255,0.95);
+  }
+
+  /* Search */
+  .searchBox{
+    margin:10px 8px 6px;
+    display:flex;
+    gap:8px;
+  }
+  .searchBox input{
+    flex:1;
+    padding:11px 14px;
+    border-radius:12px;
+    border:1px solid rgba(102,126,234,0.2);
+    background: rgba(255,255,255,0.8);
+    color:#2d3748;
+    outline:none;
+    transition:all 0.2s ease;
+    font-size:13px;
+  }
+  .searchBox input:focus{
+    border-color: rgba(102,126,234,0.5);
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+  }
+  body.light .searchBox input{
+    background: rgba(255,255,255,0.9);
+    border:1px solid rgba(102,126,234,0.2);
+    color:#2d3748;
+  }
+
+  /* HISTORY */
+  .history{
+    margin-top:10px;
+    padding:0 6px 12px;
+  }
+  .history-item{
+    padding:12px 14px;
+    border-radius:12px;
+    cursor:pointer;
+    border:1px solid rgba(102,126,234,0.15);
+    background: rgba(255,255,255,0.6);
+    margin-bottom:10px;
+    transition:all 0.2s ease;
+    position:relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  body.light .history-item{
+    background: rgba(255,255,255,0.7);
+    border:1px solid rgba(102,126,234,0.12);
+  }
+
+  .history-item:hover{
+    border:1px solid rgba(102,126,234,0.4);
+    background: rgba(255,255,255,0.9);
+    transform:translateX(4px);
+    box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+  }
+
+  .history-item .t1{
+    font-size:13px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    margin-bottom:6px;
+    color:#2d3748;
+  }
+  .history-item .t2{
+    font-size:11px;
+    opacity:0.7;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    color:#4a5568;
+  }
+  .pill{
+    font-size:10px;
+    padding:4px 9px;
+    border-radius:999px;
+    border:1px solid rgba(102,126,234,0.2);
+    background: rgba(102,126,234,0.1);
+    color:#667eea;
+    font-weight:600;
+  }
+  body.light .pill{
+    background: rgba(102,126,234,0.15);
+    border:1px solid rgba(102,126,234,0.25);
+  }
+
+  .del{
+    position:absolute;
+    top:10px;
+    right:10px;
+    border:none;
+    cursor:pointer;
+    padding:6px 9px;
+    border-radius:8px;
+    background: rgba(239,68,68,0.1);
+    color:#dc2626;
+    font-weight:700;
+    transition:all 0.2s ease;
+    font-size:12px;
+  }
+  .del:hover{
+    background: rgba(239,68,68,0.2);
+    transform:scale(1.1);
+  }
+
+  /* MAIN */
+  .main{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+  }
+
+  .topbar{
+    height:70px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 24px;
+    border-bottom:1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+  }
+  body.light .topbar{
+    background: rgba(255,255,255,0.4);
+    border-bottom:1px solid rgba(255,255,255,0.3);
+  }
+
+  .project{
+    font-size:16px;
+    font-weight:700;
+    color:#fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .top-actions{display:flex;gap:12px;align-items:center;}
+
+  .btn2{
+    padding:11px 18px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.2s ease;
+    font-size:13px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .btn2:hover{
+    background: rgba(255,255,255,0.3);
+    transform:translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+  body.light .btn2{
+    background: rgba(255,255,255,0.5);
+    border:1px solid rgba(255,255,255,0.4);
+    color:#2d3748;
+  }
+
+  .btn2.primary{
+    border:none;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    box-shadow:0 8px 20px rgba(102,126,234,0.4);
+    color:#fff;
+  }
+  .btn2.primary:hover{
+    box-shadow:0 12px 28px rgba(102,126,234,0.5);
+  }
+
+  /* CANVAS */
+  .canvas-wrap{
+    flex:1;
+    position:relative;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.15) 0%, transparent 50%);
+    overflow:auto;
+  }
+  body.light .canvas-wrap{
+    background:
+      radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.3) 0%, transparent 50%);
+  }
+
+  .canvas{
+    width:1200px;
+    height:720px;
+    margin:30px auto;
+    border-radius:20px;
+    background:#fff;
+    box-shadow:0 20px 60px rgba(0,0,0,0.2);
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.5);
+  }
+
+  .loading{
+    position:absolute;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background: rgba(255,255,255,0.9);
+    color:#667eea;
+    font-weight:700;
+    font-size:18px;
+    z-index:99;
+    backdrop-filter:blur(10px);
+  }
+
+  /* CHAT AREA */
+  #chatArea{
+    position:absolute;
+    left:18px;
+    bottom:18px;
+    width:430px;
+    max-height:520px;
+    overflow:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:50;
+  }
+
+  .msg{
+    padding:13px 16px;
+    border-radius:16px;
+    font-size:13px;
+    line-height:1.5;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    max-width:95%;
+  }
+
+  .msg.user{
+    align-self:flex-end;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color:#fff;
+    font-weight:500;
+  }
+
+  .msg.ai{
+    align-self:flex-start;
+    background: rgba(255,255,255,0.95);
+    border:1px solid rgba(102,126,234,0.2);
+    color:#2d3748;
+    font-weight:500;
+  }
+
+  /* BOTTOM INPUT */
+  .bottom-bar{
+    padding:20px 24px;
+    border-top:1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+  }
+  body.light .bottom-bar{
+    background: rgba(255,255,255,0.4);
+    border-top:1px solid rgba(255,255,255,0.3);
+  }
+
+  .prompt-row{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    max-width:1100px;
+    margin:auto;
+    background: rgba(255,255,255,0.3);
+    border:1px solid rgba(255,255,255,0.4);
+    padding:8px 12px;
+    border-radius:16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    backdrop-filter:blur(10px);
+  }
+  body.light .prompt-row{
+    background: rgba(255,255,255,0.6);
+    border:1px solid rgba(255,255,255,0.5);
+  }
+
+  .prompt-row input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:#fff;
+    font-size:14px;
+    padding:10px;
+    font-weight:500;
+  }
+  .prompt-row input::placeholder{
+    color:rgba(255,255,255,0.7);
+  }
+  body.light .prompt-row input{color:#2d3748;}
+  body.light .prompt-row input::placeholder{color:rgba(45,55,72,0.5);}
+
+  .generate{
+    padding:12px 22px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    color:#fff;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    box-shadow:0 6px 20px rgba(102,126,234,0.4);
+    transition:all 0.2s ease;
+    font-size:14px;
+  }
+  .generate:hover{
+    transform:scale(1.05);
+    box-shadow:0 8px 24px rgba(102,126,234,0.5);
+  }
+
+  .chips{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+    font-size:12px;
+  }
+  .chip{
+    padding:8px 14px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.2);
+    cursor:pointer;
+    color:#fff;
+    font-weight:600;
+    transition:all 0.2s ease;
+    backdrop-filter:blur(10px);
+  }
+  .chip:hover{
+    background: rgba(255,255,255,0.35);
+    transform:translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  body.light .chip{
+    background: rgba(255,255,255,0.5);
+    border:1px solid rgba(255,255,255,0.4);
+    color:#2d3748;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+
+<body class="light">
+
+<div class="app">
+
+  <!-- LEFT -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="icon">✦</div>
+      <div>
+        <h1>Diagram <span>Generator</span></h1>
+        <div class="small">Board-ready diagrams in seconds</div>
+      </div>
+    </div>
+
+    
+
+    <button class="btn" onclick="newDiagram()">➕ New Diagram</button>
+
+    <button class="btn" onclick="toggleTheme()">🌗 Toggle Theme</button>
+
+    <div class="section-title">DIAGRAM TYPES</div>
+
+    <button class="type-btn active" onclick="setType('board')" id="btn-board">🧑‍🏫 Board Diagram</button>
+    <button class="type-btn" onclick="setType('mindmap')" id="btn-mindmap">🧠 Mind Map</button>
+    <button class="type-btn" onclick="setType('flowchart')" id="btn-flowchart">🔁 Flowchart</button>
+    <button class="type-btn" onclick="setType('orgchart')" id="btn-orgchart">🏢 Org Chart</button>
+    <button class="type-btn" onclick="setType('sequence')" id="btn-sequence">📍 Sequence Map</button>
+    <button class="type-btn" onclick="setType('er')" id="btn-er">🗃️ Entity Relation</button>
+    <button class="type-btn" onclick="setType('hierarchy')" id="btn-hierarchy">🌳 Hierarchy Logic</button>
+
+    <div class="section-title">QUICK ACTIONS</div>
+    <button class="btn" onclick="copySVG()">📋 Copy SVG</button>
+    <button class="btn" onclick="downloadPDF()">⬇️ Export PDF</button>
+
+    <div class="section-title">SEARCH</div>
+    <div class="searchBox">
+      <input id="searchInput" placeholder="Search history..." oninput="searchHistory()" />
+    </div>
+
+    <div class="section-title">YOUR DIAGRAMS</div>
+    <div class="history" id="historyList">Loading...</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="topbar">
+      <div class="project"><b>Generate Diagram</b> </div>
+
+      <div class="top-actions">
+        <button class="btn2" onclick="downloadPNG()">Export PNG</button>
+        <button class="btn2" onclick="downloadSVG()">Save as SVG</button>
+        <button class="btn2 primary" onclick="generate()">Generate ⚡</button>
+      </div>
+    </div>
+
+    <div class="canvas-wrap">
+      <div class="canvas" id="canvas">
+        <div class="loading" id="loading">Generating... ✨</div>
+        <div id="chatArea"></div>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="prompt-row">
+        <input id="prompt" placeholder="Type a topic..." />
+        <button class="generate" onclick="generate()">Generate ⚡</button>
+      </div>
+
+      <div class="chips">
+        <div class="chip" onclick="setPrompt('Electric circuit with battery, switch, bulb')">Electric Circuit</div>
+        <div class="chip" onclick="setPrompt('Metals and non-metals mindmap')">Metals Mindmap</div>
+        <div class="chip" onclick="setPrompt('Steps of photosynthesis flowchart')">Flowchart</div>
+        <div class="chip" onclick="setPrompt('School hierarchy org chart')">Org Chart</div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+<script src="../config.js"></script>
+
+<script>
+  console.log("CONFIG:", window.APP_CONFIG);
+</script>
+<script>
+const API_BASE = window.APP_CONFIG?.API_BASE || "https://backend-abhyaas-final.onrender.com";
+let selectedType = "board";
+let currentSVG = "";
+let currentPrompt = "";
+
+function setPrompt(text){
+  document.getElementById("prompt").value = text;
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
+}
+
+function setType(type){
+  selectedType = type;
+  document.querySelectorAll(".type-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("btn-"+type).classList.add("active");
+}
+
+function newDiagram(){
+  currentSVG = "";
+  currentPrompt = "";
+  document.getElementById("prompt").value = "";
+  document.getElementById("chatArea").innerHTML = "";
+  document.getElementById("canvas").innerHTML = `
+    <div class="loading" id="loading">Generating... ✨</div>
+    <div id="chatArea"></div>
+  `;
+}
+
+function addUserMessage(text){
+  const chat = document.getElementById("chatArea");
+  const div = document.createElement("div");
+  div.className = "msg user";
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function addAIMessage(text){
+  const chat = document.getElementById("chatArea");
+  const div = document.createElement("div");
+  div.className = "msg ai";
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function generate(){
+  const prompt = document.getElementById("prompt").value.trim();
+  if(!prompt){ alert("Enter a topic!"); return; }
+
+  currentPrompt = prompt;
+
+  addUserMessage(prompt);
+  document.getElementById("prompt").value = ""; // chatgpt style clear
+
+  document.getElementById("loading").style.display="flex";
+
+  try{
+    const res = await fetch(`${API}/generate`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({prompt, type:selectedType})
+    });
+
+    if(!res.ok){
+      const err = await res.text();
+      throw new Error(err);
+    }
+
+    const data = await res.json();
+
+    if(!data.svg){
+      addAIMessage("❌ No SVG received");
+      return;
+    }
+
+    currentSVG = data.svg;
+
+    document.getElementById("canvas").innerHTML = `
+      <div class="loading" id="loading">Generating... ✨</div>
+      ${data.svg}
+      <div id="chatArea"></div>
+    `;
+
+    addAIMessage("✅ Diagram generated");
+    loadHistory();
+
+  }catch(e){
+    addAIMessage("❌ Error: " + e.message);
+  }finally{
+    const loading = document.getElementById("loading");
+    if(loading) loading.style.display="none";
+  }
+}
+
+function downloadSVG(){
+  if(!currentSVG){ alert("Generate first!"); return; }
+  const blob = new Blob([currentSVG], {type:"image/svg+xml"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `diagram_${selectedType}.svg`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function copySVG(){
+  if(!currentSVG){ alert("Generate first!"); return; }
+  navigator.clipboard.writeText(currentSVG);
+  alert("SVG copied ✅");
+}
+
+function downloadPNG(){
+  if(!currentSVG){ alert("Generate first!"); return; }
+
+  const svgBlob = new Blob([currentSVG], {type:"image/svg+xml;charset=utf-8"});
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = function(){
+    const canvas = document.createElement("canvas");
+    canvas.width = 1600;
+    canvas.height = 1000;
+
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const png = canvas.toDataURL("image/png");
+
+    const a = document.createElement("a");
+    a.href = png;
+    a.download = `diagram_${selectedType}.png`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
+}
+
+async function downloadPDF(){
+  if(!currentSVG){
+    alert("Generate first!");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+
+  // Convert SVG to PNG first
+  const svgBlob = new Blob([currentSVG], {type:"image/svg+xml;charset=utf-8"});
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = function(){
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 1600;
+    canvas.height = 1000;
+
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const pngData = canvas.toDataURL("image/png");
+
+    // Create PDF
+    const pdf = new jsPDF("landscape", "pt", "a4");
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // Fit image into page
+    pdf.addImage(pngData, "PNG", 0, 0, pageWidth, pageHeight);
+
+    pdf.save(`diagram_${selectedType}.pdf`);
+
+    URL.revokeObjectURL(url);
+  };
+
+  img.src = url;
+}
+
+
+async function loadHistory(){
+  const res = await fetch(`${API}/history?limit=20`);
+  const data = await res.json();
+  renderHistory(data.items || []);
+}
+
+async function searchHistory(){
+  const q = document.getElementById("searchInput").value.trim();
+  if(!q){
+    loadHistory();
+    return;
+  }
+  const res = await fetch(`${API}/search?q=${encodeURIComponent(q)}&limit=20`);
+  const data = await res.json();
+  renderHistory(data.items || []);
+}
+
+function renderHistory(items){
+  const root = document.getElementById("historyList");
+  if(items.length === 0){
+    root.innerHTML = `<div style="opacity:.6;font-size:13px;padding:10px 12px;">No diagrams</div>`;
+    return;
+  }
+
+  root.innerHTML = items.map(x => `
+    <div class="history-item" onclick="openDiagram('${x.id}')">
+      <button class="del" onclick="event.stopPropagation(); deleteDiagram('${x.id}')">✕</button>
+      <div class="t1">${escapeHtml(x.prompt)}</div>
+      <div class="t2">
+        <span class="pill">${x.diagram_type || "unknown"}</span>
+        <span>${new Date(x.created_at).toLocaleString()}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function deleteDiagram(id){
+  if(!confirm("Delete this diagram?")) return;
+  await fetch(`${API}/diagram/${id}`, {method:"DELETE"});
+  loadHistory();
+}
+
+async function openDiagram(id){
+  const res = await fetch(`${API}/diagram/${id}`);
+  const d = await res.json();
+  if(!d.svg) return;
+
+  selectedType = d.diagram_type || "board";
+  document.querySelectorAll(".type-btn").forEach(b=>b.classList.remove("active"));
+  const btn = document.getElementById("btn-"+selectedType);
+  if(btn) btn.classList.add("active");
+
+  currentSVG = d.svg;
+
+  document.getElementById("canvas").innerHTML = `
+    ${d.svg}
+    <div id="chatArea"></div>
+  `;
+}
+
+function escapeHtml(text){
+  return text
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+loadHistory();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1599 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Aabhyas | Learn Smarter</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-top: #f7feff;
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --muted: #53707f;
+      --heading: #0a4a56;
+      --accent-from: #06b6d4;
+      --accent-to: #0ea5e9;
+      --card-border: rgba(2, 6, 23, 0.04);
+      --card-shadow: 0 18px 40px rgba(8, 30, 40, 0.04);
+      --pill-bg: linear-gradient(90deg, #06b6d4, #60a5fa);
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      background: linear-gradient(180deg, var(--bg-top) 0%, #66caf5 45%, var(--bg) 100%);
+      color: var(--heading);
+      overflow-x: hidden;
+    }
+
+    /* HERO */
+    .hero-wrapper {
+      max-width: 1180px;
+      margin: 44px auto 36px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .hero-content { display: flex; flex-direction: column; }
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.12);
+      width: max-content;
+      margin-bottom: 12px;
+    }
+    .hero-title {
+      font-size: 2.9rem;
+      line-height: 1.05;
+      margin: 6px 0 14px;
+      color: var(--heading);
+      font-weight: 800;
+    }
+    .hero-sub {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+    .hero-image img {
+      width: 620px;
+      height: 420px;
+      border-radius: 18px;
+      object-fit: cover;
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.15);
+      transition: transform 0.6s ease, box-shadow 0.6s ease;
+    }
+    
+
+    @media (max-width:900px) {
+      .hero-wrapper { grid-template-columns: 1fr; text-align: center; }
+      .hero-image { order: -1; margin-bottom: 20px; }
+      .hero-sub { margin-left: auto; margin-right: auto; }
+    }
+
+    /* NAVBAR */
+    .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 32px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+}
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img.logo {
+      width: 44px; height: 44px; border-radius: 8px; object-fit: cover;
+      box-shadow: 0 6px 18px rgba(3, 20, 30, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .brand .title { font-weight: 700; color: var(--heading); font-size: 1.05rem; }
+    .nav-links { display: flex; gap: 18px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-weight: 600; }
+    .nav-links a:hover { color: var(--accent-from); }
+    .cta-getstarted {
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #62c9db, #031f4d);
+      color: white;
+      font-weight: 700;
+      border: none;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 0.95rem;
+    }
+
+    /* EXPLORE TOOLS */
+    .explore-wrap { width: 100%; margin: 18px 0 28px; text-align: left; }
+    .explore-inner-wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+    .explore-title { font-size: 1.15rem; color: var(--heading); font-weight: 700; margin-bottom: 8px; }
+    .explore-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 12px; }
+    .scroller-outer {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  position: relative;
+  overflow: hidden;
+  padding: 24px 0;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(6,182,212,0.06), rgba(59,130,246,0.04));
+  border: 1px solid rgba(6,182,212,0.12);
+}
+
+    .scroller-inner {
+      display: flex;
+      gap: 16px;
+      padding: 12px 20px;
+      animation: scroll-left 20s linear infinite;
+      align-items: stretch;
+    }
+    .scroller-outer:hover .scroller-inner,
+    .scroller-inner:focus-within { animation-play-state: paused; }
+    @keyframes scroll-left {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-33%); }
+    }
+   .tool-card {
+  min-width: 420px;
+  max-width: 420px;
+  height: 200px;
+  background: linear-gradient(135deg, #ffffff 0%, #f7fdff 100%);
+  border-radius: 22px;
+  padding: 26px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  border: 1px solid rgba(6,182,212,0.12);
+  box-shadow:
+    0 20px 60px rgba(6,182,212,0.08),
+    0 8px 30px rgba(0,0,0,0.04);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+  transition: all .45s cubic-bezier(.16,1,.3,1);
+  pointer-events: none;
+  user-select: none;
+}
+.tool-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow:
+    0 35px 90px rgba(6,182,212,0.18),
+    0 15px 40px rgba(0,0,0,0.08);
+}
+.tool-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  border-radius: 22px 22px 0 0;
+  opacity: 0.8;
+}
+.tool-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(6,182,212,0.08) 50%,
+    transparent 100%
+  );
+  transition: left .6s ease;
+}
+
+.tool-card:hover::after {
+  left: 140%;
+}
+
+    .tool-card * { pointer-events: none; }
+    .tool-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #06b6d4, #38bdf8);
+  color: white;
+  box-shadow: 0 14px 30px rgba(6,182,212,0.25);
+  flex-shrink: 0;
+}
+
+   .tool-body h4 {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  margin: 0 0 6px;
+  font-weight: 800;
+  color: var(--heading);
+}
+
+.tool-body p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+ /* FEATURES */
+    .features-section { max-width: 1180px; margin: 0 auto 36px; padding: 0 24px; }
+    .features-title { text-align: center; font-size: 1.6rem; color: var(--heading); font-weight: 800; margin-bottom: 6px; }
+    .features-sub { text-align: center; color: var(--muted); margin-bottom: 18px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; align-items: start; }
+    .feature-card {
+      background: var(--panel); border-radius: 12px; padding: 18px;
+      border: 1px solid var(--card-border); box-shadow: var(--card-shadow);
+      min-height: 150px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .feature-top { display: flex; gap: 12px; align-items: center; }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 12px; display: flex;
+      align-items: center; justify-content: center; color: white;
+      background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+      font-size: 22px; box-shadow: 0 10px 26px rgba(6, 182, 212, 0.06);
+    }
+    .feature-title { margin: 0; font-weight: 700; color: var(--heading); }
+    .feature-text { color: var(--muted); margin-top: 6px; }
+
+    /* CTA */
+    .cta-section { max-width: 1180px; margin: 36px auto 40px; padding: 0 24px; }
+    .cta-card {
+      padding: 42px; border-radius: 24px;
+      background: linear-gradient(135deg, #0b5c6b, #2575b6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 30px 80px rgba(10, 79, 120, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      text-align: center; position: relative;
+    }
+    .cta-card::before {
+      content: ""; position: absolute; inset: -2px; border-radius: 26px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.6), rgba(14, 165, 233, 0.6));
+      z-index: -1; filter: blur(18px);
+    }
+    .cta-title { font-size: 1.6rem; margin: 0 0 8px; color: #ffffff; font-weight: 800; }
+    .cta-sub { color: rgba(255, 255, 255, 0.85); margin-bottom: 14px; }
+    .cta-card .cta-getstarted {
+      background: linear-gradient(90deg, #06b6d4, #38bdf8);
+      color: #022c35; box-shadow: 0 18px 40px rgba(6, 182, 212, 0.45);
+    }
+
+    /* TESTIMONIALS */
+    .testimonials { max-width: 1180px; margin: 36px auto 24px; padding: 0 24px; }
+    .testimonials h2 { text-align: center; color: var(--heading); margin-bottom: 16px; font-size: 1.6rem; }
+    .test-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+    .testimonial-card {
+      background: #fff; border-radius: 12px; padding: 18px;
+      border: 1px solid var(--card-border); box-shadow: var(--card-shadow);
+    }
+    .testimonial-quote { color: var(--muted); margin-bottom: 12px; font-style: normal; }
+    .testimonial-author { display: flex; gap: 12px; align-items: center; }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 999px; display: inline-block;
+      background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    /* PRICING */
+    .pricing { max-width: 1180px; margin: 24px auto 40px; padding: 0 24px; text-align: center; }
+    .pricing h2 { color: var(--heading); margin-bottom: 6px; font-size: 1.6rem; }
+    .pricing p.sub { color: var(--muted); margin-bottom: 18px; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; align-items: start; }
+    .price-card { background: var(--panel); border-radius: 12px; padding: 20px; border: 1px solid var(--card-border); box-shadow: var(--card-shadow); }
+    .price-title { font-weight: 700; margin-bottom: 8px; }
+    .price-amount { font-size: 1.6rem; margin-bottom: 8px; color: var(--heading); font-weight: 800; }
+    .price-desc { color: var(--muted); margin-bottom: 12px; }
+    .price-cta { padding: 10px 14px; border-radius: 8px; background: #e6f8ff; color: var(--heading); text-decoration: none; font-weight: 700; display: inline-block; }
+
+    /* FOOTER */
+    .footer { border-top: 1px solid var(--card-border); margin-top: 36px; padding: 28px 24px; background: transparent; color: var(--muted); }
+    .footer-inner {
+      max-width: 1180px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: 12px; align-items: start; font-size: 0.9rem;
+    }
+    @media (max-width:900px) {
+      .nav-links { display: none; }
+      .explore-inner-wrap, .hero-wrapper, .features-section, .cta-section { padding: 0 18px; }
+      .scroller-inner { animation-duration: 28s; }
+      .hero-title { font-size: 2.1rem; }
+      .features-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .footer-inner { grid-template-columns: 1fr; }
+      .scroller-outer { margin-left: 0; width: 100%; }
+    }
+
+    /* DEMO BUTTON */
+    .btn-demo {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 16px; border-radius: 10px; font-weight: 600;
+      font-size: 0.95rem; text-decoration: none; color: white;
+      border: 1px solid rgba(10, 74, 86, 0.25);
+      background: rgba(10, 74, 86, 0.25);
+    }
+    .btn-demo:hover { background: rgba(6, 182, 212, 0.08); }
+    .hero-actions { display: flex; gap: 14px; align-items: center; }
+
+    /* WHY ABHYAASS */
+    .why-abhyass { max-width: 1180px; margin: 80px auto; padding: 0 24px; text-align: center; }
+    .why-title { font-size: 2.2rem; font-weight: 800; color: var(--heading); margin-bottom: 10px; }
+    .why-sub { color: var(--muted); font-size: 1.05rem; max-width: 680px; margin: 0 auto 40px; }
+    .why-cards {
+  position: relative;
+  height: 320px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.why-card {
+  position: absolute;
+  width: 340px;
+  padding: 34px 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 0.7s cubic-bezier(.16,1,.3,1);
+  opacity: 0;
+  transform: scale(0.7);
+  pointer-events: none;
+}
+
+/* CENTER CARD */
+.why-card.active {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  z-index: 3;
+  pointer-events: auto;
+  box-shadow:
+    0 40px 120px rgba(6, 182, 212, 0.25),
+    0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* LEFT + RIGHT */
+.why-card.left,
+.why-card.right {
+  opacity: 0.5;
+  transform: scale(0.85);
+  filter: blur(1px);
+}
+
+/* LEFT POSITION */
+.why-card.left {
+  transform: translateX(-380px) scale(0.85);
+}
+
+/* RIGHT POSITION */
+.why-card.right {
+  transform: translateX(380px) scale(0.85);
+}
+
+
+    .why-card.show { opacity: 1; transform: translateY(0) scale(1); }
+    .why-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 22px;
+  background: linear-gradient(135deg, #06b6d4, #60a5fa);
+  color: white;
+  box-shadow: 0 15px 35px rgba(6, 182, 212, 0.35);
+}
+.why-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0a4a56;
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+
+.why-card p {
+  font-size: 0.98rem;
+  color: #4b5563;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.why-link {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-from);
+  letter-spacing: 0.02em;
+  transition: all 0.25s ease;
+}
+
+.why-link:hover {
+  letter-spacing: 0.05em;
+}
+@media (max-width:768px) { .why-title { font-size: 1.8rem; } .why-card { text-align: center; } }
+
+
+
+    /* SCROLL STORY */
+    .story-section {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+      max-width: 1180px; margin: 120px auto; padding: 0 24px;
+    }
+    .story-sticky { position: sticky; top: 120px; height: 420px; }
+    .story-media { position: relative; width: 100%; height: 420px; overflow: hidden; border-radius: 18px; }
+    .story-video {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      opacity: 0; transform: translateY(60px) scale(1.05);
+      transition: opacity .6s ease, transform .8s cubic-bezier(.4, 0, .2, 1);
+    }
+    .story-video.active { opacity: 1; transform: translateY(0) scale(1); z-index: 2; }
+    .story-video.exit { opacity: 0; transform: translateY(-60px) scale(0.98); z-index: 1; }
+    .story-content { display: flex; flex-direction: column; gap: 140px; }
+    .story-block { opacity: 0; transform: translateY(60px); transition: all .6s ease; }
+    .story-block.active { opacity: 1; transform: translateY(0); }
+    .story-tag { font-size: 0.75rem; border: 1px solid #ccc; padding: 4px 10px; border-radius: 999px; display: inline-block; margin-bottom: 10px; }
+    .story-block h2 { font-size: 2.5rem; font-weight: 800; margin: 12px 0; }
+    .story-block p { max-width: 420px; color: #111111; line-height: 1.6; }
+    .story-block button {
+      margin-top: 20px; padding: 12px 26px; border-radius: 999px; border: none;
+      background: linear-gradient(135deg, #06b6d4, #38bdf8); color: #022c35;
+      font-weight: 700; cursor: pointer; transition: .25s ease;
+    }
+    .story-block button:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(6, 182, 212, 0.35); }
+    @media(max-width:900px) { .story-section { grid-template-columns: 1fr; } .story-sticky { position: relative; height: 240px; } }
+
+    /* TRUSTED BY */
+    .trusted-section {
+      position: relative; height: 420px; margin: 120px auto; max-width: 1180px;
+      background-image: url('assets/images/teachers.jpeg');
+      background-size: cover; background-position: center;
+      border-radius: 22px; overflow: hidden;
+    }
+    .trusted-overlay { position: absolute; inset: 0; background: linear-gradient(rgba(10, 74, 86, 0.75), rgba(10, 74, 86, 0.75)); z-index: 1; }
+    .trusted-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: whitesmoke; }
+    .trusted-top { font-size: 4.1rem; letter-spacing: 0.02em; opacity: 0.9; margin-bottom: 0px; }
+    .trusted-main { font-size: 4.5rem; font-weight: 800; line-height: 0.5; margin: 0; }
+    .trusted-sub { font-size: 4.1rem; margin-top: 6px; opacity: 0.95; }
+    @media(max-width:768px) { .trusted-section { height: 300px; margin: 80px 18px; } .trusted-main { font-size: 3rem; } .trusted-sub { font-size: 1.1rem; } }
+
+    /* SITE FOOTER */
+    .site-footer { background: #ffffff; border-top: 1px solid rgba(2, 6, 23, 0.08); padding: 48px 24px 20px; color: #111827; }
+    .footer-grid { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px; align-items: start; }
+    .footer-col h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; color: #0a4a56; }
+    .footer-col a { display: block; font-size: 0.9rem; color: #4b5563; text-decoration: none; margin-bottom: 9px; line-height: 1.4; }
+    .footer-col a:hover { color: #06b6d4; }
+    .footer-col .mt { margin-top: 24px; }
+    .footer-bottom { max-width: 1180px; margin: 40px auto 0; padding-top: 16px; border-top: 1px solid rgba(2, 6, 23, 0.06); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: #6b7280; }
+    .footer-links { display: flex; gap: 22px; }
+    .footer-links a { color: #6b7280; text-decoration: none; }
+    .footer-links a:hover { color: #06b6d4; }
+    @media(max-width:900px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; text-align: left; } .footer-bottom { flex-direction: column; gap: 10px; text-align: center; } }
+
+    /* GLOBAL POLISH */
+    html { scroll-behavior: smooth; }
+    section { scroll-margin-top: 120px; }
+    h1, h2, h3 { letter-spacing: -0.015em; }
+    p { line-height: 1.65; }
+    .feature-card, .why-card, .price-card, .testimonial-card { transition: transform .35s ease, box-shadow .35s ease; }
+    .feature-card:hover, .why-card:hover, .price-card:hover, .testimonial-card:hover { transform: translateY(-6px); box-shadow: 0 26px 60px rgba(8, 30, 40, 0.08); }
+    .cta-getstarted, .btn-demo, .price-cta, .story-block button { transition: all .25s ease; }
+    .cta-getstarted:hover, .price-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(6, 182, 212, 0.35); }
+    .btn-demo:hover { background: rgba(6, 182, 212, 0.15); }
+    .section-fade { opacity: 0; transform: translateY(40px); transition: all .8s ease; }
+    .section-fade.show { opacity: 1; transform: translateY(0); }
+    h1, h2, h3, h4, .hero-title, .why-title, .features-title, .cta-title { font-family: var(--font-heading); letter-spacing: -0.02em; }
+    .cta-getstarted, .btn-demo, .story-block button { font-family: var(--font-heading); letter-spacing: -0.01em; }
+
+    /* LANG SWITCH */
+    .lang-switch { display: flex; gap: 6px; }
+    .lang-switch button { border: 1px solid rgba(0,0,0,.15); background: white; padding: 6px 10px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .lang-switch button.active { background: #06b6d4; color: white; border-color: #06b6d4; }
+
+     /* ===================== SHIMMER EFFECT ===================== */
+    .shimmer-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent 0%,
+        rgba(6, 182, 212, 0.08) 50%,
+        transparent 100%
+      );
+      transition: left 0.55s ease;
+      pointer-events: none;
+    }
+    .shimmer-card:hover::after {
+      left: 160%;
+    }
+
+    /* ===================== STATS COUNTER ===================== */
+    .stats-section {
+      max-width: 1180px;
+      margin: 0 auto 48px;
+      padding: 0 24px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: transform .35s ease, box-shadow .35s ease;
+    }
+    .stat-card:hover { transform: translateY(-6px); box-shadow: 0 26px 60px rgba(8, 30, 40, 0.08); }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-from), var(--accent-to));
+      border-radius: 16px 16px 0 0;
+    }
+    .stat-number {
+      font-family: var(--font-heading);
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--heading);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-number span { color: var(--accent-from); }
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+    .stat-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    /* ===================== MODERN FAQ (FULL WIDTH) ===================== */
+.modern-faq-section {
+  width: 100%;
+  margin: 60px 0;
+  padding: 80px 0;
+   background: #b0dff3;
+}
+
+.faq-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.faq-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.modern-faq-title {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--heading);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #0a4a56 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.modern-faq-sub {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.modern-faq-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.modern-faq-item {
+  background: white;
+  border-radius: 20px;
+  margin: auto;
+  overflow: hidden;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-faq-item:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+  box-shadow: 0 12px 40px rgba(6, 182, 212, 0.15);
+  transform: translateY(-4px);
+}
+
+.modern-faq-item.active {
+  border-color: #06b6d4;
+  box-shadow: 0 20px 60px rgba(6, 182, 212, 0.25);
+}
+
+.faq-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 32px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fdff 100%);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.faq-header-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, #06b6d4, #38bdf8);
+  transform: scaleY(0);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-faq-item.active .faq-header-bar::before {
+  transform: scaleY(1);
+}
+
+.faq-header-bar:hover {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.faq-number {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #06b6d4;
+  min-width: 50px;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.modern-faq-item.active .faq-number {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.faq-question-text {
+  flex: 1;
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--heading);
+  margin: 0;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+
+.modern-faq-item.active .faq-question-text {
+  color: #06b6d4;
+}
+
+.faq-toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.modern-faq-item.active .faq-toggle {
+  background: linear-gradient(135deg, #06b6d4, #38bdf8);
+  transform: rotate(180deg);
+}
+
+.faq-icon-svg {
+  color: #06b6d4;
+  transition: all 0.3s ease;
+}
+
+.modern-faq-item.active .faq-icon-svg {
+  color: white;
+}
+
+.faq-content-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-faq-item.active .faq-content-wrapper {
+  max-height: 500px;
+}
+
+.faq-content {
+  padding: 0 32px 32px 106px;
+  animation: fadeInContent 0.5s ease forwards;
+  opacity: 0;
+}
+
+.modern-faq-item.active .faq-content {
+  opacity: 1;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faq-content p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .faq-container {
+    padding: 0 20px;
+  }
+ 
+  .modern-faq-title {
+    font-size: 2rem;
+  }
+ 
+  .faq-header-bar {
+    padding: 20px 20px;
+    gap: 16px;
+  }
+ 
+  .faq-number {
+    font-size: 1.2rem;
+    min-width: 40px;
+  }
+ 
+  .faq-question-text {
+    font-size: 1rem;
+  }
+ 
+  .faq-toggle {
+    width: 40px;
+    height: 40px;
+  }
+ 
+  .faq-content {
+    padding: 0 20px 24px 76px;
+  }
+ 
+  .faq-content p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .faq-content {
+    padding: 0 20px 24px 20px;
+  }
+ 
+  .faq-number {
+    display: none;
+  }
+}
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <header class="navbar" role="banner">
+    <div class="brand">
+      <img class="logo" src="assets/images/logo.jpeg" alt="Abhyass logo"
+        onerror="this.onerror=null; this.src='/mnt/data/023d5bc0-79f9-41fc-8c84-1747e800efbe.png'">
+      <div class="title">Abhyass</div>
+    </div>
+
+    <nav class="nav-links" aria-label="Main">
+      <div class="lang-switch">
+        <button id="langEn" class="active">EN</button>
+        <button id="langHi">हिंदी</button>
+      </div>
+      <a href="index.html" data-key="nav_home">Home</a>
+      <a href="features/chooseRole.html" data-key="nav_features">Features</a>
+      <a href="#about" data-key="nav_about">About</a>
+      <a href="features/chooseRole.html" class="cta-getstarted" data-key="nav_get_started">Get Started Free</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero-wrapper">
+    <div class="hero-content">
+      <div class="hero-badge" data-key="hero_badge">AI-Powered Education Platform</div>
+      <h1 class="hero-title" data-key="hero_title">Learn Smarter, Teach Easier with Abhyass</h1>
+      <p class="hero-sub" data-key="hero_sub">
+        Personalized AI tools for Indian classrooms — lesson planners, worksheets, auto-evaluation and multilingual support designed for grades 5–10.
+      </p>
+      <div class="hero-actions">
+        <a href="features/chooseRole.html" class="cta-getstarted" data-key="hero_cta">Get Started Free</a>
+        <a href="#demo" class="btn-demo" data-key="hero_demo">▶ Watch Demo</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="assets/images/class room.jpeg" alt="AI powered classroom learning" />
+    </div>
+  </section>
+
+  <!-- STATS COUNTER SECTION -->
+  <section class="stats-section section-fade" aria-label="Platform Statistics">
+    <div class="stats-grid">
+      <div class="stat-card shimmer-card">
+        <span class="stat-icon">🎓</span>
+        <div class="stat-number"><span class="counter" data-target="1000000" data-suffix="M+" data-divisor="1000000">0</span></div>
+        <div class="stat-label" data-key="stat1_label">Students Learning</div>
+      </div>
+      <div class="stat-card shimmer-card">
+        <span class="stat-icon">👩‍🏫</span>
+        <div class="stat-number"><span class="counter" data-target="50000" data-suffix="K+" data-divisor="1000">0</span></div>
+        <div class="stat-label" data-key="stat2_label">Teachers Empowered</div>
+      </div>
+      <div class="stat-card shimmer-card">
+        <span class="stat-icon">🏫</span>
+        <div class="stat-number"><span class="counter" data-target="5000" data-suffix="+" data-divisor="1">0</span></div>
+        <div class="stat-label" data-key="stat3_label">Schools Onboarded</div>
+      </div>
+      <div class="stat-card shimmer-card">
+        <span class="stat-icon">🗣️</span>
+        <div class="stat-number"><span class="counter" data-target="12" data-suffix="+" data-divisor="1">0</span></div>
+        <div class="stat-label" data-key="stat4_label">Indian Languages</div>
+      </div>
+    </div>
+  </section>
+  <!-- EXPLORE TOOLS -->
+  <section class="explore-wrap" aria-label="Explore Tools">
+    <div class="explore-inner-wrap">
+      <div class="explore-title" data-key="explore_title">Explore Tools</div>
+      <div class="explore-sub" data-key="explore_sub">Auto-scrolling showcase — hover to pause</div>
+    </div>
+
+    <div class="scroller-outer" aria-hidden="false">
+      <div id="scroller" class="scroller-inner" tabindex="0" aria-label="Tools carousel">
+
+        <div class="tool-card">
+          <div class="tool-icon">🎮</div>
+          <div class="tool-body">
+            <h4 data-key="tool1_title">Gamified Practice</h4>
+            <p data-key="tool1_desc">Subject-wise games and challenges that adapt to student level.</p>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-icon">📸</div>
+          <div class="tool-body">
+            <h4 data-key="tool2_title">Auto-Evaluator (Photos)</h4>
+            <p data-key="tool2_desc">Upload student answer photos — AI scores and gives feedback per student.</p>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-icon">🗣️</div>
+          <div class="tool-body">
+            <h4 data-key="tool3_title">Multilingual Voice &amp; Image</h4>
+            <p data-key="tool3_desc">Accepts voice/image input and responds in Indian languages.</p>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-icon">🧾</div>
+          <div class="tool-body">
+            <h4 data-key="tool4_title">AI Lesson Plans</h4>
+            <p data-key="tool4_desc">Generate localized lesson plans with activities and assessments.</p>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-icon">📄</div>
+          <div class="tool-body">
+            <h4 data-key="tool5_title">Instant Worksheets</h4>
+            <p data-key="tool5_desc">Create differentiated worksheets automatically from topics or images.</p>
+          </div>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-icon">📅</div>
+          <div class="tool-body">
+            <h4 data-key="tool6_title">Smart Timetable</h4>
+            <p data-key="tool6_desc">AI-generated timetables that balance topics and revision slots.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY ABHYAASS -->
+  <section id="about" class="why-abhyass section-fade">
+    <h2 class="why-title" data-key="why_title">Why Abhyaass?</h2>
+    <p class="why-sub" data-key="why_sub">A complete learning ecosystem built for clarity, curiosity, and mastery.</p>
+
+    <div class="why-cards">
+      <div class="why-card">
+        <div class="why-icon">🧠</div>
+        <h3 data-key="why_card1_title">Real Learning, Not Just Answers</h3>
+        <p data-key="why_card1_text">Students understand concepts deeply through AI.</p>
+        <span class="why-link" data-key="why_card1_link">Learn More</span>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🎮</div>
+        <h3 data-key="why_card2_title">Gamification That Makes Learning Fun</h3>
+        <p data-key="why_card2_text">Convert chapters into games, quizzes, puzzles, and missions.</p>
+        <span class="why-link" data-key="why_card2_link">Explore Games</span>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📊</div>
+        <h3 data-key="why_card3_title">Teacher Insights Without Extra Work</h3>
+        <p data-key="why_card3_text">Get instant reports, misconceptions, and class performance analytics.</p>
+        <span class="why-link" data-key="why_card3_link">See Teacher Tools</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCROLL STORY -->
+  <section class="story-section section-fade">
+
+    <div class="story-sticky">
+      <div class="story-media">
+        <video class="story-video active" data-index="0" src="assets/images/doubt-solver.mp4" autoplay muted loop playsinline></video>
+        <video class="story-video" data-index="1" src="assets/images/gamification.mp4" autoplay muted loop playsinline></video>
+        <video class="story-video" data-index="2" src="assets/images/teach-back.mp4" autoplay muted loop playsinline></video>
+      </div>
+    </div>
+
+    <div class="story-content">
+
+      <div class="story-block active" data-index="0">
+        <span class="story-tag" data-key="story_tag_students">For Students</span>
+        <h2 data-key="story1_title">Ask a Question Instant Doubt Solver</h2>
+        <p data-key="story1_p1">Ask any question and get clear, step-by-step explanations instantly. Whether it's maths, science, or concepts you didn't understand in class, Abhyaass explains it in simple language that actually makes sense.</p>
+        <p data-key="story1_p2">You can ask doubts while revising, practicing, or even late at night — learning never stops when curiosity strikes.</p>
+        <button  onclick="goToRole()" data-key="story1_btn">Try a chat</button>
+      </div>
+
+      <div class="story-block" data-index="1">
+        <span class="story-tag" data-key="story_tag_students">For Students</span>
+        <h2 data-key="story2_title">Gamification Chapters → Games</h2>
+        <p data-key="story2_p1">Turn boring chapters into interactive games, challenges, and missions that make learning fun and engaging.</p>
+        <p data-key="story2_p2">Earn rewards, unlock levels, and practice concepts daily — so studying never feels like pressure, only progress.</p>
+        <button onclick="goToRole()" data-key="story2_btn">See Games Demo</button>
+      </div>
+
+      <div class="story-block" data-index="2">
+        <span class="story-tag" data-key="story_tag_students">For Students</span>
+        <h2 data-key="story3_title">Teach-Back Mode Explain to AI</h2>
+        <p data-key="story3_p1">The best way to learn is to teach. Explain concepts to Abhyaass and let the AI ask smart questions that test your understanding.</p>
+        <p data-key="story3_p2">This helps you find gaps, think clearly, and remember topics longer — just like teaching a friend.</p>
+        <button onclick="goToRole()" data-key="story3_btn">See Demo</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section section-fade" aria-label="Call to action">
+    <div class="cta-card">
+      <div class="cta-title" data-key="cta_title">Ready to transform your classroom?</div>
+      <div class="cta-sub" data-key="cta_sub">Start now — free for classrooms. Premium plans available for school-wide admin &amp; analytics.</div>
+      <a href="features/chooseRole.html" class="cta-getstarted" data-key="cta_btn">Get Started Free</a>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials section-fade" aria-label="What teachers say">
+    <h2 data-key="testimonials_title">What Teachers Say</h2>
+    <div class="test-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-quote" data-key="testimonial1_quote">"Abhyass ne hamare lesson planning ka time aadha kar diya. Students engaged hain!"</div>
+        <div class="testimonial-author">
+          <div class="avatar">MS</div>
+          <div>
+            <div style="font-weight:700;color:var(--heading)" data-key="testimonial1_name">Mrs. Sharma</div>
+            <div style="color:var(--muted);font-size:0.9rem" data-key="testimonial1_school">Govt. Middle School, UP</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-quote" data-key="testimonial2_quote">"Worksheets instantly banana aur auto-evaluate karna bahut helpful hai."</div>
+        <div class="testimonial-author">
+          <div class="avatar">RR</div>
+          <div>
+            <div style="font-weight:700;color:var(--heading)" data-key="testimonial2_name">Mr. Reddy</div>
+            <div style="color:var(--muted);font-size:0.9rem" data-key="testimonial2_school">St. Paul High School</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing section-fade" aria-label="Simple Pricing">
+    <h2 data-key="pricing_title">Simple Pricing</h2>
+    <p class="sub" data-key="pricing_sub">Free forever for classrooms — premium plans for school-wide admin &amp; analytics.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-title" data-key="price1_name">Free</div>
+        <div class="price-amount">₹0</div>
+        <div class="price-desc" data-key="price1_desc">Worksheets, basic planner, multilingual tools</div>
+        <a class="price-cta" href="/features/chooseRole.html" data-key="price1_cta">Get Started</a>
+      </div>
+      <div class="price-card">
+        <div class="price-title" data-key="price2_name">Pro</div>
+        <div class="price-amount">₹499/mo</div>
+        <div class="price-desc" data-key="price2_desc">Advanced analytics, school admin features</div>
+        <a class="price-cta" href="#" data-key="price2_cta">Start Free Trial</a>
+      </div>
+      <div class="price-card">
+        <div class="price-title" data-key="price3_name">School</div>
+        <div class="price-amount">Custom</div>
+        <div class="price-desc" data-key="price3_desc">Enterprise onboarding, integrations and teachers tools</div>
+        <a class="price-cta" href="#" data-key="price3_cta">Contact Sales</a>
+      </div>
+    </div>
+  </section>
+
+<!-- MODERN FAQ SECTION  -->
+<section class="modern-faq-section section-fade" id="faq" aria-label="Frequently Asked Questions">
+  <div class="faq-container">
+    <div class="faq-header">
+      <h2 class="modern-faq-title" data-key="faq_title">Frequently Asked Questions</h2>
+      <p class="modern-faq-sub" data-key="faq_sub">Got questions? Everything is clear here.</p>
+    </div>
+
+    <div class="modern-faq-grid">
+      <!-- FAQ Item 1 -->
+      <div class="modern-faq-item" data-faq="0">
+        <div class="faq-header-bar" tabindex="0" role="button" aria-expanded="false">
+          <div class="faq-number">01</div>
+          <h3 class="faq-question-text" data-key="faq_q1">What is Abhyaass and how does it work?</h3>
+          <div class="faq-toggle">
+            <svg class="faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="faq-content-wrapper">
+          <div class="faq-content">
+            <p data-key="faq_a1">Abhyaass is an AI-powered education platform designed for Indian classrooms. It helps teachers with lesson planning, worksheets and evaluation, and gives students gamified learning and doubt solving — for grades 5–10.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Item 2 -->
+      <div class="modern-faq-item" data-faq="1">
+        <div class="faq-header-bar" tabindex="0" role="button" aria-expanded="false">
+          <div class="faq-number">02</div>
+          <h3 class="faq-question-text" data-key="faq_q2">Is this platform free?</h3>
+          <div class="faq-toggle">
+            <svg class="faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="faq-content-wrapper">
+          <div class="faq-content">
+            <p data-key="faq_a2">Yes! The basic plan is completely free — worksheets, lesson planner, and multilingual tools are included. For advanced analytics and school-wide features, you can get Pro (₹499/mo) or the School plan.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Item 3 -->
+      <div class="modern-faq-item" data-faq="2">
+        <div class="faq-header-bar" tabindex="0" role="button" aria-expanded="false">
+          <div class="faq-number">03</div>
+          <h3 class="faq-question-text" data-key="faq_q3">Which languages are supported?</h3>
+          <div class="faq-toggle">
+            <svg class="faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="faq-content-wrapper">
+          <div class="faq-content">
+            <p data-key="faq_a3">Abhyaass supports 12+ Indian languages including Hindi, Tamil, Telugu, Kannada, Bengali, Marathi and more. Voice and image input is also multilingual.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Item 4 -->
+      <div class="modern-faq-item" data-faq="3">
+        <div class="faq-header-bar" tabindex="0" role="button" aria-expanded="false">
+          <div class="faq-number">04</div>
+          <h3 class="faq-question-text" data-key="faq_q4">Can teachers use it without training?</h3>
+          <div class="faq-toggle">
+            <svg class="faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="faq-content-wrapper">
+          <div class="faq-content">
+            <p data-key="faq_a4">Absolutely! Abhyaass's interface is very simple and intuitive. Any teacher can start within 5 minutes without any technical knowledge. The School plan also includes dedicated onboarding support.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Item 5 -->
+      <div class="modern-faq-item" data-faq="4">
+        <div class="faq-header-bar" tabindex="0" role="button" aria-expanded="false">
+          <div class="faq-number">05</div>
+          <h3 class="faq-question-text" data-key="faq_q5">How does the Auto-Evaluator work?</h3>
+          <div class="faq-toggle">
+            <svg class="faq-icon-svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+        <div class="faq-content-wrapper">
+          <div class="faq-content">
+            <p data-key="faq_a5">The teacher uploads a photo of the student's answer sheet. AI automatically calculates each student's score, identifies common mistakes, and generates personalized feedback — in seconds.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- TRUSTED BY -->
+  <section class="trusted-section section-fade">
+    <div class="trusted-overlay"></div>
+    <div class="trusted-content">
+      <p class="trusted-top" data-key="trusted_top">Trusted by</p>
+      <h2 class="trusted-main">Over 1M</h2>
+      <p class="trusted-sub" data-key="trusted_sub">educators</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+
+      <div class="footer-col">
+        <h4 data-key="footer_col1_title">For Students</h4>
+        <a href="#" data-key="footer_s1">Gamified Learning</a>
+        <a href="#" data-key="footer_s2">Teach-Back Mode</a>
+        <a href="#" data-key="footer_s3">Revision Tools</a>
+        <a href="#" data-key="footer_s4">Multilingual Support</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col2_title">For Teachers</h4>
+        <a href="#" data-key="footer_t1">Board Diagram Generator</a>
+        <a href="#" data-key="footer_t2">Worksheet Auto Evaluator</a>
+        <a href="#" data-key="footer_t3">Track Progress</a>
+        <a href="#" data-key="footer_t4">Instant Worksheet Generator</a>
+        <a href="#" data-key="footer_t5">Smart Timetable Scheduler</a>
+        <h4 class="mt" data-key="footer_col2b_title">Admin</h4>
+        <a href="#" data-key="footer_a1">Admin Dashboard</a>
+        <a href="#" data-key="footer_a2">Teacher Analytics</a>
+        <a href="#" data-key="footer_a3">Institutional Insights</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col3_title">Products</h4>
+        <a href="#" data-key="footer_p1">Student App</a>
+        <a href="#" data-key="footer_p2">Teacher Dashboard</a>
+        <a href="#" data-key="footer_p3">Gamification Suite</a>
+        <a href="#" data-key="footer_p4">Teach-Back AI</a>
+        <a href="#" data-key="footer_p5">Learning Analytics</a>
+        <a href="#" data-key="footer_p6">Revision Engine</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col4_title">Company</h4>
+        <a href="#" data-key="footer_c1">About Us</a>
+        <a href="#" data-key="footer_c2">Pricing</a>
+        <a href="#" data-key="footer_c3">Careers</a>
+        <a href="#" data-key="footer_c4">Contact</a>
+        <a href="#" data-key="footer_c5">Terms &amp; Privacy</a>
+        <h4 class="mt" data-key="footer_col4b_title">Resources</h4>
+        <a href="#" data-key="footer_r1">Documentation</a>
+        <a href="#" data-key="footer_r2">Blog</a>
+        <a href="#" data-key="footer_r3">Community</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span data-key="footer_copy">© 2025 Abhyaass — Made with ❤️. All rights reserved</span>
+      <div class="footer-links">
+        <a href="#" data-key="footer_privacy">Privacy Policy</a>
+        <a href="#" data-key="footer_terms">Terms of Use</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+     /* ============================================================
+       TRANSLATIONS
+    ============================================================ */
+    const translations = {
+      en: {
+        nav_home:"Home", nav_features:"Features", nav_about:"About", nav_get_started:"Get Started Free",
+        hero_badge:"AI-Powered Education Platform",
+        hero_title:"Learn Smarter, Teach Easier with Abhyass",
+        hero_sub:"Personalized AI tools for Indian classrooms — lesson planners, worksheets, auto-evaluation and multilingual support designed for grades 5–10.",
+        hero_cta:"Get Started Free", hero_demo:"▶ Watch Demo",
+        stat1_label:"Students Learning", stat2_label:"Teachers Empowered",
+        stat3_label:"Schools Onboarded", stat4_label:"Indian Languages",
+        explore_title:"Explore Tools", explore_sub:"Auto-scrolling showcase — hover to pause",
+        tool1_title:"Gamified Practice", tool1_desc:"Subject-wise games and challenges that adapt to student level.",
+        tool2_title:"Auto-Evaluator (Photos)", tool2_desc:"Upload student answer photos — AI scores and gives feedback per student.",
+        tool3_title:"Multilingual Voice & Image", tool3_desc:"Accepts voice/image input and responds in Indian languages.",
+        tool4_title:"AI Lesson Plans", tool4_desc:"Generate localized lesson plans with activities and assessments.",
+        tool5_title:"Instant Worksheets", tool5_desc:"Create differentiated worksheets automatically from topics or images.",
+        tool6_title:"Smart Timetable", tool6_desc:"AI-generated timetables that balance topics and revision slots.",
+        why_title:"Why Abhyaass?", why_sub:"A complete learning ecosystem built for clarity, curiosity, and mastery.",
+        why_card1_title:"Real Learning, Not Just Answers", why_card1_text:"Students understand concepts deeply through AI explanations, games, and teach-back.", why_card1_link:"Learn More",
+        why_card2_title:"Gamification That Makes Learning Fun", why_card2_text:"Convert chapters into games, quizzes, puzzles, and missions.", why_card2_link:"Explore Games",
+        why_card3_title:"Teacher Insights Without Extra Work", why_card3_text:"Get instant reports, misconceptions, and class performance analytics.", why_card3_link:"See Teacher Tools",
+        story_tag_students:"For Students",
+        story1_title:"Ask a Question — Instant Doubt Solver",
+        story1_p1:"Ask any question and get clear, step-by-step explanations instantly. Whether it's maths, science, or concepts you didn't understand in class, Abhyaass explains it in simple language that actually makes sense.",
+        story1_p2:"You can ask doubts while revising, practicing, or even late at night — learning never stops when curiosity strikes.",
+        story1_btn:"Try a chat",
+        story2_title:"Gamification — Chapters → Games",
+        story2_p1:"Turn boring chapters into interactive games, challenges, and missions that make learning fun and engaging.",
+        story2_p2:"Earn rewards, unlock levels, and practice concepts daily — so studying never feels like pressure, only progress.",
+        story2_btn:"See Games Demo",
+        story3_title:"Teach-Back Mode — Explain to AI",
+        story3_p1:"The best way to learn is to teach. Explain concepts to Abhyaass and let the AI ask smart questions that test your understanding.",
+        story3_p2:"This helps you find gaps, think clearly, and remember topics longer — just like teaching a friend.",
+        story3_btn:"See Demo",
+        cta_title:"Ready to transform your classroom?",
+        cta_sub:"Start now — free for classrooms. Premium plans available for school-wide admin & analytics.",
+        cta_btn:"Get Started Free",
+        testimonials_title:"What Teachers Say",
+        testimonial1_quote:'"Abhyass ne hamare lesson planning ka time aadha kar diya. Students engaged hain!"',
+        testimonial1_name:"Mrs. Sharma", testimonial1_school:"Govt. Middle School, UP",
+        testimonial2_quote:'"Worksheets instantly banana aur auto-evaluate karna bahut helpful hai."',
+        testimonial2_name:"Mr. Reddy", testimonial2_school:"St. Paul High School",
+        pricing_title:"Simple Pricing",
+        pricing_sub:"Free forever for classrooms — premium plans for school-wide admin & analytics.",
+        price1_name:"Free", price1_desc:"Worksheets, basic planner, multilingual tools", price1_cta:"Get Started",
+        price2_name:"Pro", price2_desc:"Advanced analytics, school admin features", price2_cta:"Start Free Trial",
+        price3_name:"School", price3_desc:"Enterprise onboarding, integrations and teachers tools", price3_cta:"Contact Sales",
+        faq_title:"Frequently Asked Questions", faq_sub:"Got questions? Everything is clear here.",
+        faq_q1:"What is Abhyaass and how does it work?",
+        faq_a1:"Abhyaass is an AI-powered education platform designed for Indian classrooms. It helps teachers with lesson planning, worksheets and evaluation, and gives students gamified learning and doubt solving — for grades 5–10.",
+        faq_q2:"Is this platform free?",
+        faq_a2:"Yes! The basic plan is completely free — worksheets, lesson planner, and multilingual tools are included. For advanced analytics and school-wide features, you can get Pro (₹499/mo) or the School plan.",
+        faq_q3:"Which languages are supported?",
+        faq_a3:"Abhyaass supports 12+ Indian languages including Hindi, Tamil, Telugu, Kannada, Bengali, Marathi and more. Voice and image input is also multilingual.",
+        faq_q4:"Can teachers use it without training?",
+        faq_a4:"Absolutely! Abhyaass's interface is very simple and intuitive. Any teacher can start within 5 minutes without any technical knowledge. The School plan also includes dedicated onboarding support.",
+        faq_q5:"How does the Auto-Evaluator work?",
+        faq_a5:"The teacher uploads a photo of the student's answer sheet. AI automatically calculates each student's score, identifies common mistakes, and generates personalized feedback — in seconds.",
+        trusted_top:"Trusted by", trusted_sub:"educators",
+        footer_col1_title:"For Students", footer_s1:"Gamified Learning", footer_s2:"Teach-Back Mode", footer_s3:"Revision Tools", footer_s4:"Multilingual Support",
+        footer_col2_title:"For Teachers", footer_t1:"Board Diagram Generator", footer_t2:"Worksheet Auto Evaluator", footer_t3:"Track Progress", footer_t4:"Instant Worksheet Generator", footer_t5:"Smart Timetable Scheduler",
+        footer_col2b_title:"Admin", footer_a1:"Admin Dashboard", footer_a2:"Teacher Analytics", footer_a3:"Institutional Insights",
+        footer_col3_title:"Products", footer_p1:"Student App", footer_p2:"Teacher Dashboard", footer_p3:"Gamification Suite", footer_p4:"Teach-Back AI", footer_p5:"Learning Analytics", footer_p6:"Revision Engine",
+        footer_col4_title:"Company", footer_c1:"About Us", footer_c2:"Pricing", footer_c3:"Careers", footer_c4:"Contact", footer_c5:"Terms & Privacy",
+        footer_col4b_title:"Resources", footer_r1:"Documentation", footer_r2:"Blog", footer_r3:"Community",
+        footer_copy:"© 2025 Abhyaass — Made with ❤️. All rights reserved", footer_privacy:"Privacy Policy", footer_terms:"Terms of Use"
+      },
+
+      hi: {
+        nav_home:"होम", nav_features:"फीचर्स", nav_about:"हमारे बारे में", nav_get_started:"मुफ़्त शुरू करें",
+        hero_badge:"AI आधारित शिक्षा प्लेटफ़ॉर्म",
+        hero_title:"अब स्मार्ट तरीके से सीखें और आसानी से पढ़ाएं",
+        hero_sub:"भारतीय कक्षाओं के लिए AI टूल्स — लेसन प्लानर, वर्कशीट्स, ऑटो-इवैल्यूएशन और बहुभाषी सपोर्ट (कक्षा 5–10)।",
+        hero_cta:"मुफ़्त शुरू करें", hero_demo:"▶ डेमो देखें",
+        stat1_label:"छात्र सीख रहे हैं", stat2_label:"शिक्षक सशक्त हुए",
+        stat3_label:"स्कूल जुड़े", stat4_label:"भारतीय भाषाएं",
+        explore_title:"टूल्स देखें", explore_sub:"ऑटो-स्क्रॉलिंग — रोकने के लिए होवर करें",
+        tool1_title:"गेमिफ़ाइड अभ्यास", tool1_desc:"विषय-वार गेम्स और चुनौतियाँ जो छात्र के स्तर के अनुसार बदलती हैं।",
+        tool2_title:"ऑटो-इवैल्यूएटर (फ़ोटो)", tool2_desc:"छात्र की उत्तर-पुस्तिका की फ़ोटो अपलोड करें — AI प्रत्येक छात्र को स्कोर और फ़ीडबैक देगा।",
+        tool3_title:"बहुभाषी वॉइस और इमेज", tool3_desc:"वॉइस/इमेज इनपुट स्वीकार करता है और भारतीय भाषाओं में जवाब देता है।",
+        tool4_title:"AI लेसन प्लान", tool4_desc:"गतिविधियों और मूल्यांकन के साथ स्थानीय लेसन प्लान तैयार करें।",
+        tool5_title:"तुरंत वर्कशीट्स", tool5_desc:"विषयों या इमेज से अपने आप अलग-अलग स्तर की वर्कशीट्स बनाएं।",
+        tool6_title:"स्मार्ट टाइमटेबल", tool6_desc:"AI द्वारा बनाए गए टाइमटेबल जो विषयों और रिवीजन स्लॉट को संतुलित करते हैं।",
+        why_title:"Abhyaass क्यों?", why_sub:"स्पष्ट समझ, जिज्ञासा और गहरी सीख के लिए बनाया गया पूरा लर्निंग इकोसिस्टम।",
+        why_card1_title:"सिर्फ जवाब नहीं — असली समझ", why_card1_text:"AI एक्सप्लेनेशन, गेम्स और टीच-बैक के ज़रिए छात्र गहराई से सीखते हैं।", why_card1_link:"और जानें",
+        why_card2_title:"गेमिफ़िकेशन — सीखना मज़ेदार बनाएं", why_card2_text:"अध्यायों को गेम्स, क्विज़, पहेलियों और मिशन में बदलें।", why_card2_link:"गेम्स देखें",
+        why_card3_title:"शिक्षक को बिना मेहनत के इनसाइट्स", why_card3_text:"तुरंत रिपोर्ट, गलतफ़हमियाँ और कक्षा प्रदर्शन विश्लेषण प्राप्त करें।", why_card3_link:"शिक्षक टूल्स देखें",
+        story_tag_students:"छात्रों के लिए",
+        story1_title:"सवाल पूछें — तुरंत समाधान पाएं",
+        story1_p1:"कोई भी सवाल पूछें और तुरंत सरल, चरण-दर-चरण समझ पाएं। चाहे गणित हो, विज्ञान हो या कक्षा में न समझी बात — Abhyaass आसान भाषा में समझाता है।",
+        story1_p2:"रिवीजन करते वक्त, अभ्यास करते वक्त, या देर रात — जब भी जिज्ञासा जागे, सीखना कभी नहीं रुकता।",
+        story1_btn:"चैट आज़माएँ",
+        story2_title:"गेमिफ़िकेशन — अध्याय → गेम्स",
+        story2_p1:"उबाऊ अध्यायों को इंटरएक्टिव गेम्स, चुनौतियों और मिशन में बदलें जो सीखने को मज़ेदार बनाएं।",
+        story2_p2:"पुरस्कार जीतें, स्तर अनलॉक करें और रोज़ अभ्यास करें — पढ़ाई दबाव नहीं, सिर्फ प्रगति लगे।",
+        story2_btn:"गेम्स डेमो देखें",
+        story3_title:"टीच-बैक मोड — AI को समझाएं",
+        story3_p1:"सीखने का सबसे अच्छा तरीका है सिखाना। Abhyaass को अवधारणाएं समझाएं और AI ऐसे स्मार्ट सवाल पूछेगा जो आपकी समझ को परखेंगे।",
+        story3_p2:"इससे आप अपनी कमज़ोरियाँ पहचानेंगे, स्पष्ट सोचेंगे और विषयों को लंबे समय तक याद रखेंगे।",
+        story3_btn:"डेमो देखें",
+        cta_title:"अपनी कक्षा बदलने के लिए तैयार हैं?",
+        cta_sub:"अभी शुरू करें — कक्षाओं के लिए मुफ़्त। स्कूल-व्यापी एडमिन और एनालिटिक्स के लिए प्रीमियम योजनाएँ।",
+        cta_btn:"मुफ़्त शुरू करें",
+        testimonials_title:"शिक्षकों की राय",
+        testimonial1_quote:'"Abhyass ने हमारे लेसन प्लानिंग का समय आधा कर दिया। छात्र अब पहले से ज़्यादा एंगेज रहते हैं!"',
+        testimonial1_name:"श्रीमती शर्मा", testimonial1_school:"सरकारी मिडिल स्कूल, UP",
+        testimonial2_quote:'"वर्कशीट्स तुरंत बनाना और ऑटो-इवैल्यूएट करना बहुत मददगार है।"',
+        testimonial2_name:"श्री रेड्डी", testimonial2_school:"सेंट पॉल हाई स्कूल",
+        pricing_title:"सरल मूल्य योजना",
+        pricing_sub:"कक्षाओं के लिए हमेशा मुफ़्त — स्कूल प्रबंधन के लिए प्रीमियम योजनाएँ।",
+        price1_name:"मुफ़्त", price1_desc:"वर्कशीट्स, बेसिक प्लानर, बहुभाषी टूल्स", price1_cta:"शुरू करें",
+        price2_name:"प्रो", price2_desc:"एडवांस एनालिटिक्स, स्कूल एडमिन फीचर्स", price2_cta:"फ्री ट्रायल शुरू करें",
+        price3_name:"स्कूल", price3_desc:"एंटरप्राइज़ ऑनबोर्डिंग, इंटीग्रेशन और शिक्षक टूल्स", price3_cta:"सेल्स से संपर्क करें",
+        faq_title:"अक्सर पूछे जाने वाले सवाल", faq_sub:"कोई सवाल? यहाँ सब कुछ साफ़ है।",
+        faq_q1:"Abhyaass क्या है और यह कैसे काम करता है?",
+        faq_a1:"Abhyaass एक AI-powered शिक्षा प्लेटफ़ॉर्म है जो भारतीय कक्षाओं के लिए बनाया गया है। यह शिक्षकों को लेसन प्लानिंग, वर्कशीट्स और मूल्यांकन में मदद करता है, और छात्रों को गेमिफ़ाइड लर्निंग और डाउट सॉल्विंग देता है — कक्षा 5–10 के लिए।",
+        faq_q2:"क्या यह प्लेटफ़ॉर्म मुफ़्त है?",
+        faq_a2:"हां! बेसिक प्लान बिलकुल मुफ़्त है — वर्कशीट्स, लेसन प्लानर, और बहुभाषी टूल्स शामिल हैं। एडवांस एनालिटिक्स और स्कूल-व्यापी फीचर्स के लिए Pro (₹499/माह) या School प्लान लें।",
+        faq_q3:"कौन कौन सी भाषाएं सपोर्ट होती हैं?",
+        faq_a3:"Abhyaass 12+ भारतीय भाषाओं को सपोर्ट करता है जिनमें हिंदी, तमिल, तेलुगु, कन्नड़, बंगाली, मराठी और और भी हैं। वॉइस और इमेज इनपुट भी बहुभाषी है।",
+        faq_q4:"क्या शिक्षक बिना ट्रेनिंग के उपयोग कर सकते हैं?",
+        faq_a4:"बिलकुल! Abhyaass का इंटरफ़ेस बहुत सरल और intuitive है। कोई भी शिक्षक बिना किसी तकनीकी ज्ञान के 5 मिनट में शुरू कर सकता/सकती है। School प्लान में dedicated onboarding सपोर्ट भी मिलता है।",
+        faq_q5:"Auto-Evaluator कैसे काम करता है?",
+        faq_a5:"शिक्षक छात्र की उत्तर पुस्तिका की फ़ोटो अपलोड करती है। AI स्वचालित रूप से हर छात्र का स्कोर कैलकुलेट करता है, सामान्य गलतियों को पहचानता है, और व्यक्तिगत फ़ीडबैक तैयार करता है — सेकंड में।",
+        trusted_top:"विश्वसनीय", trusted_sub:"शिक्षकों द्वारा",
+        footer_col1_title:"छात्रों के लिए", footer_s1:"गेमिफ़ाइड लर्निंग", footer_s2:"टीच-बैक मोड", footer_s3:"रिवीजन टूल्स", footer_s4:"बहुभाषी सपोर्ट",
+        footer_col2_title:"शिक्षकों के लिए", footer_t1:"बोर्ड डायग्राम जनरेटर", footer_t2:"वर्कशीट ऑटो इवैल्यूएटर", footer_t3:"प्रगति ट्रैक करें", footer_t4:"तुरंत वर्कशीट जनरेटर", footer_t5:"स्मार्ट टाइमटेबल शेड्यूलर",
+        footer_col2b_title:"एडमिन", footer_a1:"एडमिन डैशबोर्ड", footer_a2:"शिक्षक एनालिटिक्स", footer_a3:"संस्थागत इनसाइट्स",
+        footer_col3_title:"प्रोडक्ट्स", footer_p1:"छात्र ऐप", footer_p2:"शिक्षक डैशबोर्ड", footer_p3:"गेमिफ़िकेशन सूट", footer_p4:"टीच-बैक AI", footer_p5:"लर्निंग एनालिटिक्स", footer_p6:"रिवीजन इंजन",
+        footer_col4_title:"कंपनी", footer_c1:"हमारे बारे में", footer_c2:"मूल्य योजना", footer_c3:"करियर", footer_c4:"संपर्क करें", footer_c5:"नियम और गोपनीयता",
+        footer_col4b_title:"संसाधन", footer_r1:"डॉक्यूमेंटेशन", footer_r2:"ब्लॉग", footer_r3:"कम्युनिटी",
+        footer_copy:"© 2025 Abhyaass — ❤️ के साथ बनाया गया। सर्वाधिकार सुरक्षित", footer_privacy:"गोपनीयता नीति", footer_terms:"उपयोग की शर्तें"
+      }
+    };
+    /* ======================================================
+       setLanguage — ek function jo poora page translate karta hai
+    ====================================================== */
+    function setLanguage(lang) {
+      const t = translations[lang];
+      if (!t) return;
+
+      document.querySelectorAll("[data-key]").forEach(el => {
+        const key = el.getAttribute("data-key");
+        if (t[key] !== undefined) {
+          el.textContent = t[key];
+        }
+      });
+
+      // html lang attribute bhi update karo
+      document.documentElement.lang = lang === "hi" ? "hi" : "en";
+
+      // button highlight
+      document.getElementById("langEn").classList.toggle("active", lang === "en");
+      document.getElementById("langHi").classList.toggle("active", lang === "hi");
+
+      // save preference
+      try { localStorage.setItem("lang", lang); } catch(e) {}
+    }
+
+    /* BUTTONS */
+    document.getElementById("langEn").addEventListener("click", () => setLanguage("en"));
+    document.getElementById("langHi").addEventListener("click", () => setLanguage("hi"));
+
+    /* on load — saved preference ya default EN */
+    document.addEventListener("DOMContentLoaded", () => {
+      let savedLang = "en";
+      try { savedLang = localStorage.getItem("lang") || "en"; } catch(e) {}
+      setLanguage(savedLang);
+    });
+
+
+    /* ======================================================
+       SCROLLER — seamless loop
+    ====================================================== */
+    (function () {
+      const inner = document.querySelector('.scroller-inner');
+      if (!inner) return;
+      const ensureLoop = () => {
+        const outerWidth = inner.parentElement.clientWidth;
+        const innerWidth = Array.from(inner.children).reduce((w, el) => w + el.getBoundingClientRect().width + 16, 0);
+        if (innerWidth < outerWidth * 1.8) {
+          const children = Array.from(inner.children).map(c => c.cloneNode(true));
+          children.forEach(c => inner.appendChild(c));
+        }
+      };
+      window.addEventListener('load', ensureLoop);
+      window.addEventListener('resize', () => {
+        clearTimeout(window._scrolldeb);
+        window._scrolldeb = setTimeout(ensureLoop, 200);
+      });
+    })();
+
+    /* WHY ABHYAASS PREMIUM CAROUSEL */
+const whyCards = document.querySelectorAll(".why-card");
+let current = 0;
+
+function updateCarousel() {
+  whyCards.forEach((card, index) => {
+    card.classList.remove("active", "left", "right");
+
+    if (index === current) {
+      card.classList.add("active");
+    } else if (index === (current - 1 + whyCards.length) % whyCards.length) {
+      card.classList.add("left");
+    } else if (index === (current + 1) % whyCards.length) {
+      card.classList.add("right");
+    }
+  });
+}
+
+updateCarousel();
+
+setInterval(() => {
+  current = (current + 1) % whyCards.length;
+  updateCarousel();
+}, 3000);
+
+    /* ======================================================
+       SCROLL STORY — intersection observer
+    ====================================================== */
+    const steps  = document.querySelectorAll('.story-block');
+    const videos = document.querySelectorAll('.story-video');
+
+    const storyObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = parseInt(entry.target.dataset.index);
+          steps.forEach(s => s.classList.remove('active'));
+          entry.target.classList.add('active');
+          videos.forEach((v, i) => {
+            v.classList.remove('active', 'exit');
+            if (i < index) v.classList.add('exit');
+          });
+          videos[index].classList.add('active');
+        }
+      });
+    }, { threshold: 0.55 });
+
+    steps.forEach(step => storyObserver.observe(step));
+
+
+    /* ======================================================
+       SECTION FADE IN ON SCROLL
+    ====================================================== */
+    const sectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('show');
+      });
+    }, { threshold: 0.002 });
+
+    document.querySelectorAll('.section-fade').forEach(sec => sectionObserver.observe(sec));
+
+
+    /* ======================================================
+       goToRole helper
+    ====================================================== */
+    function goToRole() {
+      window.location.href = "features/chooseRole.html";
+    }
+
+
+    function animateCounter(el) {
+      const target   = parseInt(el.dataset.target);
+      const suffix   = el.dataset.suffix || '';
+      const divisor  = parseFloat(el.dataset.divisor) || 1;
+      const duration = 1800;
+      const steps    = 60;
+      const increment = target / steps;
+      let current = 0;
+      let step = 0;
+
+      const timer = setInterval(() => {
+        step++;
+        current = Math.min(target, Math.round(increment * step));
+        const display = divisor >= 1000
+          ? (current / divisor).toFixed(current / divisor < 10 ? 1 : 0)
+          : current;
+        el.textContent = display + suffix;
+        if (step >= steps) clearInterval(timer);
+      }, duration / steps);
+    }
+
+    const statsObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.counter').forEach(animateCounter);
+          statsObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) statsObserver.observe(statsSection);
+
+    /* ============================================================
+   MODERN FAQ ACCORDION
+============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  const faqItems = document.querySelectorAll('.modern-faq-item');
+ 
+  faqItems.forEach(item => {
+    const header = item.querySelector('.faq-header-bar');
+   
+    header.addEventListener('click', () => {
+      const isActive = item.classList.contains('active');
+     
+      // Close all items
+      faqItems.forEach(faq => {
+        faq.classList.remove('active');
+        faq.querySelector('.faq-header-bar').setAttribute('aria-expanded', 'false');
+      });
+     
+      // Open clicked item if it was closed
+      if (!isActive) {
+        item.classList.add('active');
+        header.setAttribute('aria-expanded', 'true');
+      }
+    });
+   
+    // Keyboard accessibility
+    header.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        header.click();
+      }
+    });
+  });
+});
+  </script>
+</body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Your Path | Abhyaas</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── exact site variables ── */
+    :root {
+      --bg-top:       #f8feff;
+      --bg-mid:       #47b1c9;
+      --bg-bot:       #ffffff;
+      --card:         #ffffff;
+      --muted:        #55606a;
+      --heading:      #0a4a56;
+      --heading-dark: #062a37;
+      --accent-from:  #06b6d4;
+      --accent-to:    #0ea5e9;
+      --accent-blue:  #3b82f6;
+      --accent-grad:  linear-gradient(90deg,#06b6d4,#3b82f6);
+      --icon-s:       linear-gradient(135deg,#3b82f6,#60a5fa);
+      --icon-t:       linear-gradient(135deg,#a855f7,#6366f1);
+      --nav-cta:      linear-gradient(90deg,#62c9db,#031f4d);
+      --border:       rgba(2,6,23,0.06);
+      --shadow:       0 18px 42px rgba(8,25,40,0.06);
+      --font-body:    'Inter', system-ui, sans-serif;
+      --font-head:    'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 50%, var(--bg-bot) 100%);
+      color: var(--heading);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1,h2,h3,h4 {
+      font-family: var(--font-head);
+      letter-spacing: -0.02em;
+    }
+
+    /* ═══════════════════════════════
+       NAVBAR
+    ═══════════════════════════════ */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 80;
+
+      /* slide-down on load */
+      animation: navDown .55s cubic-bezier(.4,0,.2,1) both;
+    }
+    @keyframes navDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; height: 40px;}
+    .brand-logo {
+      width:40px; height:40px;
+      border-radius:10px;
+      object-fit: cover;
+    }
+    .brand-icon {
+      width:10px; height:10px; border-radius:10px;
+      background: linear-gradient(135deg,#06b6d4,#0ea5e9);
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px;
+      box-shadow: 0 6px 18px rgba(6,182,212,0.30);
+    }
+    .brand-name {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--heading);
+    }
+
+    .nav-links { display:flex; gap:18px; align-items:center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: .95rem;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent-from); }
+
+    .nav-cta {
+      padding: 9px 40px;
+      border-radius: 10px;
+      background: var(--nav-cta);
+      color: white !important;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .9rem;
+      transition: transform .22s, box-shadow .22s;
+    }
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(6,182,212,0.35);
+    }
+
+    /* ═══════════════════════════════
+       BACKGROUND ORBS (ambient glow)
+    ═══════════════════════════════ */
+    .orb-wrap {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: .35;
+      animation: orbFloat 12s ease-in-out infinite;
+    }
+    .orb-1 {
+      width:500px; height:500px;
+      background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+      top: -160px; left: -120px;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width:420px; height:420px;
+      background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+      bottom: -100px; right: -80px;
+      animation-delay: -5s;
+    }
+    .orb-3 {
+      width:300px; height:300px;
+      background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+      top: 45%; left: 50%;
+      transform: translate(-50%,-50%);
+      opacity: .18;
+      animation-delay: -9s;
+    }
+    @keyframes orbFloat {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(30px,-40px) scale(1.06); }
+      66%      { transform: translate(-20px,30px) scale(0.96); }
+    }
+
+    /* ═══════════════════════════════
+       HERO TEXT  (staggered fade-up)
+    ═══════════════════════════════ */
+    .page {
+      position: relative; z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 72px 24px 80px;
+      text-align: center;
+    }
+
+    /* shared reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      animation: revealUp .65s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes revealUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--heading);
+      background: rgba(6,182,212,0.10);
+      border: 1px solid rgba(6,182,212,0.20);
+      margin-bottom: 18px;
+      animation-delay: .1s;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent-from);
+      box-shadow: 0 0 0 3px rgba(6,182,212,0.25);
+      animation: pulseDot 2.2s ease infinite;
+    }
+    @keyframes pulseDot {
+      0%,100% { box-shadow: 0 0 0 3px rgba(6,182,212,0.25); }
+      50%      { box-shadow: 0 0 0 7px rgba(6,182,212,0.08); }
+    }
+
+    .page h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      background: linear-gradient(90deg, #062a37, #06b6d4, #3b82f6, #062a37);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.08;
+      margin-bottom: 12px;
+      animation-delay: .2s;
+      animation: revealUp .65s cubic-bezier(.4,0,.2,1) forwards, gradientShift 4s ease-in-out infinite;
+    }
+    
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .page .subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 480px;
+      margin-bottom: 52px;
+      animation-delay: .32s;
+    }
+
+    /* ═══════════════════════════════
+       ROLE CARDS
+    ═══════════════════════════════ */
+    .card-row {
+      display: flex;
+      gap: 26px;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+      max-width: 1060px;
+    }
+
+    .role-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(6, 182, 212, 0.15) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      width: 460px;
+      max-width: calc(100% - 24px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: var(--shadow);
+      padding: 36px 32px 32px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      /* staggered entrance */
+      opacity: 0;
+      transform: translateY(40px) scale(.97);
+      animation: cardIn .7s cubic-bezier(.34,1.56,.64,1) forwards;
+      transition: transform .32s cubic-bezier(.34,1.56,.64,1),
+                  box-shadow .32s ease,
+                  border-color .32s ease;
+    }
+    .role-card:nth-child(1) { animation-delay: .42s; }
+    .role-card:nth-child(2) { animation-delay: .56s; }
+
+    @keyframes cardIn {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* top shimmer sweep on hover */
+    .role-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg,
+        transparent 35%,
+        rgba(255,255,255,0.55) 50%,
+        transparent 65%);
+      transform: translateX(-120%);
+      transition: transform .55s ease;
+      pointer-events: none;
+    }
+    .role-card:hover::before { transform: translateX(120%); }
+
+    /* subtle top colour bar */
+    .role-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 24px 24px 0 0;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .role-card.student::after { background: var(--icon-s); }
+    .role-card.teacher::after { background: var(--icon-t); }
+    .role-card:hover::after   { opacity: 1; }
+
+    .role-card:hover {
+      transform: translateY(-10px) scale(1.015);
+      box-shadow: 0 32px 80px rgba(8,25,40,0.12);
+      border-color: rgba(6,182,212,0.25);
+    }
+
+    /* icon box */
+    .icon-box {
+      width: 100px; height: 100px;
+      border-radius: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.4rem;
+      color: white;
+      margin-bottom: 22px;
+      position: relative;
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    .role-card:hover .icon-box { transform: scale(1.12) rotate(-3deg); }
+
+    .icon-box::after {
+      content: '';
+      position: absolute; inset: -6px;
+      border-radius: 30px;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .role-card:hover .icon-box::after { opacity: 1; }
+
+    .icon-student { background: var(--icon-s); box-shadow: 0 12px 32px rgba(59,130,246,0.28); }
+    .icon-teacher { background: var(--icon-t); box-shadow: 0 12px 32px rgba(168,85,247,0.28); }
+
+    .role-title {
+      font-family: var(--font-head);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--heading-dark);
+      margin-bottom: 10px;
+    }
+
+    .role-desc {
+      color: var(--muted);
+      font-size: .97rem;
+      line-height: 1.6;
+      max-width: 360px;
+      margin-bottom: 28px;
+      flex: 1;
+    }
+
+    /* feature pills */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .pill {
+      font-size: .78rem;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 999px;
+      color: var(--heading);
+      background: rgba(6,182,212,0.09);
+      border: 1px solid rgba(6,182,212,0.18);
+      transition: background .2s, transform .2s;
+    }
+    .role-card:hover .pill { background: rgba(6,182,212,0.16); }
+
+    /* CTA button */
+    .role-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      border-radius: 999px;
+      color: white;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .97rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-student { background: linear-gradient(90deg,#06b6d4,#3b82f6); box-shadow: 0 10px 28px rgba(59,130,246,0.28); }
+    .cta-teacher { background: linear-gradient(90deg,#a855f7,#6366f1); box-shadow: 0 10px 28px rgba(99,102,241,0.28); }
+
+    .role-cta:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 18px 40px rgba(59,130,246,0.38);
+    }
+    .role-cta svg {
+      transition: transform .25s ease;
+    }
+    .role-card:hover .role-cta svg { transform: translateX(4px); }
+
+    /* ═══════════════════════════════
+       BOTTOM TAGLINE
+    ═══════════════════════════════ */
+    .tagline {
+      margin-top: 60px;
+      animation-delay: .7s;
+    }
+    .tagline h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--heading);
+      margin-bottom: 6px;
+    }
+    .tagline p {
+      color: var(--muted);
+      font-size: .95rem;
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════
+       FLOATING PARTICLES (JS canvas)
+    ═══════════════════════════════ */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════ */
+    @media (max-width: 960px) {
+      .role-card { width: 100%; max-width: 560px; }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 52px 16px 64px; }
+      .page h1 { font-size: 1.9rem; }
+      .nav-links { display: none; }
+      .icon-box { width: 84px; height: 84px; font-size: 2rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ambient orbs -->
+  <div class="orb-wrap" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- particle canvas -->
+  <canvas id="particles" aria-hidden="true"></canvas>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <img src="../assets/images/logo.jpeg" alt="Abhyaas Logo" class="brand-logo">
+      <span class="brand-name">Abhyaas</span>
+    </a>
+    <nav class="nav-links">
+      <a href="../index.html">Home</a>
+    </nav>
+  </header>
+
+  <!-- PAGE -->
+  <main class="page">
+
+    <!-- badge -->
+    <div class="badge reveal" style="animation-delay:.1s">
+      <span class="badge-dot"></span>
+      AI-Powered Education Platform
+    </div>
+
+    <!-- headline -->
+    <h1 class="reveal" style="animation-delay:.2s">Choose Your Learning Path</h1>
+    <p class="subtitle reveal" style="animation-delay:.32s">
+      Join thousands of learners and educators building smarter classrooms.
+    </p>
+
+    <!-- CARDS -->
+    <div class="card-row">
+
+
+      <!-- Teacher -->
+      <div class="role-card teacher">
+        <div class="icon-box icon-teacher">📘</div>
+        <div class="role-title">I'm a Teacher</div>
+        <p class="role-desc">
+          Save planning time with auto-generated lesson plans, worksheets, visual aids and simple class-level analytics.
+        </p>
+        <div class="pills">
+          <span class="pill">Lesson Plans</span>
+          <span class="pill">Auto-Evaluate</span>
+          <span class="pill">Smart Timetable</span>
+        </div>
+        <a class="role-cta cta-teacher" href="teacher-auth.html">
+          Start Teaching
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Student -->
+      <div class="role-card student">
+        <div class="icon-box icon-student">🎓</div>
+        <div class="role-title">I'm a Student</div>
+        <p class="role-desc">
+          Start your learning journey with expert guidance, gamified practice, and AI-powered feedback tailored to your grade.
+        </p>
+        <div class="pills">
+          <span class="pill">Adaptive Practice</span>
+          <span class="pill">AI Feedback</span>
+          <span class="pill">Gamified Learning</span>
+        </div>
+        <a class="role-cta cta-student" href="student-auth.html">
+          Start Learning
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+
+      
+
+    </div>
+
+    <!-- tagline -->
+    <div class="tagline reveal" style="animation-delay:.7s">
+      <h2>Helping Students Learn & Teachers Teach Smarter</h2>
+      <p>AI tools that simplify studying and save time for educators — focused on low-resource, multilingual classrooms.</p>
+    </div>
+
+  </main>
+
+  <script>
+    /* ─── Floating particles ─── */
+    (function () {
+      const canvas = document.getElementById('particles');
+      const ctx    = canvas.getContext('2d');
+      let W, H, dots = [];
+
+      const COLORS = ['#06b6d4','#3b82f6','#a855f7','#60a5fa'];
+
+      function resize() {
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+
+      function spawn() {
+        dots = [];
+        const count = Math.floor(W * H / 22000);
+        for (let i = 0; i < count; i++) {
+          dots.push({
+            x:  Math.random() * W,
+            y:  Math.random() * H,
+            r:  Math.random() * 2.2 + 0.6,
+            vx: (Math.random() - .5) * 0.28,
+            vy: (Math.random() - .5) * 0.28,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            alpha: Math.random() * 0.35 + 0.1
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        for (const d of dots) {
+          d.x += d.vx;
+          d.y += d.vy;
+          if (d.x < 0) d.x = W;
+          if (d.x > W) d.x = 0;
+          if (d.y < 0) d.y = H;
+          if (d.y > H) d.y = 0;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+          ctx.fillStyle = d.color;
+          ctx.globalAlpha = d.alpha;
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(draw);
+      }
+
+      resize(); spawn(); draw();
+      window.addEventListener('resize', () => { resize(); spawn(); });
+    })();
+
+    /* ─── Card 3-D tilt on mouse move ─── */
+    document.querySelectorAll('.role-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r  = card.getBoundingClientRect();
+        const x  = (e.clientX - r.left) / r.width  - .5;
+        const y  = (e.clientY - r.top)  / r.height - .5;
+        card.style.transform = `translateY(-10px) scale(1.015) rotateX(${-y * 6}deg) rotateY(${x * 6}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+
+    /* ─── Auth logic (unchanged from original) ─── */
+    function getSignupTemp() {
+      try {
+        const raw = localStorage.getItem("signupTemp");
+        return raw ? JSON.parse(raw) : null;
+      } catch(e) { return null; }
+    }
+
+    async function continueAs(role) {
+      const data = getSignupTemp();
+      if (!data) { window.location.href = "/signup"; return; }
+
+      const isStudent = role === "student";
+      const apiUrl    = isStudent ? "/api/auth/student/register" : "/api/auth/teacher/login";
+      const payload   = isStudent
+        ? { name: data.name, email: data.email, password: data.password, grade: data.grade || "6" }
+        : { name: data.name, email: data.email, password: data.password, schoolName: data.schoolName || "My School" };
+
+      try {
+        const res  = await fetch(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) { alert(json.message || "Registration failed."); return; }
+        localStorage.setItem("token",    json.token      || "");
+        localStorage.setItem("userRole", json.user?.role || role);
+        window.location.href = isStudent ? "/dashboard/student" : "/dashboard/teacher";
+      } catch(err) {
+        alert("Server error. Try again later.");
+      }
+    }
+  </script>
+</body>
+</html>

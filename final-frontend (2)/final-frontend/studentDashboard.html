@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Student Dashboard — Abhyass</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --text: #062a37;
+      --muted: #52606d;
+      --accent-from: #06b6d4;
+      --accent-to: #3b82f6;
+      --font-body: 'Space Grotesk', system-ui, sans-serif;
+      --font-heading: 'Outfit', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background: #000;
+      overflow-x: hidden;
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      font-family: var(--font-heading);
+      letter-spacing: -0.02em;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+    }
+
+    .brand img { width: 42px; height: 42px; border-radius: 8px; }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--muted);
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--accent-from); }
+
+    .lang-switch { display: flex; gap: 6px; }
+
+    .lang-switch button {
+      border: 1px solid rgba(0,0,0,.15);
+      background: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: .2s;
+    }
+
+    .lang-switch button.active {
+      background: #06b6d4;
+      color: white;
+      border-color: #06b6d4;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      padding: 80px 24px;
+      overflow: hidden;
+    }
+
+    .hero video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(6,42,55,.65), rgba(6,42,55,.88));
+      z-index: -1;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      color: white;
+    }
+
+    /* ===== HERO ENTRANCE ANIMATIONS ===== */
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      margin: 0 0 12px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: slideUp .7s cubic-bezier(.22,1,.36,1) .1s forwards;
+    }
+
+    .hero > .hero-inner > p {
+      font-size: 1.15rem;
+      line-height: 1.65;
+      max-width: 680px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp .7s cubic-bezier(.22,1,.36,1) .25s forwards;
+    }
+
+    @keyframes slideUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== STREAK ===== */
+    .daily-streak {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: fit-content;
+      padding: 14px 20px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.42);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,1.2);
+      margin-bottom: 28px;
+      margin-top: 10px;
+      opacity: 20;
+      transform: translateY(15px);
+      animation: slideUp .6s cubic-bezier(.22,1,.36,1) .38s forwards;
+    }
+
+    .streak-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg,#f97316,#ef4444);
+    }
+
+    .streak-count { font-weight: 800; color: #fff; font-size: 1.95rem; }
+    .streak-sub { font-size: 0.82rem; color: rgba(255,255,255,1.75); }
+
+    /* ===== TODAY FOCUS ===== */
+    .today-focus {
+      margin: 0 0 48px;
+      padding: 28px 32px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.42);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,1.18);
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      align-items: center;
+      opacity: 20;
+      transform: translateY(15px);
+      animation: slideUp .7s cubic-bezier(.22,1,.36,1) .5s forwards;
+    }
+
+    .today-label {
+      font-size: 1.95rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #67e8f9;
+    }
+
+    .today-left h2 {
+      margin: 6px 0 10px;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .today-left p {
+      max-width: 520px;
+      color: rgba(255,255,255,.8);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .today-task {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      border-radius: 18px;
+      padding: 20px 22px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      color: white;
+      min-width: 200px;
+      box-shadow: 0 20px 60px rgba(59,130,246,.5);
+    }
+
+    .today-task strong { font-size: 1.1rem; font-weight: 800; display: block; margin-bottom: 6px; }
+    .today-task p { font-size: 0.88rem; line-height: 1.45; color: rgba(255,255,255,.9); }
+    .task-icon { font-size: 1.8rem; }
+
+    /* ===========================
+       CARDS GRID — THE STAR SHOW
+    =========================== */
+    .hero-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+      max-width: 1100px;
+      perspective: 1200px;
+    }
+
+    /* Base card */
+    .hero-card {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      border-radius: 22px;
+      padding: 26px 24px 32px;
+      color: #062a37;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+
+      /* Staggered entrance */
+      opacity: 0;
+      transform: translateY(50px) rotateX(8deg);
+      animation: cardEntry .75s cubic-bezier(.22,1,.36,1) forwards;
+
+      /* smooth transition for hover */
+      transition:
+        transform .4s cubic-bezier(.22,1,.36,1),
+        box-shadow .4s ease,
+        z-index 0s;
+
+      will-change: transform;
+    }
+
+    .hero-card:nth-child(1) { animation-delay: .65s; }
+    .hero-card:nth-child(2) { animation-delay: .78s; }
+    .hero-card:nth-child(3) { animation-delay: .91s; }
+    .hero-card:nth-child(4) { animation-delay: 1.04s; }
+
+    @keyframes cardEntry {
+      to { opacity: 1; transform: translateY(0) rotateX(0); }
+    }
+
+    /* ---- HOVER: CARD ZOOMS & LIFTS ---- */
+    .hero-card:hover {
+      transform: translateY(-14px) scale(1.04) rotateX(-2deg);
+      box-shadow:
+        0 40px 100px rgba(0,0,0,.5),
+        0 0 0 2px rgba(6,182,212,.6),
+        inset 0 0 80px rgba(6,182,212,.04);
+      z-index: 10;
+    }
+
+    /* Spotlight that follows cursor */
+    .hero-card .spotlight {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(circle 200px at var(--mx,50%) var(--my,50%),
+        rgba(255,255,255,0.18) 0%,
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .hero-card:hover .spotlight { opacity: 1; }
+
+    /* Glow border pulse on hover */
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity .4s;
+    }
+
+    .hero-card:hover::before { opacity: 0.7; }
+
+    /* ---- EMOJI BG ---- */
+    .hero-card .card-bg-emoji {
+      position: absolute;
+      bottom: -14px;
+      right: -12px;
+      font-size: 110px;
+      opacity: 0.3;
+      transform: rotate(-12deg);
+      pointer-events: none;
+      transition: transform .4s cubic-bezier(.22,1,.36,1), opacity .4s;
+      filter: blur(1px);
+    }
+
+    .hero-card:hover .card-bg-emoji {
+      transform: rotate(-6deg) scale(1.15) translate(-6px, -6px);
+      opacity: 0.5;
+      filter: blur(0);
+    }
+
+    /* ---- ICON ---- */
+    .icon {
+      width: 58px;
+      height: 58px;
+      font-size: 1.6rem;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+      color: white;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 24px rgba(6,182,212,.35);
+      transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s;
+    }
+
+    .hero-card:hover .icon {
+      transform: scale(1.15) rotate(-5deg);
+      box-shadow: 0 14px 40px rgba(6,182,212,.55);
+    }
+
+    .hero-card h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .hero-card p {
+      font-size: 0.96rem;
+      line-height: 1.6;
+      color: #334155;
+      position: relative;
+    }
+
+    /* ---- BADGE ---- */
+    .badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: linear-gradient(90deg, rgba(59,130,246,.15), rgba(6,182,212,.12));
+      border: 1px solid rgba(6,182,212,.25);
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ---- CARD VARIANTS ---- */
+    .game-card {
+      background: linear-gradient(145deg, rgba(6,182,212,.1), rgba(59,130,246,.06)), rgba(255,255,255,.93);
+    }
+
+    .story-card {
+      background: linear-gradient(145deg, rgba(14,165,233,.1), rgba(6,182,212,.05)), rgba(255,255,255,.93);
+    }
+
+    .teach-card {
+      background: linear-gradient(145deg, rgba(99,102,241,.1), rgba(59,130,246,.06)), rgba(255,255,255,.93);
+    }
+
+    /* ---- REVEAL LINE UNDER TITLE ---- */
+    .hero-card h3::after {
+      content: "";
+      display: block;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #06b6d4, #3b82f6);
+      border-radius: 2px;
+      margin-top: 5px;
+      transition: width .4s cubic-bezier(.22,1,.36,1);
+    }
+
+    .hero-card:hover h3::after { width: 60px; }
+
+    /* ---- ACTIVE PRESS EFFECT ---- */
+    .hero-card:active {
+      transform: translateY(-6px) scale(1.01);
+      transition: transform .1s;
+    }
+
+    /* ===== SCROLL REVEAL (for cards section) ===== */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .7s ease, transform .7s cubic-bezier(.22,1,.36,1);
+    }
+    .scroll-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ===== SITE FOOTER ===== */
+    .site-footer {
+      background: #ffffff;
+      border-top: 1px solid rgba(2,6,23,.08);
+      padding: 48px 24px 20px;
+      color: #111827;
+    }
+
+    .footer-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    .footer-col h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: #0a4a56;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 0.9rem;
+      color: #4b5563;
+      text-decoration: none;
+      margin-bottom: 9px;
+      line-height: 1.4;
+      transition: color .2s;
+    }
+
+    .footer-col a:hover { color: #06b6d4; }
+    .footer-col .mt { margin-top: 24px; }
+
+    .footer-bottom {
+      max-width: 1180px;
+      margin: 40px auto 0;
+      padding-top: 16px;
+      border-top: 1px solid rgba(2,6,23,.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+
+    .footer-links { display: flex; gap: 22px; }
+    .footer-links a { color: #6b7280; text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: #06b6d4; }
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:768px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero-cards { grid-template-columns: 1fr; }
+      .today-focus { flex-direction: column; align-items: stretch; }
+      .today-task { width: 100%; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+    }
+
+    /* ===== FLOATING PARTICLES (ambient) ===== */
+    .particles {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: rgba(6,182,212,.5);
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.7; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    /* ===== CARD TILT ANIMATION on load ===== */
+    @keyframes wiggle {
+      0%,100% { transform: translateY(0) rotateZ(0); }
+      25% { transform: translateY(-4px) rotateZ(-1deg); }
+      75% { transform: translateY(-2px) rotateZ(1deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="brand">
+      <img src="assets/images/logo.jpeg" alt="Abhyass">
+      Abhyass
+    </div>
+    <nav class="nav-links">
+      <div class="lang-switch">
+        <button id="langEn" class="active">EN</button>
+        <button id="langHi">हिंदी</button>
+      </div>
+      <a href="index.html" data-key="nav_home">Home</a>
+      <a href="features/student-auth.html" data-key="nav_logout">Logout</a>
+    </nav>
+  </header>
+
+  <!-- HERO WITH VIDEO + CARDS -->
+  <section class="hero">
+
+    <video autoplay muted loop playsinline>
+      <source src="assets/images/student.mp4" type="video/mp4">
+    </video>
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="hero-inner" style="position:relative; z-index:1;">
+      <h1 data-key="hero_title">Welcome, Student</h1>
+      <p data-key="hero_sub" style="opacity:0;transform:translateY(20px);animation:slideUp .7s cubic-bezier(.22,1,.36,1) .25s forwards;">
+        Your personal AI learning space designed to help you understand concepts better,
+        practice smarter, and build confidence every day.
+        Start learning the smart way — one concept at a time.
+      </p>
+
+      <!-- STREAK -->
+      <div class="daily-streak">
+        <div class="streak-icon">🔥</div>
+        <div>
+          <div class="streak-count"><span id="streakNumber">1</span> day streak</div>
+          <div class="streak-sub">Keep learning daily — consistency wins 💪</div>
+        </div>
+      </div>
+
+      <!-- TODAY FOCUS -->
+      <div class="today-focus">
+        <div class="today-left">
+          <span class="today-label" data-key="today_label">Today's Focus</span>
+          <h2 data-key="today_title">Strengthen your basics</h2>
+          <p data-key="today_desc">
+            Start with a quick activity below. Learning a little every day builds
+            confidence faster than last-minute studying.
+          </p>
+        </div>
+        <div class="today-right">
+          <div class="today-task">
+            <span class="task-icon">🎯</span>
+            <div>
+              <strong data-key="task_title">Recommended for you</strong>
+              <p data-key="task_desc">Try one game or reading activity to warm up your brain.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARDS -->
+      <div class="hero-cards">
+
+        <div class="hero-card feature" data-tilt data-href="features/game.html">
+          <div class="spotlight"></div>
+          <span class="card-bg-emoji">🎮</span>
+          <span class="badge" data-key="badge_upcoming">Upcoming</span>
+          <div class="icon">🎮</div>
+          <h3 data-key="card1_title">Gamified Learning</h3>
+          <p data-key="card1_desc">
+            Learn through games, challenges, and missions that adapt to your level.
+            Practice concepts daily while earning rewards and improving skills
+            without feeling bored.
+          </p>
+        </div>
+
+        <div class="hero-card feature" data-tilt data-href="features/fluency.html">
+          <div class="spotlight"></div>
+          <span class="card-bg-emoji">📗</span>
+          <!-- <span class="badge" data-key="badge_upcoming">Upcoming</span> -->
+          <div class="icon">📗</div>
+          <h3 data-key="card2_title">Reading Fluency</h3>
+          <p data-key="card2_desc">
+            Improve pronunciation, confidence, and understanding with AI-powered
+            reading practice that gives instant feedback and helps you read better
+            every day.
+          </p>
+        </div>
+
+        <div class="hero-card feature" data-tilt data-href="features/story.html">
+          <div class="spotlight"></div>
+          <span class="card-bg-emoji">📖</span>
+          <!-- <span class="badge" data-key="badge_upcoming">Upcoming</span> -->
+          <div class="icon">📝</div>
+          <h3 data-key="card3_title">Story-Based Learning</h3>
+          <p data-key="card3_desc">
+            Turn boring chapters into engaging stories that make concepts easier
+            to understand, remember, and enjoy — learning feels like reading a story.
+          </p>
+        </div>
+
+        <div class="hero-card feature" data-tilt data-href="features/teachback.html">
+          <div class="spotlight"></div>
+          <span class="card-bg-emoji">🧠</span>
+          <!-- <span class="badge" data-key="badge_upcoming">Upcoming</span> -->
+          <div class="icon">📄</div>
+          <h3 data-key="card4_title">Teach-Back Mode</h3>
+          <p data-key="card4_desc">
+            Master topics by explaining them to AI. Teaching helps you find gaps
+            in understanding and strengthens concepts just like teaching a friend.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SITE FOOTER -->
+  <footer class="site-footer scroll-reveal">
+    <div class="footer-grid">
+
+      <div class="footer-col">
+        <h4 data-key="footer_col1_title">For Students</h4>
+        <a href="#" data-key="footer_s1">Gamified Learning</a>
+        <a href="#" data-key="footer_s2">Teach-Back Mode</a>
+        <a href="#" data-key="footer_s3">Revision Tools</a>
+        <a href="#" data-key="footer_s4">Multilingual Support</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col2_title">For Teachers</h4>
+        <a href="#" data-key="footer_t1">Board Diagram Generator</a>
+        <a href="#" data-key="footer_t2">Worksheet Auto Evaluator</a>
+        <a href="#" data-key="footer_t3">Track Progress</a>
+        <a href="#" data-key="footer_t4">Instant Worksheet Generator</a>
+        <a href="#" data-key="footer_t5">Smart Timetable Scheduler</a>
+        <h4 class="mt" data-key="footer_col2b_title">Admin</h4>
+        <a href="#" data-key="footer_a1">Admin Dashboard</a>
+        <a href="#" data-key="footer_a2">Teacher Analytics</a>
+        <a href="#" data-key="footer_a3">Institutional Insights</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col3_title">Products</h4>
+        <a href="#" data-key="footer_p1">Student App</a>
+        <a href="#" data-key="footer_p2">Teacher Dashboard</a>
+        <a href="#" data-key="footer_p3">Gamification Suite</a>
+        <a href="#" data-key="footer_p4">Teach-Back AI</a>
+        <a href="#" data-key="footer_p5">Learning Analytics</a>
+        <a href="#" data-key="footer_p6">Revision Engine</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-key="footer_col4_title">Company</h4>
+        <a href="#" data-key="footer_c1">About Us</a>
+        <a href="#" data-key="footer_c2">Pricing</a>
+        <a href="#" data-key="footer_c3">Careers</a>
+        <a href="#" data-key="footer_c4">Contact</a>
+        <a href="#" data-key="footer_c5">Terms &amp; Privacy</a>
+        <h4 class="mt" data-key="footer_col4b_title">Resources</h4>
+        <a href="#" data-key="footer_r1">Documentation</a>
+        <a href="#" data-key="footer_r2">Blog</a>
+        <a href="#" data-key="footer_r3">Community</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span data-key="footer_copy">© 2025 Abhyaass — Made with ❤️. All rights reserved</span>
+      <div class="footer-links">
+        <a href="#" data-key="footer_privacy">Privacy Policy</a>
+        <a href="#" data-key="footer_terms">Terms of Use</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    /* ===================== TRANSLATIONS ===================== */
+    const translations = {
+      en: {
+        nav_home:"Home", nav_logout:"Logout",
+        hero_title:"Welcome, Student",
+        hero_sub:"Your personal AI learning space designed to help you understand concepts better, practice smarter, and build confidence every day. Start learning the smart way — one concept at a time.",
+        badge_upcoming:"Upcoming",
+        today_label:"Today's Focus", today_title:"Strengthen your basics",
+        today_desc:"Start with a quick activity below. Learning a little every day builds confidence faster than last-minute studying.",
+        task_title:"Recommended for you", task_desc:"Try one game or reading activity to warm up your brain.",
+        card1_title:"Gamified Learning", card1_desc:"Learn through games, challenges, and missions that adapt to your level. Practice concepts daily while earning rewards and improving skills without feeling bored.",
+        card2_title:"Reading Fluency", card2_desc:"Improve pronunciation, confidence, and understanding with AI-powered reading practice that gives instant feedback and helps you read better every day.",
+        card3_title:"Story-Based Learning", card3_desc:"Turn boring chapters into engaging stories that make concepts easier to understand, remember, and enjoy — learning feels like reading a story.",
+        card4_title:"Teach-Back Mode", card4_desc:"Master topics by explaining them to AI. Teaching helps you find gaps in understanding and strengthens concepts just like teaching a friend.",
+        footer_col1_title:"For Students", footer_s1:"Gamified Learning", footer_s2:"Teach-Back Mode", footer_s3:"Revision Tools", footer_s4:"Multilingual Support",
+        footer_col2_title:"For Teachers", footer_t1:"Board Diagram Generator", footer_t2:"Worksheet Auto Evaluator", footer_t3:"Track Progress", footer_t4:"Instant Worksheet Generator", footer_t5:"Smart Timetable Scheduler",
+        footer_col2b_title:"Admin", footer_a1:"Admin Dashboard", footer_a2:"Teacher Analytics", footer_a3:"Institutional Insights",
+        footer_col3_title:"Products", footer_p1:"Student App", footer_p2:"Teacher Dashboard", footer_p3:"Gamification Suite", footer_p4:"Teach-Back AI", footer_p5:"Learning Analytics", footer_p6:"Revision Engine",
+        footer_col4_title:"Company", footer_c1:"About Us", footer_c2:"Pricing", footer_c3:"Careers", footer_c4:"Contact", footer_c5:"Terms & Privacy",
+        footer_col4b_title:"Resources", footer_r1:"Documentation", footer_r2:"Blog", footer_r3:"Community",
+        footer_copy:"© 2025 Abhyaass — Made with ❤️. All rights reserved", footer_privacy:"Privacy Policy", footer_terms:"Terms of Use"
+      },
+      hi: {
+        nav_home:"होम", nav_logout:"लॉगआउट",
+        hero_title:"स्वागत है, छात्र",
+        hero_sub:"आपका निजी AI लर्निंग स्पेस — जो अवधारणाओं को बेहतर समझने, स्मार्ट अभ्यास करने और हर दिन आत्मविश्वास बढ़ाने में मदद करता है। एक अवधारणा से शुरू करें — स्मार्ट तरीके से सीखें।",
+        badge_upcoming:"जल्द आ रहा है",
+        today_label:"आज का लक्ष्य", today_title:"बुनियादी समझ को मजबूत करें",
+        today_desc:"नीचे दी गई किसी एक गतिविधि से शुरुआत करें। रोज़ थोड़ा सीखना आख़िरी समय की पढ़ाई से ज़्यादा असरदार होता है।",
+        task_title:"आपके लिए सुझाव", task_desc:"दिमाग़ को एक्टिव करने के लिए एक गेम या रीडिंग गतिविधि आज़माएँ।",
+        card1_title:"गेमिफ़ाइड लर्निंग", card1_desc:"गेम्स, चुनौतियों और मिशन के ज़रिए सीखें जो आपके स्तर के अनुसार बदलते हैं। रोज़ अभ्यास करें, पुरस्कार जीतें और बिना बोरियत के कौशल सुधारें।",
+        card2_title:"रीडिंग फ्लुएंसी", card2_desc:"AI आधारित रीडिंग प्रैक्टिस से उच्चारण, आत्मविश्वास और समझ सुधारें — तुरंत फ़ीडबैक पाएं और हर दिन बेहतर पढ़ना सीखें।",
+        card3_title:"स्टोरी-बेस्ड लर्निंग", card3_desc:"उबाऊ अध्यायों को रोचक कहानियों में बदलें जो अवधारणाओं को समझना, याद रखना और आनंद लेना आसान बनाती हैं — पढ़ाई कहानी पढ़ने जैसी लगेगी।",
+        card4_title:"टीच-बैक मोड", card4_desc:"AI को समझाकर विषयों में महारत हासिल करें। सिखाने से आप अपनी कमज़ोरियाँ पहचानेंगे और अवधारणाएं मज़बूत होंगी — ठीक जैसे किसी दोस्त को पढ़ाते हैं।",
+        footer_col1_title:"छात्रों के लिए", footer_s1:"गेमिफ़ाइड लर्निंग", footer_s2:"टीच-बैक मोड", footer_s3:"रिवीजन टूल्स", footer_s4:"बहुभाषी सपोर्ट",
+        footer_col2_title:"शिक्षकों के लिए", footer_t1:"बोर्ड डायग्राम जनरेटर", footer_t2:"वर्कशीट ऑटो इवैल्यूएटर", footer_t3:"प्रगति ट्रैक करें", footer_t4:"तुरंत वर्कशीट जनरेटर", footer_t5:"स्मार्ट टाइमटेबल शेड्यूलर",
+        footer_col2b_title:"एडमिन", footer_a1:"एडमिन डैशबोर्ड", footer_a2:"शिक्षक एनालिटिक्स", footer_a3:"संस्थागत इनसाइट्स",
+        footer_col3_title:"प्रोडक्ट्स", footer_p1:"छात्र ऐप", footer_p2:"शिक्षक डैशबोर्ड", footer_p3:"गेमिफ़िकेशन सूट", footer_p4:"टीच-बैक AI", footer_p5:"लर्निंग एनालिटिक्स", footer_p6:"रिवीजन इंजन",
+        footer_col4_title:"कंपनी", footer_c1:"हमारे बारे में", footer_c2:"मूल्य योजना", footer_c3:"करियर", footer_c4:"संपर्क करें", footer_c5:"नियम और गोपनीयता",
+        footer_col4b_title:"संसाधन", footer_r1:"डॉक्यूमेंटेशन", footer_r2:"ब्लॉग", footer_r3:"कम्युनिटी",
+        footer_copy:"© 2025 Abhyaass — ❤️ के साथ बनाया गया। सर्वाधिकार सुरक्षित", footer_privacy:"गोपनीयता नीति", footer_terms:"उपयोग की शर्तें"
+      }
+    };
+
+    function setLanguage(lang) {
+      const t = translations[lang];
+      if (!t) return;
+      document.querySelectorAll("[data-key]").forEach(el => {
+        const key = el.getAttribute("data-key");
+        if (t[key] !== undefined) el.textContent = t[key];
+      });
+      document.documentElement.lang = lang === "hi" ? "hi" : "en";
+      document.getElementById("langEn").classList.toggle("active", lang === "en");
+      document.getElementById("langHi").classList.toggle("active", lang === "hi");
+      try { localStorage.setItem("lang", lang); } catch(e) {}
+    }
+
+    document.getElementById("langEn").addEventListener("click", () => setLanguage("en"));
+    document.getElementById("langHi").addEventListener("click", () => setLanguage("hi"));
+
+    document.addEventListener("DOMContentLoaded", () => {
+      let savedLang = "en";
+      try { savedLang = localStorage.getItem("lang") || "en"; } catch(e) {}
+      setLanguage(savedLang);
+    });
+
+    /* ===================== FEATURE CLICK ===================== */
+   document.querySelectorAll('.feature').forEach(el => {
+  el.addEventListener('click', () => {
+    const href = el.dataset.href;
+    if (href) {
+      window.location.href = href;
+    } else {
+      alert('This feature is coming soon — stay tuned!');
+    }
+  });
+});
+
+    /* ===================== STREAK ===================== */
+    function updateStreak() {
+      const today = new Date().toDateString();
+      const lastVisit = localStorage.getItem("lastVisit");
+      let streak = parseInt(localStorage.getItem("streak")) || 0;
+      if (lastVisit !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        streak = lastVisit === yesterday.toDateString() ? streak + 1 : 1;
+        localStorage.setItem("streak", streak);
+        localStorage.setItem("lastVisit", today);
+      }
+      document.getElementById("streakNumber").textContent = streak;
+    }
+    document.addEventListener("DOMContentLoaded", updateStreak);
+
+    /* ===================== SPOTLIGHT MOUSE TRACKER ===================== */
+    document.querySelectorAll('.hero-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mx', `${x}%`);
+        card.style.setProperty('--my', `${y}%`);
+      });
+    });
+
+    /* ===================== 3D TILT ON HOVER ===================== */
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = (e.clientX - cx) / (rect.width / 2);
+        const dy = (e.clientY - cy) / (rect.height / 2);
+        const tiltX = dy * -10;
+        const tiltY = dx * 10;
+        card.style.transform = `translateY(-14px) scale(1.04) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform .6s cubic-bezier(.22,1,.36,1), box-shadow .4s ease';
+      });
+
+      card.addEventListener('mouseenter', () => {
+        card.style.transition = 'transform .15s ease, box-shadow .4s ease';
+      });
+    });
+
+    /* ===================== SCROLL REVEAL ===================== */
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.scroll-reveal').forEach(el => revealObserver.observe(el));
+
+    /* ===================== FLOATING PARTICLES ===================== */
+    const particleContainer = document.getElementById('particles');
+    function spawnParticle() {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 6 + 2;
+      const left = Math.random() * 100;
+      const duration = Math.random() * 8 + 6;
+      const delay = Math.random() * 4;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${left}%;
+        animation-duration:${duration}s;
+        animation-delay:${delay}s;
+        background: ${Math.random() > 0.5 ? 'rgba(6,182,212,.6)' : 'rgba(59,130,246,.5)'};
+      `;
+      particleContainer.appendChild(p);
+      setTimeout(() => p.remove(), (duration + delay) * 1000);
+    }
+
+    // Spawn particles continuously
+    setInterval(spawnParticle, 600);
+    for (let i = 0; i < 8; i++) spawnParticle();
+  </script>
+
+</body>
+</html>
