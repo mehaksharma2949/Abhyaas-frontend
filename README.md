@@ -18,3 +18,22 @@ https://abhyass2.netlify.app/
 - JavaScript
 
 ## 📂 Project Structure
+Abhyaas-frontend/
+└── final frontend/
+├── index.html
+├── studentDashboard.html
+├── teacherDashboard.html
+├── assets/
+└── features/
+
+## ⚙️ How to Run Locally
+1. Download or clone this repo
+2. Open the folder
+3. Run `index.html` in browser
+
+## 👩‍💻 Team
+- Mehak Sharma (Frontend)
+
+## 📌 Note
+This is the frontend repository of the Abhyaas project.
+Backend is deployed separately.
